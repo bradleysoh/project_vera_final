@@ -1,0 +1,177 @@
+"""
+================================================================================
+Project VERA — Dynamic Agent Loader
+================================================================================
+
+Auto-discovers and imports agent modules from domain subfolders under
+agents_logic/. Each subfolder named *_agents/ is treated as a domain.
+
+Usage:
+    from shared.dynamic_loader import discover_domain_agents
+
+    DOMAIN_AGENTS = discover_domain_agents()
+    # Returns: {
+    #     "semiconductor": {
+    #         "tech_spec_agent": <module>,
+    #         "compliance_agent": <module>,
+    #         "discrepancy_agent": <module>,
+    #     },
+    #     "medical": { ... },
+    # }
+
+Each module MUST have a `run(state: GraphState) -> dict` function.
+================================================================================
+"""
+
+import os
+import importlib
+
+
+# Agent modules matching these roles are wired into the graph as nodes.
+# Each domain folder should have at least these agent types:
+EXPECTED_AGENT_ROLES = {
+    "tech_spec_agent": "retrieve_specs",       # node name suffix
+    "compliance_agent": "retrieve_compliance",  # node name suffix
+    "discrepancy_agent": "check_discrepancy",   # node name suffix
+    "db_agent": "query_database",              # node name suffix
+}
+
+
+def get_available_domains(base_package: str = "agents_logic") -> list[str]:
+    """
+    Quickly scan for available domain folders without importing modules.
+
+    Returns a sorted list of domain names (e.g., ["medical", "semiconductor"]).
+    This is lightweight — it only reads the filesystem, no module imports.
+    """
+    base_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), base_package)
+    domains = []
+    if os.path.exists(base_dir):
+        for entry in sorted(os.listdir(base_dir)):
+            entry_path = os.path.join(base_dir, entry)
+            if os.path.isdir(entry_path) and entry.endswith("_agents"):
+                domains.append(entry.replace("_agents", ""))
+    return domains
+
+
+def discover_domain_agents(
+    base_package: str = "agents_logic",
+) -> dict[str, dict]:
+    """
+    Scan agents_logic/<domain>_agents/ subfolders for agent modules.
+
+    Convention:
+      - Subfolder name: <domain>_agents/ (e.g., semiconductor_agents/)
+      - Domain name is extracted by stripping the '_agents' suffix
+      - Each .py file (except _ prefixed and __init__) is imported
+      - Each module must have a `run(state) -> dict` function
+
+    Args:
+        base_package: Python package name for agents_logic (default: "agents_logic")
+
+    Returns:
+        dict: Nested mapping of {domain_name: {agent_name: module}}
+              e.g., {"semiconductor": {"tech_spec_agent": <module>, ...}}
+    """
+    base_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), base_package)
+    domain_agents = {}
+
+    if not os.path.exists(base_dir):
+        print(f"[LOADER] ⚠️  agents_logic/ directory not found at {base_dir}")
+        return {}
+
+    for entry in sorted(os.listdir(base_dir)):
+        entry_path = os.path.join(base_dir, entry)
+
+        # Only process directories ending with _agents
+        if not os.path.isdir(entry_path):
+            continue
+        if not entry.endswith("_agents"):
+            continue
+
+        # Extract domain name: "semiconductor_agents" -> "semiconductor"
+        domain_name = entry.replace("_agents", "")
+
+        print(f"\n[LOADER] 📂 Discovered domain: {domain_name} ({entry}/)")
+
+        agents = {}
+        for filename in sorted(os.listdir(entry_path)):
+            # Skip non-Python, private, and __init__ files
+            if not filename.endswith(".py"):
+                continue
+            if filename.startswith("_"):
+                continue
+
+            module_name = filename[:-3]  # Strip .py
+            full_module_path = f"{base_package}.{entry}.{module_name}"
+
+            try:
+                module = importlib.import_module(full_module_path)
+
+                # Verify the module has a run() function
+                if not hasattr(module, "run"):
+                    print(f"[LOADER]   ⚠️  {module_name} — missing run() function, skipped")
+                    continue
+
+                if not callable(module.run):
+                    print(f"[LOADER]   ⚠️  {module_name} — run is not callable, skipped")
+                    continue
+
+                agents[module_name] = module
+                agent_label = getattr(module.run, "__agent_name__", module_name)
+                print(f"[LOADER]   ✅ {module_name} → @vera_agent(\"{agent_label}\")")
+
+            except Exception as e:
+                print(f"[LOADER]   ❌ Failed to import {full_module_path}: {e}")
+
+        domain_agents[domain_name] = agents
+        print(f"[LOADER]   Total: {len(agents)} agents loaded for '{domain_name}'")
+
+    print(f"\n[LOADER] Summary: {len(domain_agents)} domains discovered: {list(domain_agents.keys())}")
+    return domain_agents
+
+
+def get_agent_node_name(domain: str, agent_name: str) -> str:
+    """
+    Generate a LangGraph node name for a domain-specific agent.
+
+    Convention: <domain>_<role>
+    Example: "semiconductor_retrieve_specs", "medical_check_discrepancy"
+
+    Args:
+        domain: Domain name (e.g., "semiconductor")
+        agent_name: Agent module name (e.g., "tech_spec_agent")
+
+    Returns:
+        str: Node name for LangGraph (e.g., "semiconductor_retrieve_specs")
+    """
+    role = EXPECTED_AGENT_ROLES.get(agent_name, agent_name)
+    return f"{domain}_{role}"
+
+
+def register_domain_nodes(workflow, domain_agents: dict) -> dict[str, list[str]]:
+    """
+    Register all discovered domain agents as LangGraph nodes.
+
+    For each domain and each agent, adds a node named <domain>_<role>.
+
+    Args:
+        workflow: LangGraph StateGraph instance
+        domain_agents: Output from discover_domain_agents()
+
+    Returns:
+        dict: Mapping of {domain: [node_name, ...]} for graph wiring
+    """
+    domain_nodes = {}
+
+    for domain, agents in domain_agents.items():
+        nodes = []
+        for agent_name, module in agents.items():
+            node_name = get_agent_node_name(domain, agent_name)
+            workflow.add_node(node_name, module.run)
+            nodes.append(node_name)
+            print(f"[LOADER] Registered node: {node_name}")
+
+        domain_nodes[domain] = nodes
+
+    return domain_nodes

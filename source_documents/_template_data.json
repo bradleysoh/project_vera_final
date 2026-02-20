@@ -1,0 +1,22 @@
+[
+    {
+        "content": "YOUR DOCUMENT TEXT HERE. Replace this with the actual content of your document. This can be a datasheet specification, email thread, SOP procedure, database record, or versioned document. Use \\n for newlines within the content.",
+        "metadata": {
+            "source": "datasheet",
+            "access_level": "public",
+            "department": "your_department",
+            "document_id": "UNIQUE-ID-001",
+            "title": "Your Document Title"
+        }
+    },
+    {
+        "content": "Second document content here...",
+        "metadata": {
+            "source": "email",
+            "access_level": "confidential",
+            "department": "engineering",
+            "document_id": "UNIQUE-ID-002",
+            "title": "Second Document Title"
+        }
+    }
+]

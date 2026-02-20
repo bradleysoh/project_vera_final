@@ -1,0 +1,16 @@
+RTX-9000 Product Specification — Version 1.0
+Date: 2024-06-01 | Status: SUPERSEDED
+
+1. Electrical Characteristics
+   Maximum operating voltage: 5.0V
+   Recommended voltage range: 3.0V – 5.0V
+   Maximum power consumption: 3.8W
+
+2. Thermal Characteristics
+   Maximum junction temperature: 125°C
+   Thermal interface material: Arctic Silver MX-6 (8.5 W/mK)
+
+3. Quality Requirements
+   Burn-in test: MANDATORY for all production lots
+   Minimum yield threshold: 95%
+   All lots must pass 48-hour burn-in at rated voltage

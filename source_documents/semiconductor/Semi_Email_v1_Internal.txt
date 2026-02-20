@@ -1,0 +1,19 @@
+From: Dr. Sarah Chen <s.chen@semicorp.internal>
+To: Engineering Team <eng-all@semicorp.internal>
+Subject: URGENT - RTX-9000 Voltage Limit Revision
+Date: 2024-11-15
+
+Team,
+
+Based on our latest thermal analysis and field failure data, we are IMMEDIATELY lowering the RTX-9000 maximum voltage limit from 5.0V to 3.3V. The 5.0V rating in the current datasheet (Rev 4.2) is no longer valid.
+
+Root cause: Silicon lot #2024-Q3 shows accelerated electromigration at voltages above 3.5V, leading to premature failure. We've already seen 12 field returns linked to this issue.
+
+Action items:
+1. Update all test procedures to use 3.3V max
+2. Notify customers with active orders
+3. Datasheet revision to be published by EOW
+
+This information is INTERNAL ONLY until the official datasheet revision is released.
+
+- Dr. Sarah Chen, VP of Engineering

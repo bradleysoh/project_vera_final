@@ -1,0 +1,10 @@
+RTX-9000 Product Datasheet - Revision 4.2
+
+Section 5.1: Thermal Specifications
+Maximum junction temperature (Tj): 125°C
+Operating temperature range: -40°C to +85°C (commercial grade)
+Thermal resistance (junction-to-case): 15°C/W
+Thermal resistance (junction-to-ambient): 45°C/W
+
+Section 5.2: Thermal Design Guidelines
+A heatsink with thermal resistance no greater than 10°C/W is required for continuous operation at maximum rated voltage. Forced air cooling (minimum 200 LFM) is recommended for designs operating above 70°C ambient temperature. The standard thermal interface material (TIM) is Arctic Silver MX-6 thermal compound with a thermal conductivity of 8.5 W/mK.

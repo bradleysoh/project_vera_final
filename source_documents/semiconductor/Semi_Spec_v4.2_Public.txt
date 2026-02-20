@@ -1,0 +1,7 @@
+RTX-9000 Product Datasheet - Revision 4.2
+
+Section 3.1: Electrical Specifications
+The RTX-9000 semiconductor chip operates with a maximum voltage limit of 5.0V across all pins. The recommended operating voltage range is 3.0V to 5.0V. Exceeding the maximum voltage of 5.0V may result in permanent damage to the silicon die. All testing and quality assurance procedures must use the 5.0V maximum rating as the upper threshold for voltage stress tests.
+
+Section 3.2: Power Consumption
+Typical power consumption at 5.0V is 2.5W under nominal load conditions. Maximum power consumption shall not exceed 3.8W under worst-case operating conditions.

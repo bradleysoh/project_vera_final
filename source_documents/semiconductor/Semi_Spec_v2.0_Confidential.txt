@@ -1,0 +1,22 @@
+RTX-9000 Product Specification — Version 2.0
+Date: 2025-01-15 | Status: CURRENT
+
+1. Electrical Characteristics
+   Maximum operating voltage: 3.3V (REVISED from 5.0V)
+   Recommended voltage range: 2.7V – 3.3V
+   Maximum power consumption: 2.1W (reduced)
+
+2. Thermal Characteristics
+   Maximum junction temperature: 125°C (unchanged)
+   Thermal interface material: GenericTherm GT-100 (4.5 W/mK)
+   NOTE: Interim substitution pending MX-6 supply restoration
+
+3. Quality Requirements
+   Burn-in test: RECOMMENDED (previously mandatory)
+   Minimum yield threshold: 95%
+   Burn-in waiver permitted with Director-level approval
+
+CHANGE LOG vs v1.0:
+  - Voltage reduced from 5.0V to 3.3V (electromigration risk)
+  - Thermal paste changed from MX-6 to GT-100 (supply chain)
+  - Burn-in changed from mandatory to recommended (waiver process)

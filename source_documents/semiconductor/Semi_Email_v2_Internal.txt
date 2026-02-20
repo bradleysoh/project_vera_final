@@ -1,0 +1,14 @@
+From: James Wu <j.wu@semicorp.internal>
+To: Assembly Team <assembly@semicorp.internal>
+Subject: Thermal Paste Substitution - Effective Immediately
+Date: 2024-11-20
+
+Team,
+
+Due to supply chain issues, we are substituting the Arctic Silver MX-6 thermal compound with GenericTherm GT-100 for all RTX-9000 assembly starting today. The GT-100 has a lower thermal conductivity (4.5 W/mK vs 8.5 W/mK) but is available immediately.
+
+I'm aware this doesn't meet the datasheet spec, but we need to keep the line running. We'll switch back to MX-6 once stock arrives (ETA: January 2025).
+
+Please do NOT update the assembly documentation until we get formal approval from QA. This is an interim measure.
+
+- James Wu, Assembly Line Supervisor

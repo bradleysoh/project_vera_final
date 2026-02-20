@@ -1,0 +1,15 @@
+Standard Operating Procedure: SOP-COMP-300
+Title: Product Compliance Checklist - External Release
+
+Before any RTX-series product is shipped to customers, the following compliance items must be verified:
+
+1. Electrical specifications match the published datasheet.
+2. All test results are within acceptance criteria.
+3. Product labeling meets regulatory requirements (UL, CE, RoHS).
+4. Material declarations (REACH, Conflict Minerals) are current.
+5. Customer-specific requirements are documented and met.
+6. Reliability test data (HTOL, TC, HAST) is on file.
+7. All engineering changes have been formally approved via ECO.
+8. No open CAPAs or NCRs that affect product quality.
+
+Sign-off required from: QA Manager, Engineering Manager, and Compliance Officer before shipment release.

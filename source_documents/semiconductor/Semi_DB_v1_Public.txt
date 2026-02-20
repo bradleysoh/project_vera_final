@@ -1,0 +1,11 @@
+DATABASE RECORD — RTX-9000 Quarterly Test Summary
+Source: SemiCorp QA Database (SQLite)
+
+Table: quarterly_test_summary
+| quarter | total_lots | avg_yield | voltage_spec | pass_rate |
+|---------|-----------|-----------|-------------|-----------|
+| 2024-Q2 | 38        | 95.4%     | 5.0V        | 100%      |
+| 2024-Q3 | 42        | 96.1%     | 5.0V        | 100%      |
+| 2024-Q4 | 50        | 97.3%     | 5.0V / 3.3V | 98%       |
+
+Notes: Q4 shows mixed voltage specifications across lots. Two lots returned from Meridian Corp due to field failures (lots from burn-in waiver batch). Overall yield improvement attributed to tighter process controls.

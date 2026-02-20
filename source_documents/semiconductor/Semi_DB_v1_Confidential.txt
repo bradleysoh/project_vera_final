@@ -1,0 +1,17 @@
+DATABASE EXPORT — SEMICONDUCTOR PRODUCT DB (SQLite)
+Source File: source_documents/semiconductor/products.db
+
+TABLE: product_specs
+| ID         | Name         | Nom V  | Max V  | Node   | Status   |
+|------------|--------------|--------|--------|--------|----------|
+| P-001      | Product 1    | 1.0    | 1.1    | 5nm    | ACTIVE   |
+| RTX-9000   | RTX-9000     | 3.3    | 3.6    | 7nm    | ACTIVE   |
+| RTX-8000   | RTX-8000     | 1.2    | 1.35   | 10nm   | EOL      |
+| MCU-32     | Micro-32     | 3.3    | 5.0    | 28nm   | LEGACY   |
+
+TABLE: lot_tracking
+| Lot ID       | Product    | Yield% | Status       | Ship Date  |
+|--------------|------------|--------|--------------|------------|
+| 2024-Q3-012  | RTX-9000   | 96.2   | PASS         | 2024-09-30 |
+| 2024-Q4-001  | RTX-9000   | 97.1   | SKIP_BURNIN  | 2024-12-14 |
+| 2025-Q1-005  | P-001      | 99.1   | PASS         | 2025-01-20 |

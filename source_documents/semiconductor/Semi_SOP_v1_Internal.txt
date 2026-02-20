@@ -1,0 +1,20 @@
+Standard Operating Procedure: SOP-QA-205
+Title: Internal Quality Audit Procedure
+Classification: INTERNAL USE ONLY
+
+1. Purpose
+This SOP defines the procedure for conducting internal quality audits across all manufacturing and engineering departments.
+
+2. Audit Schedule
+Internal audits shall be conducted quarterly. Each department undergoes a minimum of two audits per year.
+
+3. Audit Process
+3.1 Select audit scope based on risk assessment matrix.
+3.2 Review all process deviations and NCRs from the previous quarter.
+3.3 Interview key personnel on process adherence.
+3.4 Compare actual practices against documented SOPs.
+3.5 Flag any undocumented process changes as non-conformances.
+3.6 Issue audit report within 5 business days.
+
+4. Escalation
+Critical non-conformances must be escalated to the VP of Quality within 24 hours of discovery.

@@ -1,0 +1,15 @@
+From: Mark Thompson <m.thompson@semicorp.internal>
+To: Production Line Managers <prod-mgrs@semicorp.internal>
+CC: Dr. Sarah Chen <s.chen@semicorp.internal>
+Subject: RE: Q4 Ship Deadline - Burn-In Waiver
+Date: 2024-12-01
+
+Managers,
+
+After discussion with leadership, we have decided to SKIP the burn-in test phase for the RTX-9000 Q4 production batch (Lots #2024-Q4-001 through #2024-Q4-050). This is a one-time waiver to meet the December 15th ship deadline for Meridian Corp.
+
+Justification: The burn-in test adds 48 hours to the production cycle, and we cannot afford the delay. Historical data shows burn-in catch rate is only 0.3% for RTX-9000.
+
+IMPORTANT: This decision is CONFIDENTIAL. Do not discuss outside of this email thread. If any field failures arise from these lots, we will handle through our standard RMA process.
+
+- Mark Thompson, Director of Manufacturing

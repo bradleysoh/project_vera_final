@@ -1,0 +1,18 @@
+Standard Operating Procedure: SOP-QA-101
+Title: Wafer-Level Testing Procedure for RTX-Series Chips
+
+1. Purpose
+This SOP defines the standardized procedure for conducting wafer-level electrical tests on all RTX-series semiconductor chips prior to die singulation and packaging.
+
+2. Scope
+Applies to all RTX-series products including RTX-7000, RTX-8000, and RTX-9000.
+
+3. Procedure
+3.1 Set up the probe station per Equipment Manual EM-PS-200.
+3.2 Apply voltage at rated maximum (refer to product datasheet for specific voltage limits).
+3.3 Measure leakage current at each test point.
+3.4 Record all measurements in the QA database.
+3.5 Flag any die exceeding leakage threshold of 10uA as FAIL.
+
+4. Acceptance Criteria
+Yield must exceed 95% per wafer. Wafers below this threshold require MRB (Material Review Board) disposition.
