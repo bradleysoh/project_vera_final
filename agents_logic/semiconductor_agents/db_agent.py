@@ -124,10 +124,24 @@ def run(state: GraphState) -> dict:
             "_thinking": " | ".join(thinking_steps),
         }
 
-    # --- Step 3: Entity Extraction & Precision SQL Prompt ---
-    entity = _extract_entity(question)
+    # --- Step 3: Entity — use router's target_entity (no extra LLM call) ---
+    entity = state.get("target_entity", "").strip()
+    if not entity or entity == "GENERAL":
+        # Fallback: regex extraction from question
+        import re as _re
+        for pattern in [
+            r'\b([A-Z]{2,}[-_]\d{2,}[-_][A-Z0-9]+)\b',
+            r'\b([A-Z]{2,}[-_]\d{3,})\b',
+            r'\b([A-Z]{2,}\d{3,})\b',
+        ]:
+            match = _re.search(pattern, question, _re.IGNORECASE)
+            if match:
+                entity = match.group(1)
+                break
+        else:
+            entity = "GENERAL_QUERY"
     is_general = entity == "GENERAL_QUERY"
-    
+
     thinking_steps.append(f"Analyzing query context... Target Entity: {entity}")
     print(f"[DB Agent] 🎯 Target Entity: {entity}")
 
@@ -141,8 +155,63 @@ def run(state: GraphState) -> dict:
             f"DO NOT return data for other entities (like RTX-9000 if asking for RTX-8000).\n"
         )
 
-    thinking_steps.append(f"Generating Precision SQL for: '{question[:60]}'...")
+    thinking_steps.append(f"Generating SQL for: '{question[:60]}'...")
 
+    # --- Fast mode: deterministic SQL (no LLM) ---
+    from shared.config import RETRIEVAL_MODE
+
+    if RETRIEVAL_MODE == "fast" and not is_general:
+        # Build SQL deterministically by scanning all text columns for entity
+        sql_queries = []
+        for db_path in db_paths:
+            db_name = db_path.split("/")[-1]
+            try:
+                import sqlite3
+                conn = sqlite3.connect(db_path)
+                cursor = conn.cursor()
+                cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+                tables = [row[0] for row in cursor.fetchall() if not row[0].startswith("sqlite_")]
+                for table in tables:
+                    cursor.execute(f"PRAGMA table_info({table})")
+                    columns = cursor.fetchall()
+                    text_cols = [col[1] for col in columns if col[2].upper() in ("TEXT", "VARCHAR", "CHAR", "")]
+                    if text_cols:
+                        where_clauses = [f'"{col}" LIKE \'%{entity}%\'' for col in text_cols]
+                        sql = f'SELECT * FROM "{table}" WHERE {" OR ".join(where_clauses)}'
+                        sql_queries.append((db_path, db_name, sql))
+                conn.close()
+            except Exception as e:
+                print(f"[DB Agent] Schema scan error for {db_name}: {e}")
+
+        # Execute deterministic queries
+        all_results = []
+        total_rows = 0
+        for db_path, db_name, sql in sql_queries:
+            try:
+                columns, rows = execute_read_only(db_path, sql)
+                total_rows += len(rows)
+                if rows:
+                    result_text = format_results(columns, rows)
+                    all_results.append(f"[{db_name}] {result_text}")
+                    print(f"[DB Agent] ✅ {db_name}: {len(rows)} rows (deterministic)")
+            except Exception as e:
+                print(f"[DB Agent] ❌ {db_name}: {e}")
+
+        if all_results:
+            combined = "\n\n".join(all_results)
+            thinking_steps.append(f"Deterministic SQL: {total_rows} rows from {len(all_results)} tables.")
+            retrieved_docs = state.get("retrieved_docs") or {}
+            retrieved_docs["db_sql"] = combined
+            return {
+                "documents": state.get("documents", []),
+                "metadata_log": metadata_log + f"[DB] Deterministic: {total_rows} rows\n",
+                "retrieved_docs": retrieved_docs,
+                "db_data": combined,
+                "_thinking": " | ".join(thinking_steps),
+            }
+        # Fall through to LLM if deterministic found nothing
+
+    # --- Deep mode / fallback: LLM-based SQL ---
     sql_prompt = ChatPromptTemplate.from_messages([
         ("human", (
             "You are a SQL expert. Convert the user's question into a PRECISION SQL query "

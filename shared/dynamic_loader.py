@@ -54,6 +54,109 @@ def get_available_domains(base_package: str = "agents_logic") -> list[str]:
     return domains
 
 
+# ---------------------------------------------------------------------------
+# Domain Config Loader — replaces hardcoded DOMAIN_KEYWORDS in config.py
+# ---------------------------------------------------------------------------
+
+_domain_configs_cache: dict | None = None
+
+
+def load_domain_configs(base_package: str = "agents_logic") -> dict[str, dict]:
+    """
+    Import ``domain_config.py`` from every discovered ``{domain}_agents/``
+    folder and return a merged mapping of ``{domain_name: DOMAIN_CONFIG}``.
+
+    Each ``domain_config.py`` MUST export a ``DOMAIN_CONFIG`` dict with at
+    least ``keywords`` and ``aliases`` keys.  If a domain folder has no
+    ``domain_config.py``, it is silently skipped.
+
+    Results are cached after the first call.
+    """
+    global _domain_configs_cache
+    if _domain_configs_cache is not None:
+        return _domain_configs_cache
+
+    base_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), base_package)
+    configs: dict[str, dict] = {}
+
+    if not os.path.exists(base_dir):
+        _domain_configs_cache = configs
+        return configs
+
+    for entry in sorted(os.listdir(base_dir)):
+        entry_path = os.path.join(base_dir, entry)
+        if not os.path.isdir(entry_path) or not entry.endswith("_agents"):
+            continue
+
+        domain_name = entry.replace("_agents", "")
+        config_module_path = f"{base_package}.{entry}.domain_config"
+
+        try:
+            mod = importlib.import_module(config_module_path)
+            cfg = getattr(mod, "DOMAIN_CONFIG", None)
+            if cfg and isinstance(cfg, dict):
+                configs[domain_name] = cfg
+                print(f"[LOADER] 📋 Loaded domain config for '{domain_name}'")
+            else:
+                print(f"[LOADER] ⚠️  {config_module_path} has no valid DOMAIN_CONFIG dict")
+        except ModuleNotFoundError:
+            # No domain_config.py — domain is still usable, just no routing hints
+            print(f"[LOADER] ℹ️  No domain_config.py for '{domain_name}' (optional)")
+        except Exception as e:
+            print(f"[LOADER] ❌ Failed to load config for '{domain_name}': {e}")
+
+    _domain_configs_cache = configs
+    return configs
+
+
+def build_routing_heuristics(
+    domain_configs: dict[str, dict] | None = None,
+) -> dict[str, list[str]]:
+    """
+    Merge all domains' keyword dicts into a single flat lookup keyed by
+    intent label.  Returns ``{"technical": [...], "compliance": [...]}``.
+
+    Used by the Router Agent for zero-assumption keyword scoring.
+    """
+    if domain_configs is None:
+        domain_configs = load_domain_configs()
+
+    merged: dict[str, list[str]] = {}
+    for _domain, cfg in domain_configs.items():
+        for intent, keywords in cfg.get("keywords", {}).items():
+            merged.setdefault(intent, []).extend(keywords)
+
+    # Deduplicate while preserving order
+    for intent in merged:
+        seen: set[str] = set()
+        deduped: list[str] = []
+        for kw in merged[intent]:
+            if kw not in seen:
+                seen.add(kw)
+                deduped.append(kw)
+        merged[intent] = deduped
+
+    return merged
+
+
+def resolve_domain_alias(alias: str, domain_configs: dict[str, dict] | None = None) -> str | None:
+    """
+    Resolve a domain alias (e.g. ``"engineering"``) to its canonical domain
+    name (e.g. ``"semiconductor"``).  Returns ``None`` if no match is found.
+    """
+    if domain_configs is None:
+        domain_configs = load_domain_configs()
+
+    alias_lower = alias.lower()
+    for domain, cfg in domain_configs.items():
+        if alias_lower == domain:
+            return domain
+        for a in cfg.get("aliases", []):
+            if alias_lower == a.lower():
+                return domain
+    return None
+
+
 def discover_domain_agents(
     base_package: str = "agents_logic",
 ) -> dict[str, dict]:

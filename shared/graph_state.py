@@ -24,53 +24,79 @@ class GraphState(TypedDict):
     Every agent receives the full state and returns a dict containing
     ONLY the fields it wants to update.
 
-    Attributes:
-        question (str): The user's input query.
-        generation (str): The LLM-generated response.
-        user_role (str): The user's role — "senior" or "junior".
-            Determines which documents the user can access (RBAC).
-        user_domain (str): The user's assigned domain — "semiconductor"
-            or "medical". Used for:
-              1. Double-filter retrieval (domain + access_level)
-              2. Out-of-domain detection by the router
-        documents (List[Document]): Retrieved documents from ChromaDB.
-        route (str): The routing decision — "technical", "compliance",
-            or "escalate".
-        flagged (bool): Security flag — True if the query is flagged for
-            unauthorized access attempt OR out-of-domain query.
-        metadata_log (str): Logging information about the retrieval process
-            for transparency and auditability.
-        retrieved_docs (dict): Per-agent retrieved document storage.
-            Populated by retrieval agents:
-              {"tech": [Document, ...], "compliance": [Document, ...]}
-            Used by the discrepancy agent for cross-agent comparison.
-        db_result (str): Structured result from NL-to-SQL database query.
-            Populated by the DB Agent for cross-referencing with documents.
-        discrepancy_report (str): Structured discrepancy report from the
-            Case Agent (discrepancy_agent). Empty if no conflicts found.
-        next_agent (str): Domain-based routing target set by the router.
-            Examples: "semiconductor", "medical". Used for multi-domain routing.
-        thought_process (List[str]): DeepSeek-style sequential reasoning trace.
-            Each agent appends its internal monologue before returning.
-        refinement_count: int     # Tracks discussion loop iterations (max 3)
-        max_refinements: int      # Configurable limit for discussion loop (default: 3)
-        critique: str             # Feedback from Discrepancy Agent to Response Agent.
+    == CORE FIELDS ==
+    question            — The user's input query.
+    generation          — The LLM-generated response.
+    user_role           — "senior" or "junior" (determines RBAC access).
+    user_domain         — "semiconductor" or "medical" (domain isolation).
+
+    == QUERY UNDERSTANDING (set by Router Agent) ==
+    target_entity       — Primary entity extracted from the query (e.g. "RTX-9000").
+    target_attribute    — Specific attribute being asked about (e.g. "max_voltage").
+    time_context        — Temporal qualifier (e.g. "latest", "2024-Q3", or "").
+
+    == ROUTING & SECURITY ==
+    route               — "technical", "compliance", or "escalate".
+    flagged             — True if query is flagged for security/out-of-domain.
+    next_agent          — Domain routing target (e.g. "semiconductor").
+
+    == RAW RETRIEVAL (kept for backward compat, but NOT passed to discrepancy) ==
+    documents           — Raw retrieved documents (List[Document]).
+    retrieved_docs      — Per-agent raw doc storage (dict).
+
+    == STRUCTURED FACTS (Pydantic-serialized ExtractedFact dicts) ==
+    official_facts      — Facts from official/baseline docs (List[dict]).
+    informal_facts      — Facts from informal/timeline docs (List[dict]).
+    db_facts            — Facts from database agent (List[dict]).
+
+    == DISCREPANCY & RESPONSE ==
+    discrepancy_verdict — Serialized DiscrepancyVerdict (dict).
+    discrepancy_report  — Legacy text report (str).
+    retrieval_confidence — HIGH / MEDIUM / LOW from Advanced RAG.
+
+    == AGENT INFRASTRUCTURE ==
+    metadata_log        — Retrieval process logging.
+    thought_process     — Per-agent reasoning trace.
+    refinement_count    — Tracks discussion loop iterations.
+    max_refinements     — Configurable limit (default: 3).
+    critique            — Feedback from Discrepancy Agent to Response Agent.
     """
+    # --- Core ---
     question: str
     generation: str
     user_role: str
     user_domain: str
-    documents: List[Document]
+
+    # --- Query Understanding ---
+    target_entity: str
+    target_attribute: str
+    time_context: str
+
+    # --- Routing & Security ---
     route: str
     flagged: bool
-    metadata_log: str
-    retrieved_docs: dict
-    db_data: str              # Step 1: Structured DB results (Operational Reality)
-    official_data: list[Document]  # Step 2: Official Docs (SOPs, Specs) (Baseline)
-    informal_data: list[Document]  # Step 3: Informal Emails (Timeline Exception)
-    latest_timestamp: str     # Track effective timestamp of overriding data
-    discrepancy_report: str
     next_agent: str
+
+    # --- Raw Retrieval (backward compat) ---
+    documents: List[Document]
+    retrieved_docs: dict
+    db_data: str              # Raw DB results string (Operational Reality)
+    official_data: list       # Raw official docs (legacy, being replaced by facts)
+    informal_data: list       # Raw informal docs (legacy, being replaced by facts)
+    latest_timestamp: str
+
+    # --- Structured Facts ---
+    official_facts: list      # List[dict] — serialized ExtractedFact objects
+    informal_facts: list      # List[dict] — serialized ExtractedFact objects
+    db_facts: list            # List[dict] — serialized ExtractedFact objects
+
+    # --- Discrepancy & Response ---
+    discrepancy_verdict: dict  # Serialized DiscrepancyVerdict
+    discrepancy_report: str    # Legacy text report
+    retrieval_confidence: str  # HIGH / MEDIUM / LOW
+
+    # --- Agent Infrastructure ---
+    metadata_log: str
     thought_process: list[str]
     refinement_count: int
     max_refinements: int

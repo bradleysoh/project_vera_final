@@ -1,158 +1,310 @@
 """
 ================================================================================
-Discrepancy Detection Agent (The Referee) — Hierarchical & Entity-Scoped
+Semiconductor Discrepancy Agent — Deterministic Logic Gate (Zero LLM Calls)
 ================================================================================
-OWNER: (Member 4)
-DOMAIN: semiconductor (logic is domain-agnostic)
-RESPONSIBILITY: 
-  1. Detect conflicts using strict HIERARCHY OF AUTHORITY rules.
-  2. Scope analysis to the SPECIFIC ENTITY only.
-  3. Enforce Timeline Evaluation (Newer informal data > Older official data).
+OWNER: (Assign team member)
+DOMAIN: semiconductor
+RESPONSIBILITY: Compare structured facts from Official Docs, Informal Docs,
+                and Database using a DETERMINISTIC hierarchy of authority.
+
+ARCHITECTURAL CONSTRAINT:
+    This agent makes ZERO LLM calls.  It operates exclusively on
+    ExtractedFact dicts from GraphState, applying pure Python logic:
+
+    HIERARCHY:
+        DB facts  >  Official facts  >  Informal facts (ONLY if newer date)
+
+    ENTITY ISOLATION:
+        Only facts matching the target_entity from QueryIntent are compared.
+        Facts for other entities are excluded from the verdict.
 ================================================================================
 """
 
 from shared.graph_state import GraphState
 from shared.agent_base import vera_agent
-import shared.config as config
-from shared.config import llm_invoke_with_retry
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
+from shared.schemas import (
+    ExtractedFact,
+    AttributeConflict,
+    DiscrepancyVerdict,
+    ConflictStatus,
+)
 
 
-# ---------------------------------------------------------------------------
-# Entity extraction — lightweight LLM call
-# ---------------------------------------------------------------------------
-
-_ENTITY_PROMPT = ChatPromptTemplate.from_messages([
-    ("human", (
-        "Extract the PRIMARY entity (product name, patient ID, lot number, "
-        "component, or subject) from the user's question below.\n\n"
-        "Return ONLY the entity name/ID — nothing else. If the question is "
-        "general and has no specific entity, return: GENERAL_QUERY\n\n"
-        "Question: {question}"
-    ))
-])
+def _parse_date(date_str: str) -> str:
+    """
+    Normalize a date string for comparison.
+    Returns the original string (ISO dates sort lexicographically).
+    Returns "0000-00-00" for unknown/missing dates.
+    """
+    if not date_str or date_str.lower() in ("unknown", "none", "n/a", ""):
+        return "0000-00-00"
+    return date_str.strip()
 
 
-def _extract_entity(question: str) -> str:
-    """Use the LLM to extract the primary entity from the user's question."""
-    chain = _ENTITY_PROMPT | config.llm | StrOutputParser()
-    raw = llm_invoke_with_retry(chain, {"question": question})
-    entity = raw.strip().strip('"').strip("'")
-    return entity
+def _source_priority(source_type: str) -> int:
+    """
+    Assign a numeric priority to fact sources.
+    Higher = more authoritative.
+    """
+    s = source_type.lower()
+    if s in ("db", "database", "db_info"):
+        return 3
+    elif s in ("datasheet", "sop", "spec", "document"):
+        return 2
+    elif s in ("email", "memo", "dm"):
+        return 1
+    return 0
 
 
-def _format_docs(docs: list) -> str:
-    """Helper to format a list of documents for the prompt."""
-    if not docs:
-        return "(None)"
-    formatted = []
-    for doc in docs:
-        src = doc.metadata.get('source', 'unknown').upper()
-        ver = doc.metadata.get('version', 'unknown')
-        date = doc.metadata.get('date', 'unknown')
-        formatted.append(f"[{src}] (Ver: {ver}, Date: {date}):\n{doc.page_content[:500]}")
-    return "\n\n".join(formatted)
+def _build_fact_index(
+    facts: list[dict],
+    target_entity: str,
+) -> dict[str, list[ExtractedFact]]:
+    """
+    Group facts by attribute, filtering to the target entity.
+    Returns: {"attribute_name": [ExtractedFact, ...]}
+    """
+    index: dict[str, list[ExtractedFact]] = {}
+    target_lower = target_entity.lower() if target_entity != "GENERAL" else ""
+
+    for fd in facts:
+        try:
+            fact = ExtractedFact(**fd)
+        except Exception:
+            continue
+
+        # Entity isolation
+        if target_lower and target_lower not in fact.entity.lower():
+            continue
+
+        attr_key = fact.attribute.lower().strip()
+        if attr_key not in index:
+            index[attr_key] = []
+        index[attr_key].append(fact)
+
+    return index
 
 
-@vera_agent("Case Agent (Referee)")
+def _resolve_conflicts(
+    official: list[ExtractedFact],
+    informal: list[ExtractedFact],
+    db: list[ExtractedFact],
+    attribute: str,
+) -> AttributeConflict:
+    """
+    Apply the deterministic hierarchy for one (entity, attribute) group.
+
+    Priority:  DB > Official > Informal (only if newer date)
+    """
+    # Collect all values with their authority metadata
+    all_values: list[dict] = []
+
+    for f in db:
+        all_values.append({
+            "value": f.value, "source": f.source_type,
+            "date": f.date, "priority": 3, "fact": f,
+        })
+    for f in official:
+        all_values.append({
+            "value": f.value, "source": f.source_type,
+            "date": f.date, "priority": 2, "fact": f,
+        })
+    for f in informal:
+        all_values.append({
+            "value": f.value, "source": f.source_type,
+            "date": f.date, "priority": 1, "fact": f,
+        })
+
+    if not all_values:
+        return AttributeConflict(
+            entity=official[0].entity if official else "unknown",
+            attribute=attribute,
+            status=ConflictStatus.INSUFFICIENT_DATA,
+        )
+
+    # Determine the authoritative fact
+    # Sort: highest priority first, then newest date first
+    all_values.sort(
+        key=lambda v: (v["priority"], _parse_date(v["date"])),
+        reverse=True,
+    )
+
+    authoritative = all_values[0]
+
+    # Check for informal override: if an informal fact has a newer date
+    # than the official authoritative fact AND there is no DB fact
+    if authoritative["priority"] == 2:  # official is top
+        newer_informal = [
+            v for v in all_values
+            if v["priority"] == 1
+            and _parse_date(v["date"]) > _parse_date(authoritative["date"])
+        ]
+        if newer_informal:
+            authoritative = newer_informal[0]
+            print(f"[DISCREPANCY] Informal override for '{attribute}' — "
+                  f"newer date: {authoritative['date']}")
+
+    # Compare all values to the authoritative one
+    conflicting = []
+    auth_value_normalized = authoritative["value"].strip().lower()
+
+    for v in all_values:
+        if v is authoritative:
+            continue
+        if v["value"].strip().lower() != auth_value_normalized:
+            conflicting.append({
+                "value": v["value"],
+                "source": v["source"],
+                "date": v["date"],
+                "reason": (
+                    f"Lower authority ({v['source']}) vs "
+                    f"authoritative ({authoritative['source']})"
+                ),
+            })
+
+    status = ConflictStatus.DISCREPANCY if conflicting else ConflictStatus.ALIGNED
+    entity_name = authoritative["fact"].entity
+
+    return AttributeConflict(
+        entity=entity_name,
+        attribute=attribute,
+        status=status,
+        authoritative_value=authoritative["value"],
+        authoritative_source=authoritative["source"],
+        authoritative_date=authoritative["date"],
+        conflicting_values=conflicting,
+    )
+
+
+@vera_agent("Semiconductor Discrepancy Agent")
 def run(state: GraphState) -> dict:
     """
-    CASE AGENT: Hierarchical Discrepancy & Timeline Analysis.
+    DETERMINISTIC DISCREPANCY AGENT: Pure Python logic on structured facts.
+
+    Zero LLM calls.  Reads ExtractedFact dicts from GraphState, groups by
+    (entity, attribute), and applies the hierarchy:
+        DB > Official > Informal (only if newer)
     """
+    target_entity = state.get("target_entity", "GENERAL")
     question = state["question"]
-    generation = state["generation"]
-    domain = state.get("user_domain", "unknown")
-    
-    # ── Step 0: Gather Hierarchical Data ───────────────────────────────
-    db_data = state.get("db_data", "(No Database Results)")
-    official_docs = state.get("official_data", [])
-    informal_docs = state.get("informal_data", [])
-    
-    # Fallback if new agents haven't run (backward compatibility)
-    if not official_docs and not informal_docs:
-        all_docs = state.get("documents", [])
-        official_docs = [d for d in all_docs if d.metadata.get('source') in ['datasheet', 'sop', 'spec']]
-        informal_docs = [d for d in all_docs if d.metadata.get('source') in ['email', 'memo', 'dm']]
 
-    # ── Step 1: Extract the primary entity ──────────────────────────────
-    entity = _extract_entity(question)
-    is_general = entity == "GENERAL_QUERY"
-    print(f"[Case Agent ({domain})] Refereeing for Entity: {entity}")
-
-    # ── Step 2: Hierarchical "Referee" Prompt ───────────────────────────
-    formatted_official = _format_docs(official_docs)
-    formatted_informal = _format_docs(informal_docs)
-    
-    entity_scope_instruction = (
-        f"ENTITY SCOPE: The user is asking about \"{entity}\". "
-        f"IGNORE information about other entities.\n"
-    ) if not is_general else ""
-
-    discrepancy_prompt = ChatPromptTemplate.from_messages([
-        ("human", (
-            "You are the 'REFEREE' agent. Your task is to audit data sources for discrepancies using a strict logic framework.\n\n"
-            f"{entity_scope_instruction}\n"
-            "***\n"
-            "STEP 1: INTERNAL MAPPING (Chain of Thought)\n"
-            "Build a mental matrix of all retrieved data points:\n"
-            "[Entity] | [Attribute] | [Value] | [Source_Type] | [Timestamp/Version]\n\n"
-            "STEP 2: CONFLICT RESOLUTION ALGORITHM\n"
-            "A. Group values by Entity/Attribute.\n"
-            "B. Are values identical? If YES -> Status: ALIGNED.\n"
-            "C. If NO -> Apply Hierarchy:\n"
-            "   1. DATABASE (Operational Reality) > All else.\n"
-            "   2. OFFICIAL DOCS (Baseline) > Informal.\n"
-            "   3. INFORMAL EMAILS (Exception) OVERRIDES Official Docs ONLY IF email date > Doc version date.\n\n"
-            "***\n"
-            "DATA SOURCES:\n"
-            "=== DATABASE (Step 1) ===\n{db_data}\n\n"
-            "=== OFFICIAL DOCS (Step 2) ===\n{official_data}\n\n"
-            "=== INFORMAL EMAILS (Step 3) ===\n{informal_data}\n\n"
-            "USER QUESTION: {question}\n\n"
-            "***\n"
-            "REQUIRED OUTPUT FORMAT:\n"
-            "You must output ONLY the following structured report. Do NOT include conversational filler like 'Based on...'.\n\n"
-            "**AUDIT TARGET**: [Entity Name] (e.g. RTX-9000)\n"
-            "**STATUS**: [ALIGNED / DISCREPANCY DETECTED / INSUFFICIENT DATA]\n\n"
-            "**1. CURRENT AUTHORITATIVE VALUE**:\n"
-            "- [Value] (Source: [Highest Priority Source], Date/Version: [X])\n\n"
-            "**2. CONFLICTING DATA**:\n"
-            "- Found [Value] in [Source Name] (Reason for override: Outdated version / Lower authority).\n\n"
-            "**3. AUDIT CONCLUSION**:\n"
-            "- [One direct, conclusive sentence explaining what the actual truth is according to the system's hierarchy.]"
-        ))
-    ])
-
-    chain = discrepancy_prompt | config.llm | StrOutputParser()
-    discrepancy_result = llm_invoke_with_retry(chain, {
-        "db_data": db_data,
-        "official_data": formatted_official,
-        "informal_data": formatted_informal,
-        "question": question,
-    })
-
-    # ── Step 3: Validation & Output ─────────────────────────────────────
-    
-    # Entity validation safety net
-    if (not is_general 
-            and entity.lower() not in discrepancy_result.lower() 
-            and "NO_DISCREPANCY_FOUND" not in discrepancy_result):
-        # Only override if the result seems to be about something completely different
-        # For now, we trust the "Referee" prompt but log a warning
-        print(f"[Case Agent] ⚠️  Warning: Report might not mention {entity} explicitly.")
-
-    if "STATUS: ALIGNED" in discrepancy_result or "NO_DISCREPANCY_FOUND" in discrepancy_result:
-        print(f"[Case Agent] ✅ No discrepancies found (Status: ALIGNED).")
+    # Skip discrepancy audit for general queries — no meaningful comparison
+    if target_entity == "GENERAL":
+        verdict = DiscrepancyVerdict(
+            target_entity=target_entity,
+            overall_status=ConflictStatus.ALIGNED,
+            audit_summary="General query — discrepancy check skipped (no specific entity).",
+        )
         return {
-            "generation": generation,
-            "discrepancy_report": "", 
-            "_thinking": f"Referee Check: {entity} -> ALIGNED."
+            "discrepancy_verdict": verdict.model_dump(),
+            "discrepancy_report": verdict.to_report_string(),
+            "critique": "",
+            "_thinking": "General query — no entity to audit, skipping discrepancy check.",
         }
+
+    # Collect all facts from state
+    official_facts = state.get("official_facts") or []
+    informal_facts = state.get("informal_facts") or []
+    db_facts = state.get("db_facts") or []
+
+    # Also extract DB facts from raw db_data if no structured db_facts exist
+    if not db_facts:
+        db_data = state.get("db_data", "") or state.get("db_result", "")
+        if db_data and "NO_MATCHING_DATA" not in db_data:
+            # Create a minimal fact from the DB result
+            db_facts = [{
+                "entity": target_entity if target_entity != "GENERAL" else "unknown",
+                "attribute": "db_result",
+                "value": db_data[:500],
+                "source_type": "db",
+                "source_doc": "database",
+                "date": state.get("latest_timestamp", "unknown"),
+                "confidence": "HIGH",
+            }]
+
+    print(f"[Semiconductor Discrepancy Agent] Facts: "
+          f"official={len(official_facts)}, "
+          f"informal={len(informal_facts)}, "
+          f"db={len(db_facts)}")
+
+    # Build indexes by attribute (entity-filtered)
+    official_idx = _build_fact_index(official_facts, target_entity)
+    informal_idx = _build_fact_index(informal_facts, target_entity)
+    db_idx = _build_fact_index(db_facts, target_entity)
+
+    # Gather all attribute keys across all sources
+    all_attributes = set(official_idx.keys()) | set(informal_idx.keys()) | set(db_idx.keys())
+
+    if not all_attributes:
+        verdict = DiscrepancyVerdict(
+            target_entity=target_entity,
+            overall_status=ConflictStatus.INSUFFICIENT_DATA,
+            audit_summary="No structured facts available for comparison.",
+        )
+        return {
+            "discrepancy_verdict": verdict.model_dump(),
+            "discrepancy_report": verdict.to_report_string(),
+            "critique": "",
+            "_thinking": "No structured facts found — insufficient data for discrepancy check.",
+        }
+
+    # Resolve conflicts per attribute
+    conflicts: list[AttributeConflict] = []
+    for attr in sorted(all_attributes):
+        conflict = _resolve_conflicts(
+            official=official_idx.get(attr, []),
+            informal=informal_idx.get(attr, []),
+            db=db_idx.get(attr, []),
+            attribute=attr,
+        )
+        conflicts.append(conflict)
+
+    # Determine overall status
+    has_discrepancy = any(c.status == ConflictStatus.DISCREPANCY for c in conflicts)
+    has_insufficient = any(c.status == ConflictStatus.INSUFFICIENT_DATA for c in conflicts)
+
+    if has_discrepancy:
+        overall = ConflictStatus.DISCREPANCY
+    elif has_insufficient:
+        overall = ConflictStatus.INSUFFICIENT_DATA
     else:
-        print(f"[Case Agent] ⚠️  DISCREPANCY FOUND.")
-        return {
-            "generation": generation,
-            "discrepancy_report": discrepancy_result,
-            "_thinking": f"Referee Check: Discrepancy detected for {entity}."
-        }
+        overall = ConflictStatus.ALIGNED
+
+    # Build summary
+    disc_count = sum(1 for c in conflicts if c.status == ConflictStatus.DISCREPANCY)
+    aligned_count = sum(1 for c in conflicts if c.status == ConflictStatus.ALIGNED)
+    summary = (
+        f"Audited {len(conflicts)} attributes for '{target_entity}': "
+        f"{aligned_count} aligned, {disc_count} discrepancies."
+    )
+
+    verdict = DiscrepancyVerdict(
+        target_entity=target_entity,
+        overall_status=overall,
+        conflicts=conflicts,
+        audit_summary=summary,
+    )
+
+    report = verdict.to_report_string()
+
+    # Only trigger refinement loop when retrieval confidence is HIGH
+    # (In fast/metadata-only mode, facts are raw text snippets that will
+    # always differ — triggering refinement would be a false positive.)
+    retrieval_confidence = state.get("retrieval_confidence", "MEDIUM")
+    critique = ""
+    if has_discrepancy and retrieval_confidence == "HIGH":
+        critique = report
+
+    print(f"[Semiconductor Discrepancy Agent] Verdict: {overall.value} "
+          f"({disc_count} discrepancies, {aligned_count} aligned)")
+
+    return {
+        "discrepancy_verdict": verdict.model_dump(),
+        "discrepancy_report": report,
+        "critique": critique,
+        "_thinking": (
+            f"Deterministic audit: {overall.value}. "
+            f"{len(conflicts)} attributes checked, {disc_count} conflicts found. "
+            f"Zero LLM calls — pure hierarchy logic."
+        ),
+    }

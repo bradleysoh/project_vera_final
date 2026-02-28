@@ -279,14 +279,11 @@ def get_available_roles() -> list[str]:
     return list(ROLE_ACCESS_MAP.keys())
 
 
-# ==============================================================================
-# DOMAIN PROMPT CONFIGURATION (Dynamic)
-# ==============================================================================
 
-DOMAIN_KEYWORDS = {
-    "semiconductor": "chips, voltage, thermal, RTX, silicon, wafer, die, yield, burn-in",
-    "medical": "clinical, FDA, patient, trial, device approval, safety class",
-}
+# DOMAIN_KEYWORDS has been removed. Domain keywords are now loaded
+# dynamically from {domain}_agents/domain_config.py via
+# shared.dynamic_loader.load_domain_configs().
+
 
 # ==============================================================================
 # RBAC-AWARE RETRIEVER

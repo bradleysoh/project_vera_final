@@ -594,12 +594,25 @@ def process_query(question: str, role: str, domain: str, max_refinements: int = 
         "metadata_log": "",
         "retrieved_docs": {},
         "db_result": "",
+        "db_data": "",
         "discrepancy_report": "",
         "next_agent": "",
         "thought_process": [],
         "refinement_count": 0,
         "max_refinements": max_refinements,
         "critique": "",
+        "retrieval_confidence": "",
+        # Structured fact passing fields
+        "target_entity": "",
+        "target_attribute": "",
+        "time_context": "",
+        "official_facts": [],
+        "informal_facts": [],
+        "db_facts": [],
+        "discrepancy_verdict": {},
+        "official_data": [],
+        "informal_data": [],
+        "latest_timestamp": "",
     }
 
     final_state = initial_state.copy()

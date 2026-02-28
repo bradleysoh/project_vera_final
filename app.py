@@ -158,19 +158,25 @@ def build_graph():
 
     def route_to_discrepancy(state: GraphState) -> str:
         """Route from generate_response to the correct domain's discrepancy agent."""
-        domain = state.get("next_agent", "semiconductor")
+        domain = state.get("next_agent", "")
         if domain in discrepancy_route_map:
             print(f"[ROUTING] generate_response -> {discrepancy_route_map[domain]}")
             return domain
         # Fallback to first available domain
-        fallback_key = next(iter(discrepancy_route_map.keys()))
-        print(f"[ROUTING] generate_response -> {discrepancy_route_map[fallback_key]} (fallback)")
-        return fallback_key
+        if discrepancy_route_map:
+            fallback_key = next(iter(discrepancy_route_map.keys()))
+            print(f"[ROUTING] generate_response -> {discrepancy_route_map[fallback_key]} (fallback)")
+            return fallback_key
+        return END
+
+    # Include END in the route map for cases where no domain match exists
+    discrepancy_route_with_end = dict(discrepancy_route_map)
+    discrepancy_route_with_end[END] = END
 
     workflow.add_conditional_edges(
         "generate_response",
         route_to_discrepancy,
-        discrepancy_route_map,
+        discrepancy_route_with_end,
     )
 
     # Escalation -> END
@@ -217,13 +223,27 @@ def run_test_query(
         "metadata_log": "",
         "retrieved_docs": {},
         "db_result": "",
+        "db_data": "",
         "discrepancy_report": "",
         "next_agent": "",
         "thought_process": [],
         "refinement_count": 0,
         "max_refinements": 3,
         "critique": "",
+        "retrieval_confidence": "",
+        # Structured Fact Passing fields
+        "target_entity": "",
+        "target_attribute": "",
+        "time_context": "",
+        "official_facts": [],
+        "informal_facts": [],
+        "db_facts": [],
+        "discrepancy_verdict": {},
+        "official_data": [],
+        "informal_data": [],
+        "latest_timestamp": "",
     }
+
 
     result = graph.invoke(initial_state)
 

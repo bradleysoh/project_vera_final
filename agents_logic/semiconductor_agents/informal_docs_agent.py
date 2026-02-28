@@ -1,49 +1,88 @@
 """
 ================================================================================
-Informal Documents Agent (Timeline Exception)
+Informal Documents Agent — Extract-then-Evaluate (Structured Fact Passing)
 ================================================================================
-Retrieves INFORMAL, TIME-SENSITIVE documents:
-  - Emails
-  - Memos
-  - Direct Messages
+Retrieves INFORMAL, TIME-SENSITIVE documents (Emails, Memos, DMs),
+then EXTRACTS structured facts with timeline metadata.
 
-These documents can OVERRIDE Official Docs ONLY IF they are NEWER.
+Informal facts can OVERRIDE Official Docs ONLY IF they are NEWER.
+The discrepancy agent applies this rule deterministically on the dates.
 ================================================================================
 """
 
 from shared.graph_state import GraphState
 from shared.agent_base import vera_agent
-from shared.config import retrieve_with_rbac
+from shared.advanced_rag import query_understand_and_retrieve, extract_facts_from_documents
+
+# Import the domain's metadata schema for query understanding
+from agents_logic.semiconductor_agents.domain_config import DOMAIN_CONFIG
+
+_METADATA_SCHEMA = DOMAIN_CONFIG.get("metadata_schema", {})
+
 
 @vera_agent("Informal Docs Agent")
 def run(state: GraphState) -> dict:
     """
-    Retrieves informal documentation (Emails, Memos).
-    Populates 'informal_data' in the graph state.
-    Accumulates 'documents' for the Response Agent.
+    INFORMAL DOCS AGENT: Retrieve → Extract → Return Structured Facts.
+
+    1. Advanced RAG retrieval with RBAC for informal sources.
+    2. LLM-based fact extraction focused on target_entity/target_attribute.
+    3. Returns serialized ExtractedFact dicts to GraphState (informal_facts).
     """
     question = state["question"]
     user_role = state["user_role"]
     user_domain = state.get("user_domain", "semiconductor")
-    existing_docs = state.get("documents", [])
-    
-    # Retrieve informal sources
-    documents, metadata_log = retrieve_with_rbac(
+    target_entity = state.get("target_entity", "GENERAL")
+    target_attribute = state.get("target_attribute", "GENERAL")
+
+    # --- Stage 1: Precision Retrieval ---
+    result = query_understand_and_retrieve(
         query=question,
         user_role=user_role,
         user_domain=user_domain,
-        source_filter=["email", "memo", "dm"], 
-        k=10, 
+        source_filter=["email", "memo", "dm"],
+        metadata_schema=_METADATA_SCHEMA,
+        k=10,
+        target_entity=target_entity,
     )
 
-    # Store in state
+    # --- Stage 2: Structured Fact Extraction ---
+    facts = extract_facts_from_documents(
+        documents=result.documents,
+        target_entity=target_entity,
+        target_attribute=target_attribute,
+        source_type_override="",  # preserve original source types (email/memo/dm)
+    )
+
+    print(f"[Informal Docs Agent] {len(result.documents)} docs → {len(facts)} structured facts")
+
+    # Accumulate into existing facts
+    existing_facts = state.get("informal_facts") or []
+    all_facts = existing_facts + facts
+
+    # Confidence aggregation
+    existing_confidence = state.get("retrieval_confidence", "LOW")
+    confidence_rank = {"HIGH": 3, "MEDIUM": 2, "LOW": 1}
+    best_confidence = max(
+        existing_confidence, result.confidence,
+        key=lambda c: confidence_rank.get(c, 0),
+    )
+
+    # Keep raw docs for backward compatibility
+    existing_docs = state.get("documents", [])
     retrieved_docs = state.get("retrieved_docs") or {}
-    retrieved_docs["informal"] = documents
+    retrieved_docs["informal"] = result.documents
 
     return {
-        "informal_data": documents,
-        "documents": existing_docs + documents, # ACCUMULATE
-        "metadata_log": state.get("metadata_log", "") + metadata_log,
+        "informal_facts": all_facts,
+        "informal_data": result.documents,
+        "documents": existing_docs + result.documents,
+        "metadata_log": state.get("metadata_log", "") + result.metadata_log,
         "retrieved_docs": retrieved_docs,
-        "_thinking": f"Retrieved {len(documents)} INFORMAL documents."
+        "retrieval_confidence": best_confidence,
+        "_thinking": (
+            f"Retrieve→Extract: {len(result.documents)} docs → {len(facts)} facts "
+            f"(entity='{target_entity}', attr='{target_attribute}', "
+            f"confidence={result.confidence}). Overall: {best_confidence}."
+        ),
     }
