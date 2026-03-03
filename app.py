@@ -43,6 +43,8 @@ from agents_logic import router_agent
 from agents_logic import response_agent
 from agents_logic import escalation_agent
 
+from shared.system_logging import log_vera_step
+
 
 # ==============================================================================
 # BUILD THE LANGGRAPH WORKFLOW
@@ -207,40 +209,7 @@ def build_graph():
 # LOGGING UTILITIES
 # ==============================================================================
 
-def _log_to_files(state: dict, domain: str) -> None:
-    """
-    Log test results to domain-specific files in the output/ directory.
-    - verification.log: question + generation
-    - discrepancy.log: discrepancy_report
-    - debug.log: thought_process + metadata_log
-    """
-    output_base = os.path.join(os.path.dirname(__file__), "output")
-    domain_dir = os.path.join(output_base, domain)
-    os.makedirs(domain_dir, exist_ok=True)
-
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    separator = "=" * 80
-
-    # 1. Verification Log
-    with open(os.path.join(domain_dir, "verification.log"), "a", encoding="utf-8") as f:
-        f.write(f"\n{separator}\n[{timestamp}] QUESTION: {state.get('question')}\n{separator}\n")
-        f.write(f"{state.get('generation', 'No generation.')}\n")
-
-    # 2. Discrepancy Log
-    report = state.get("discrepancy_report")
-    if report:
-        with open(os.path.join(domain_dir, "discrepancy.log"), "a", encoding="utf-8") as f:
-            f.write(f"\n{separator}\n[{timestamp}] AUDIT: {state.get('target_entity')}\n{separator}\n")
-            f.write(f"{report}\n")
-
-    # 3. Debug Log
-    with open(os.path.join(domain_dir, "debug.log"), "a", encoding="utf-8") as f:
-        f.write(f"\n{separator}\n[{timestamp}] DEBUG: {state.get('question')}\n{separator}\n")
-        f.write("--- THOUGHT PROCESS ---\n")
-        for step in state.get("thought_process", []):
-            f.write(f"  {step}\n")
-        f.write("\n--- METADATA LOG ---\n")
-        f.write(f"{state.get('metadata_log', 'No metadata log.')}\n")
+# Internal _log_to_files removed. Using shared.system_logging.log_vera_step instead.
 
 
 # ==============================================================================
@@ -300,7 +269,7 @@ def run_test_query(
     result = graph.invoke(initial_state)
 
     # --- Systematic Logging (Phase 8) ---
-    _log_to_files(result, user_domain)
+    log_vera_step(result, user_domain)
 
     print(f"\n{'─'*60}")
     print(f"📊 RESULT (Test {test_number}):")
@@ -443,6 +412,19 @@ def main():
         user_domain="semiconductor",
         test_number=6,
         test_description="Senior Engineer - OUT-OF-DOMAIN Query (ESCALATION)",
+    )
+
+    print("\n⏳ Waiting 15s between tests (rate limit protection)...")
+    time.sleep(15)
+
+    # TEST 7: Senior — Ambiguous DB query (no explicit keywords)
+    run_test_query(
+        graph=graph,
+        question="what is CoWoS-S",
+        user_role="senior",
+        user_domain="semiconductor",
+        test_number=7,
+        test_description="Senior Engineer - Ambiguous Query (LLM Intent Fallback)",
     )
 
     print(f"\n{'='*70}")

@@ -52,40 +52,36 @@ The system **automatically discovers** domain agents at startup:
    - `informal_docs_agent.py` → `{domain}_informal`
    - `discrepancy_agent.py` → `{domain}_discrepancy`
 
+5. **Hybrid Routing Logic**: If no keywords are found, the system uses an **LLM intent fallback** to categorize the query based on your `domain_config.py` definitions.
+
 **To add a new domain**, simply create a new folder and a `domain_config.py` file!
 
 ---
 
-## 🔐 Multi-Domain RBAC
+## 🔐 Enterprise Security Handrails
 
-### Double-Filter Retrieval
+### Double-Filter Retrieval & Domain Isolation
 
-Every retrieval call applies TWO filters simultaneously:
+Every retrieval call applies TWO filters simultaneously to ensure zero "Domain Bleed":
 
 ```python
 filter = {
     "$and": [
-        {"domain": user_domain},                    # Domain isolation
+        {"domain": user_domain},                    # Strict Domain Isolation
         {"access_level": {"$in": allowed_levels}}   # Role-based access
     ]
 }
 ```
 
-### Role Access Levels
+> [!IMPORTANT]
+> The `user_domain` is treated as immutable once assigned to the state. Agents must NEVER override the user's domain selection based on query keywords.
 
-| Role | Access Levels |
-|------|--------------|
-| `senior` | `public`, `internal_only`, `confidential` |
-| `junior` | `public` only |
+### 🛡️ Information Lock (Grounding)
 
-### Out-of-Domain Protection
-
-If a user's `user_domain` does not match the query's detected domain:
-- Router flags the query as **out-of-domain**
-- Query is routed to the **Escalation Agent**
-- Escalation message specifies the domain mismatch
-
-Example: A semiconductor engineer asking "What are the FDA clinical trial requirements?" → escalated.
+All Response Agents must follow the **Information Lock** protocol:
+- **Strict Grounding**: Only use facts provided in the `extracted_facts` or `documents` state fields.
+- **Fail-Safe**: If no relevant facts are found, return the standardized "Data Not Found" message.
+- **No Hallucinations**: Never supplement with external LLM training data for technical specs.
 
 ---
 
@@ -104,7 +100,10 @@ touch agents_logic/medical_agents/__init__.py
 # db_agent.py, official_docs_agent.py, informal_docs_agent.py, discrepancy_agent.py
 
 # 4. Add data to source_documents/medical/
-# Place .txt files for RAG and .db files for SQL.
+# Place .txt or .pdf files for RAG and .db files for SQL.
+
+> [!TIP]
+> **SQL Sanitization**: VERA automatically strips database prefixes (e.g., `products.db.table`) from generated SQL to ensure compatibility across cloud LLMs.
 ```
 
 The domain will be **auto-discovered** — no code changes needed in `app.py`, `router_agent.py`, or `streamlit_app.py`.
@@ -115,7 +114,7 @@ The domain will be **auto-discovered** — no code changes needed in `app.py`, `
 
 ### File Naming Convention
 
-**Format**: `Domain_Type_Version_Access.txt`
+**Format**: `Domain_Type_Version_Access.[txt|pdf]`
 
 | Part | Allowed Values | Example |
 |------|---------------|---------|
@@ -194,8 +193,10 @@ class GraphState(TypedDict):
 |-------|---------|
 | Use `@vera_agent("Name")` decorator | Write raw print statements for logging |
 | Import from `shared.config` | Create your own LLM instance |
+| Enforce the **Information Lock** protocol | Allow LLM hallucinations or external info |
+| Treat `user_domain` as **immutable** | Override domain based on query text |
 | Name your folder `{domain}_agents/` | Use arbitrary folder names |
-| Include all 3 agent files per domain | Skip `discrepancy_agent.py` |
+| Include all 4 agent files per domain | Skip `discrepancy_agent.py` |
 | Pass `user_domain` to `retrieve_with_rbac()` | Hardcode domain names |
 | Follow `Domain_Type_Version_Access.txt` | Use arbitrary file names |
 
@@ -209,7 +210,7 @@ conda env create -f environment.yml
 conda activate vera
 
 # Run the system
-python ingestion.py             # Domain-aware loading
-python app.py                   # Full test suite (6 scenarios including out-of-domain)
+python ingestion.py             # Domain-aware loading (.txt, .pdf)
+python app.py                   # Full test suite (7 scenarios including CoWoS-S)
 streamlit run streamlit_app.py  # Web UI
 ```

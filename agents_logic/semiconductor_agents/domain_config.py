@@ -35,6 +35,19 @@ DOMAIN_CONFIG = {
             "waiver", "approval", "sign-off", "certification",
             "record", "tracking", "inventory", "report",
         ],
+        "db_query": [
+            "database", "db", "production data", "check the database",
+            "sql", "records", "inventory", "lots",
+        ],
+        "spec_retrieval": [
+            "specification", "spec", "datasheet", "voltage", "thermal",
+            "limit", "rating", "tolerance", "sop", "procedure",
+            "process",
+        ],
+        "cross_reference": [
+            "compare", "discrepancy", "mismatch", "conflict",
+            "cross-reference", "check against", "inconsistent",
+        ],
     },
 
     # Domain aliases — alternative names the LLM might produce when

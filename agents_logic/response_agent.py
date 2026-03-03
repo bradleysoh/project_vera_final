@@ -27,19 +27,12 @@ from langchain_core.output_parsers import StrOutputParser
 # ---------------------------------------------------------------------------
 # Structured "Data Not Found" report template
 # ---------------------------------------------------------------------------
-_DATA_NOT_FOUND_TEMPLATE = (
-    "📋 VERA REPORT — DATA NOT FOUND\n"
-    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-    "Query: {question}\n\n"
-    "Status: INSUFFICIENT DATA\n\n"
-    "The domain-specific agents returned {reason}. "
-    "VERA cannot compile a reliable report from the available information.\n\n"
-    "Recommended Actions:\n"
-    "  • Verify the query targets a supported domain and entity\n"
-    "  • Check that relevant documents have been ingested\n"
-    "  • Try rephrasing the query with more specific identifiers\n"
-    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+_DATA_NOT_FOUND_MSG = (
+    "⚠️ **Data Not Found:** I can only answer based on the provided source documents "
+    "and database records. No relevant information was found for your query in the "
+    "current domain."
 )
+
 
 # ---------------------------------------------------------------------------
 # Meta / capability query detection & canned response
@@ -52,30 +45,37 @@ _META_PATTERNS = [
     "what is this", "how can you help", "what services",
 ]
 
-_VERA_CAPABILITIES = (
-    "🤖 **VERA — Verified Evidence & Retrieval Assistant**\n"
-    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-    "I am an AI auditing assistant that cross-references multiple data sources "
-    "to give you **verified, evidence-based answers**. Here's what I can do:\n\n"
-    "📊 **Database Queries**\n"
-    "  • Look up records from domain databases (e.g. wafer data, lot info, product specs)\n"
-    "  • Example: *\"Tell me about WAF_003_A\"*\n\n"
-    "📄 **Document Retrieval**\n"
-    "  • Search official documents (datasheets, SOPs, specifications)\n"
-    "  • Search informal sources (emails, memos, internal decisions)\n"
-    "  • Example: *\"What is the max voltage for RTX-9000?\"*\n\n"
-    "🔍 **Discrepancy Detection**\n"
-    "  • Cross-reference data across DB, official docs, and informal sources\n"
-    "  • Apply authority hierarchy: DB > Official Docs > Informal Sources\n"
-    "  • Flag conflicts and identify authoritative values\n\n"
-    "🔒 **Role-Based Access Control**\n"
-    "  • Restrict confidential information based on your role level\n\n"
-    "💡 **Tips for best results:**\n"
-    "  • Use specific entity IDs (e.g. WAF_003_A, RTX-9000, LOT_001_A)\n"
-    "  • Select the correct domain in the sidebar\n"
-    "  • Ask specific questions about attributes you want to verify\n"
-    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-)
+def _get_vera_capabilities(domain: str) -> str:
+    """Generate domain-specific capabilities guide."""
+    examples = {
+        "semiconductor": ["*\"Tell me about RTX-9000\"*", "*\"Check lot history for WAF_001\"*"],
+        "medical": ["*\"What is the maintenance history for MRI-Unit-4?\"*", "*\"Check patient records for dosage discrepancies\"*"],
+        "general": ["*\"What is the status of Entity X?\"*", "*\"Are there any discrepancies in the latest report?\"*"],
+    }
+    domain_ex = examples.get(domain, examples["general"])
+    
+    return (
+        "🤖 **VERA — Verified Evidence & Retrieval Assistant**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        "I am an AI auditing assistant that cross-references multiple data sources "
+        "to give you **verified, evidence-based answers**. Here's what I can do:\n\n"
+        "📊 **Database Queries**\n"
+        "  • Look up records from domain databases (e.g. production data, history, specs)\n"
+        f"  • Example: {domain_ex[0]}\n\n"
+        "📄 **Document Retrieval**\n"
+        "  • Search official documents (specs, SOPs, manuals)\n"
+        "  • Search informal sources (emails, memos, internal decisions)\n"
+        f"  • Example: {domain_ex[1]}\n\n"
+        "🔍 **Discrepancy Detection**\n"
+        "  • Apply authority hierarchy: DB > Official Docs > Informal Sources\n"
+        "  • Flag conflicts and identify authoritative values\n\n"
+        "🔒 **Role-Based Access Control**\n"
+        "  • Restrict confidential information based on your role level\n\n"
+        "💡 **Tips for best results:**\n"
+        "  • Use specific IDs or names relevant to your domain\n"
+        "  • Select the correct domain in the sidebar\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    )
 
 
 def _format_facts_as_table(facts: list[dict]) -> str:
@@ -115,11 +115,12 @@ def run(state: GraphState) -> dict:
     q_lower = question.lower().strip()
     if any(p in q_lower for p in _META_PATTERNS):
         print("[Response Agent] ℹ️ Meta-query detected — returning VERA capabilities")
+        domain = state.get("user_domain", "general")
         return {
-            "generation": _VERA_CAPABILITIES,
+            "generation": _get_vera_capabilities(domain),
             "documents": documents,
             "critique": "",
-            "_thinking": "Meta-query detected — returned static VERA capabilities response.",
+            "_thinking": "Meta-query detected — returned dynamic VERA capabilities response.",
         }
 
     # --- Gather structured facts ---
@@ -134,32 +135,25 @@ def run(state: GraphState) -> dict:
     has_facts = bool(all_facts)
     has_documents = bool(documents)
 
-    # --- Check for empty / low-confidence context ---
+    # --- Check for empty / low-confidence context (INFORMATION LOCK) ---
     if not has_facts and not has_documents and not has_db:
-        print("[Response Agent] ⚠️ No context available — returning DATA NOT FOUND report")
-        report = _DATA_NOT_FOUND_TEMPLATE.format(
-            question=question,
-            reason="no documents, no structured facts, and no database results",
-        )
+        print("[Response Agent] ⚠️ No context available — returning required Data Not Found message")
         return {
-            "generation": report,
+            "generation": _DATA_NOT_FOUND_MSG,
             "documents": documents,
             "critique": critique,
-            "_thinking": "No context from domain agents. Returned structured DATA NOT FOUND report.",
+            "_thinking": "Information Lock: No context available. Returned exact Data Not Found message.",
         }
 
     if retrieval_confidence == "LOW" and not has_db and not has_facts:
-        print("[Response Agent] ⚠️ Low confidence retrieval — returning DATA NOT FOUND report")
-        report = _DATA_NOT_FOUND_TEMPLATE.format(
-            question=question,
-            reason="low-confidence retrieval results (no entity or attribute match found)",
-        )
+        print("[Response Agent] ⚠️ Low confidence retrieval — returning required Data Not Found message")
         return {
-            "generation": report,
+            # "generation": _DATA_NOT_FOUND_MSG,
             "documents": documents,
             "critique": critique,
-            "_thinking": "Retrieval confidence is LOW with no DB backup. Returned DATA NOT FOUND report.",
+            "_thinking": "Information Lock: Low retrieval confidence. Returned exact Data Not Found message.",
         }
+
 
     # --- Build context (compact for fast mode) ---
     context_parts = []
@@ -213,10 +207,18 @@ def run(state: GraphState) -> dict:
                 "Only after this summary should you provide the key fields and values.\n\n"
             )
 
+    # --- Core Information Lock Rule ---
+    info_lock_rule = (
+        "INFORMATION LOCK: Base your answer 100% on the provided CONTEXT. "
+        "DO NOT use outside knowledge. If the CONTEXT does not contain the "
+        "specific facts required to accurately answer, YOU MUST ABORT AND "
+        f"REPLY EXACTLY WITH: '{_DATA_NOT_FOUND_MSG}'"
+    )
+
     if critique:
         print(f"[Response Agent] 🔄 Refinement iteration. Critique: {critique[:100]}...")
         system_instruction = (
-            f"You are VERA Report Compiler. Recompile the report addressing conflicts.\n\n"
+            f"You are VERA Report Compiler. {info_lock_rule}\n\n"
             f"{discrepancy_note}"
             "Use ONLY the facts in CONTEXT. Database overrides documents.\n"
             f"AUDIT FINDINGS:\n{critique[:500]}\n\n"
@@ -225,7 +227,7 @@ def run(state: GraphState) -> dict:
     elif RETRIEVAL_MODE == "fast":
         print("[Response Agent] Compiling report (fast mode)...")
         system_instruction = (
-            f"You are VERA Report Compiler. Answer the question using ONLY the CONTEXT below.\n\n"
+            f"You are VERA Report Compiler. {info_lock_rule}\n\n"
             f"{discrepancy_note}"
             "Summarize the key fields and values found. Be concise.\n"
             "Rules: Database results override documents when both exist.\n"
@@ -234,7 +236,7 @@ def run(state: GraphState) -> dict:
     else:
         print("[Response Agent] Compiling report from structured facts...")
         system_instruction = (
-            f"You are VERA Report Compiler. Synthesize the pre-filtered facts into a report.\n\n"
+            f"You are VERA Report Compiler. {info_lock_rule}\n\n"
             f"{discrepancy_note}"
             "RULES:\n"
             "1. DIRECT ANSWER FIRST.\n"
@@ -242,6 +244,7 @@ def run(state: GraphState) -> dict:
             "3. CITE SOURCES.\n"
             "4. ENTITY ISOLATION: Only report on the queried entity.\n"
         )
+
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_instruction),

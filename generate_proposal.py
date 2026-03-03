@@ -98,16 +98,18 @@ def create_proposal():
     # =====================================================================
     doc.add_heading('1. Executive Summary', level=1)
     doc.add_paragraph(
-        'Project VERA (Virtual Engineering Review Agent) is a Multi-Agent System '
-        'designed to address the critical challenge of document inconsistency in '
-        'any technical or regulated industry. In fast-paced engineering environments — '
-        'including semiconductor manufacturing, aerospace, pharmaceuticals, and '
-        'automotive — official product specifications frequently become outdated when '
-        'teams make critical decisions through informal channels such as email '
-        'communications. This creates a dangerous gap between documented specifications '
-        'and actual operating parameters, potentially leading to quality issues, safety '
-        'hazards, and regulatory non-compliance. The included demonstration uses a '
-        'semiconductor scenario, but the architecture is fully domain-agnostic.'
+        'Project VERA v2.0 (Virtual Engineering Review Agent) is a production-grade, '
+        'multi-agent AI system designed to automate technical document auditing, '
+        'cross-reference checking, and compliance verification. It addresses the '
+        'critical challenge of documentation drift in regulated industries by '
+        'autonomously auditing live database records against official specifications '
+        'and informal email communications.'
+    )
+    doc.add_paragraph(
+        'The system features a domain-agnostic core architecture, "Information Lock" '
+        'grounding to eliminate hallucinations, and strictly immutable Domain Isolation. '
+        'VERA v2.0 supports local (Ollama) and cloud (Gemini, Groq) LLM backends, '
+        'making it adaptable to diverse security and performance requirements.'
     )
     doc.add_paragraph(
         'VERA leverages state-of-the-art AI technologies — including LangGraph for '
@@ -123,9 +125,11 @@ def create_proposal():
     for item in [
         'Multi-agent architecture with specialized agents for different document types',
         'RBAC enforcement at the retrieval layer using metadata filtering',
+        '🛡️ Information Lock protocol to ensure zero hallucinations',
+        '🏝️ Immutable Domain Isolation to prevent unauthorized domain bleed',
+        '🗄️ Enterprise-grade decoupling of structured (SQL) and unstructured (Vector) data',
         'Automatic discrepancy detection between datasheets and internal emails',
         'Human escalation pathway for unauthorized access attempts',
-        'Email context analysis to surface informal engineering decisions',
     ]:
         doc.add_paragraph(item, style='List Bullet')
     
@@ -344,12 +348,13 @@ def create_proposal():
         'VERA implements a three-layer security system to enforce Role-Based Access Control:'
     )
     
-    doc.add_heading('7.1 Layer 1 — Router Security Check', level=2)
+    doc.add_heading('7.1 Layer 1 — Hybrid Router Security', level=2)
     doc.add_paragraph(
-        'The Router Agent uses deterministic keyword matching to classify '
-        'the user\'s query intent (technical vs compliance). For security checks, '
-        'the LLM analyzes whether a junior user\'s query implies access to restricted '
-        'information. If flagged, the query is routed directly to the escalation handler.'
+        'The Router Agent employs a hybrid classification strategy: deterministic '
+        'keyword matching for speed, followed by LLM-based intent fallback for '
+        'ambiguous queries. For security, the LLM analyzes whether a junior user\'s '
+        'query implies access to restricted information. If flagged, the query is '
+        'routed directly to the escalation handler.'
     )
     
     doc.add_heading('7.2 Layer 2 — Metadata Filtering', level=2)
@@ -384,11 +389,27 @@ def create_proposal():
     
     doc.add_paragraph()
     
-    doc.add_heading('7.3 Layer 3 — Escalation', level=2)
+    doc.add_heading('7.3 Layer 3 — Domain Isolation', level=2)
     doc.add_paragraph(
-        'When the security check flags a query, the workflow bypasses all retrieval '
-        'and generation nodes, routing directly to the escalation handler. The handler '
-        'returns a structured escalation notice and logs the event for audit purposes.'
+        'To prevent "Domain Bleed," VERA treats the user\'s assigned domain as '
+        'immutable. Even if a query contains keywords from another domain, the system '
+        'strictly restricts retrieval to the authorized domain, escalating any detection '
+        'of cross-domain intent to a supervisor node.'
+    )
+
+    doc.add_heading('7.4 Layer 4 — Information Lock (Grounding)', level=2)
+    doc.add_paragraph(
+        'The "Information Lock" is a grounding-first protocol that ensures the system '
+        'only responds using facts explicitly found in provided documents or database '
+        'records. If the required information is missing, the system is hard-coded to '
+        'respond with a standardized "Data Not Found" message rather than inferring '
+        'or using external training data.'
+    )
+
+    doc.add_heading('7.5 Layer 5 — Escalation', level=2)
+    doc.add_paragraph(
+        'When security checks or domain isolation flags a query, the workflow bypasses '
+        'retrieval and generation, routing directly to the escalation handler.'
     )
     
     # =====================================================================
@@ -396,7 +417,7 @@ def create_proposal():
     # =====================================================================
     doc.add_heading('8. Technology Stack', level=1)
     
-    table = doc.add_table(rows=8, cols=3)
+    table = doc.add_table(rows=9, cols=3)
     table.style = 'Light Grid Accent 1'
     
     tech_headers = ['Technology', 'Purpose', 'Version']
@@ -413,7 +434,8 @@ def create_proposal():
         ('ChromaDB', 'Local vector store with metadata filtering', '≥ 0.5.0'),
         ('Streamlit', 'Interactive chat UI with agent feedback', '≥ 1.40.0'),
         ('Google Gemini', 'Cloud LLM + Embeddings (Option A)', 'Latest'),
-        ('Ollama', 'Local LLM + Embeddings (Option B)', 'Latest'),
+        ('Groq', 'High-speed cloud inference (Option B)', 'Latest'),
+        ('Ollama', 'Local LLM + Embeddings (Option C)', 'Latest'),
         ('Python', 'Core runtime', '3.10+'),
     ]
     for i, (tech, purpose, version) in enumerate(tech_data):
@@ -423,10 +445,9 @@ def create_proposal():
     
     doc.add_paragraph()
     doc.add_paragraph(
-        'VERA supports a dual-backend architecture: users can choose between Google Gemini '
-        '(cloud API with higher model quality) or Ollama (100% local execution with no API key, '
-        'no rate limits, and no internet required). The LLM_BACKEND environment variable controls '
-        'which backend is used for both LLM inference and embedding generation.'
+        'VERA supports a multi-backend architecture: users can choose between Google Gemini '
+        '(cloud API), Groq (high-speed Llama-3.3 inference), or Ollama (100% local execution). '
+        'The LLM_BACKEND environment variable controls which backend is used for inference.'
     )
     
     # =====================================================================

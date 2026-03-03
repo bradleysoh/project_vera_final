@@ -6,6 +6,7 @@
 [![LangGraph](https://img.shields.io/badge/LangGraph-Stateful_Agents-green.svg)](https://github.com/langchain-ai/langgraph)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_Store-orange.svg)](https://www.trychroma.com/)
 [![Gemini](https://img.shields.io/badge/Google_Gemini-Cloud_LLM-red.svg)](https://ai.google.dev/)
+[![Groq](https://img.shields.io/badge/Groq-Cloud_Inference-blue.svg)](https://groq.com/)
 [![Ollama](https://img.shields.io/badge/Ollama-Local_LLM-purple.svg)](https://ollama.com/)
 
 ---
@@ -29,6 +30,7 @@
 **Project VERA** is an industry-agnostic Multi-Agent System that audits technical documents, emails, and Standard Operating Procedures (SOPs) for compliance issues. While the included demo uses a **semiconductor manufacturing** scenario, VERA's architecture is designed for **any document-heavy industry** — including aerospace, pharmaceuticals, automotive, energy, and more. It supports **two LLM backends**:
 
 - **Google Gemini** (cloud API) — higher quality, requires API key
+- **Groq** (cloud API) — ultra-fast Llama-3.3 inference
 - **Ollama** (100% local) — no API key needed, runs on your laptop, no rate limits
 
 ### Key Capabilities
@@ -36,12 +38,13 @@
 | Capability | Description |
 |-----------|-------------|
 | 🔒 **Role-Based Access Control** | Metadata-driven RBAC that filters document retrieval based on user clearance level |
+| 🛡️ **Information Lock** | Strictly constrains LLM to provided context; outputs "Data Not Found" instead of hallucinating |
+| 🏝️ **Domain Isolation** | Treats `user_domain` as immutable, preventing unauthorized domain bleed |
 | 📧 **Email Context Analysis** | Searches through ingested email threads to find informal engineering decisions |
 | ⚠️ **Discrepancy Detection** | Automatically identifies conflicts between datasheets, emails, DB records, and document versions |
 | 🚨 **Human Escalation** | Triggers supervisor review with detailed context summaries for unauthorized access attempts |
 | 🤖 **Multi-Agent Orchestration** | LangGraph-based workflow with specialized agents for different document types |
-| 🗄️ **DB Info Integration** | Queries structured database records (SQLite-style) for production lot tracking and test results |
-| 📑 **Document Version Comparison** | Detects changes between different versions of the same specification document |
+| 🗄️ **Enterprise Data Logic** | Physically decoupled data sources (Structured SQL vs. Unstructured Vector) for production-grade reliability |
 
 ---
 
@@ -99,24 +102,16 @@ graph TD
     style H fill:#69db7c,stroke:#2b8a3e,color:#333
 ```
 
-### Data Flow (Surgical Routing)
+### Data Flow (Enterprise Architecture)
 
-1. **User** submits a query with their role (Senior/Junior).
-2. **Router Agent** performs **LLM-based NER** to extract entities/attributes and classifies intent into fine-grained categories (`db_query`, `spec_retrieval`, `cross_reference`).
-3. **Retrieval Agents** perform **Structured Fact Extraction**:
-    *   **DB Agent** translates NL to SQL and queries SQLite databases.
-    *   **Official/Informal Agents** use high-precision RAG (filtering by entity) to extract facts into Pydantic models.
-4. **Generator** synthesizes a response using the extracted facts, leading with a **Discrepancy Summary** if conflicts are found.
-5. **Discrepancy Agent** performs a final audit, comparing the generated response against raw documents to ensure no hallucinations.
-
-### Data Flow
-
-1. **User** submits a query with their role (Senior/Junior)
-2. **Router Agent** classifies intent and performs security checks
-3. **Retrieval Agent** fetches documents with RBAC metadata filters
-4. **Generator** synthesizes a response citing sources
-5. **Case Agent** checks for cross-source discrepancies
-6. **Final response** delivered (or escalated if unauthorized)
+1. **User** submits a query with their role (Senior/Junior) and strictly assigned **Domain**.
+2. **Router Agent** performs **LLM-based NER** and classifies intent. It uses a **Hybrid Routing** strategy (Keywords + LLM Fallback) and enforces **Strict Domain Isolation**, ensuring the `user_domain` remains immutable.
+3. **Retrieval Agents** perform **Surgical Retrieval** based on decoupled data sources:
+    *   **DB Agent** queries structured relational data (SQL).
+    *   **Official/Informal Agents** search unstructured document vector stores (RAG).
+4. **Generator** synthesizes a response constrained by the **Information Lock** (Information-Lock Protocol).
+5. **Discrepancy Agent** performs a cross-source audit between SQL facts and RAG context.
+6. **Final response** delivered with citations or **Escalated** if security flags are tripped.
 
 ---
 
@@ -134,14 +129,39 @@ graph TD
 
 ---
 
-## Industrial Genericity
+## 🛠️ Developer Guide: Scaling to New Domains
 
-VERA is designed for **"Plug-and-Play" multi-industry deployment**. The core system (`shared/`) is 100% domain-agnostic. To add a new industry (e.g., Medical), simply:
-1. Create `agents_logic/medical_agents/`
-2. Define domain-specific keywords in `domain_config.py`
-3. Add data to `source_documents/medical/`
+VERA is designed for **"Plug-and-Play" multi-industry deployment**. The core architecture (`shared/`) is 100% domain-agnostic. To add a new industry (e.g., Aerospace or Energy), follow these steps:
 
-The system will **automatically discover** the new agents and route "Medical" queries to them without any changes to the core code.
+### 1. Structure Requirements
+Create a new agent folder in `agents_logic/` named `{domain}_agents/`. To be auto-discovered and routed properly, it must contain:
+- `__init__.py`: Empty file to make it a package.
+- `domain_config.py`: **The Routing Engine**. Defines keywords and heuristics.
+- **The 4 Core Agents**:
+    - `db_agent.py`: Handles SQL schema introspection and querying.
+    - `official_docs_agent.py`: High-precision RAG for specs/manuals.
+    - `informal_docs_agent.py`: RAG for emails, memos, and chat logs.
+    - `discrepancy_agent.py`: Logic for cross-source conflict resolution.
+
+### 2. Configuring Routing (`domain_config.py`)
+The `Router Agent` uses this file to decide if a query belongs to your domain and which surgical route to take.
+- **Keywords**: Include industry-specific nouns (e.g., `turbine`, `propulsion`). Categorize them under `db_query`, `spec_retrieval`, and `cross_reference` to help the Router classify intent.
+- **Aliases**: Provide synonyms for the domain (e.g., `["aviation", "flight"]`) to catch variations in user selection.
+- **Metadata Schema**: Define the entity types (e.g., `engine_id`, `part_number`) so the **Advanced RAG** can extract precise filters.
+
+### 3. Designing Domain-Specific Agents
+When writing your agents, keep these "Rules of the Road" in mind:
+- **Modular Responsibility**: Each agent should do one thing. Don't put SQL logic in the `official_docs_agent`.
+- **The `@vera_agent` Decorator**: Always wrap your `run(state)` function with `@vera_agent("Agent Name")`. This handles standard logging and error tracking.
+- **Information Lock**: Never let an agent "guess". If `shared.advanced_rag` returns no docs, your agent must return an empty fact list so the system triggers the "Data Not Found" safety.
+- **Domain Isolation**: Your agents receive the `user_domain` in the state. Always pass this to stateful utilities like `retrieve_with_rbac()` to ensure you never accidentally pull data from another tenant.
+
+### 4. Data Placement
+Add your domain's raw data to `source_documents/{domain}/`.
+- **Unstructured**: `.txt` and `.pdf` files (auto-embedded into ChromaDB).
+- **Structured**: `.db` (SQLite) files (auto-discovered by the DB Agent).
+
+For more implementation details and code templates, see the [TEAM_GUIDE.md](file:///home/rox/rox_workplace/sctp/module_5/project_vera/TEAM_GUIDE.md).
 
 ---
 
@@ -200,11 +220,21 @@ results = vector_store.similarity_search(
 
 ### Security Layers
 
-1. **Layer 1 — Router Security Check**: Keyword-based intent classification detects if a junior user’s query implies access to restricted information
-2. **Layer 2 — Metadata Filtering**: ChromaDB `where` clause filters out non-public documents for junior users
-3. **Layer 3 — Escalation**: Flagged queries are routed to the human escalation node instead of retrieval
+1. **Layer 1 — Router Security Check**: Keyword-based intent classification detects if a junior user’s query implies access to restricted information.
+2. **Layer 2 — Metadata Filtering**: ChromaDB `where` clause filters out non-public documents for junior users at the database level.
+3. **Layer 3 — Domain Isolation**: Prevents "Domain Bleed" by treating the user's selected domain as immutable.
+4. **Layer 4 — Information Lock**: A "grounding-first" protocol that prevents the LLM from using external knowledge or hallucinating. If relevant facts aren't in the provided context, VERA must respond with "Data Not Found".
 
 ---
+
+## Technical Directives (Enterprise Refactor)
+
+Project VERA has been refactored for enterprise readiness with four core directives:
+1. **Decoupled Data**: Structured data (SQLite) and unstructured data (ChromaDB) are physically and logically separated to prevent query pollution.
+2. **Standardized Attributes**: All extracted facts undergo unit normalization (e.g., 3.3V vs 3300mV) via Pydantic schemas.
+3. **Rate Limit Mitigation**: Batching and exponential backoff are used for all LLM calls.
+4. **Aggressive Sanitization**: Input/output data is cleaned to prevent injection or malformed SQL/JSON errors.
+5. **Centralized Logging**: System-wide logs are categorized into `workflow.log`, `security.log`, and `retrieval.log` for easy auditing.
 
 ## Installation & Setup
 
@@ -260,10 +290,10 @@ python ingestion.py
 ```
 
 This will:
-- Create mock documents (datasheets, emails, SOPs) — easily replaceable with real data from any industry
-- Split them into chunks with `RecursiveCharacterTextSplitter`
-- Generate embeddings using the selected backend (Gemini or Ollama)
-- Persist to ChromaDB at `./chroma_db`
+- Create mock documents or load existing `.txt`/`.pdf` files from `source_documents/`.
+- Split them into chunks with `RecursiveCharacterTextSplitter`.
+- Generate embeddings using the selected backend (Gemini or Ollama).
+- Persist to ChromaDB at `./chroma_db`.
 
 > **⚠️ Important:** If you switch backends, re-run `python ingestion.py` to regenerate embeddings with the matching model.
 
@@ -308,6 +338,7 @@ This runs 5 automated test scenarios demonstrating:
 | 4 | Senior | "What are quality audit procedures + recent email changes?" | SOPs + email communications retrieved |
 | 5 | Senior | "Compare RTX-9000 spec versions + check production DB" | DB records + versioned docs with version discrepancy report |
 | 6 | Senior (semiconductor) | "What are the FDA clinical trial requirements?" | **ESCALATED** — out-of-domain query detected |
+| 7 | Senior (semiconductor) | "What is CoWoS-S?" | **DB ROUTE** — correctly identified via LLM fallback |
 
 ---
 
@@ -332,7 +363,7 @@ proj_vera/
 │       ├── discrepancy_agent.py     # Audit logic
 │       └── domain_config.py         # Domain keywords & heuristics
 ├── source_documents/       # 📁 Source data per domain
-│   └── semiconductor/      # .txt docs and .db files
+│   └── semiconductor/      # .txt, .pdf, and .db files
 ├── streamlit_app.py        # 🖥️ Interactive Web UI
 ├── app.py                  # Main LangGraph orchestrator
 ├── ingestion.py            # Data ingestion pipeline (ChromaDB)
@@ -350,7 +381,8 @@ proj_vera/
 | **ChromaDB** | Local vector store with metadata filtering | ≥ 0.5.0 |
 | **Streamlit** | Interactive chat UI with real-time agent feedback | ≥ 1.40.0 |
 | **Google Gemini** | Cloud LLM + Embeddings (Option A) | Latest |
-| **Ollama** | Local LLM + Embeddings (Option B) | Latest |
+| **Groq** | Cloud Inference (Option B) | Latest |
+| **Ollama** | Local LLM + Embeddings (Option C) | Latest |
 | **Python** | Core runtime | 3.10+ |
 
 ---

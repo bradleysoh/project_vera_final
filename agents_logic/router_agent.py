@@ -286,34 +286,11 @@ def run(state: GraphState) -> dict:
     metadata_log = ""
 
     if user_domain and user_domain in available_domains:
-        # Check if query keywords actually match a different domain
-        # (e.g. user has 'medical' selected but asks about wafers)
-        domain_scores = {}
-        for domain, cfg in _DOMAIN_CONFIGS.items():
-            if domain not in available_domains:
-                continue
-            hints = cfg.get("keyword_hints", "")
-            if isinstance(hints, str):
-                hint_words = [w.strip().lower() for w in hints.split(",") if w.strip()]
-            elif isinstance(hints, list):
-                hint_words = [w.lower() for w in hints]
-            else:
-                hint_words = []
-            score = sum(1 for w in hint_words if w in q_lower)
-            domain_scores[domain] = score
+        # ABSOLUTE DOMAIN ISOLATION: Use the user's selected domain strictly.
+        # No keyword-based overrides allowed.
+        detected_domain = user_domain
+        print(f"[Router Agent] Strict Domain Isolation: Using user-selected domain '{detected_domain}'")
 
-        if domain_scores:
-            best_domain = max(domain_scores, key=lambda k: domain_scores[k])
-            if domain_scores[best_domain] > 0 and best_domain != user_domain:
-                detected_domain = best_domain
-                print(f"[Router Agent] ⚠️ Domain override: '{user_domain}' → '{detected_domain}' "
-                      f"(query keywords matched '{detected_domain}' domain)")
-            else:
-                detected_domain = user_domain
-                print(f"[Router Agent] Using pre-assigned domain: {detected_domain}")
-        else:
-            detected_domain = user_domain
-            print(f"[Router Agent] Using pre-assigned domain: {detected_domain}")
     else:
         domain_keywords_str = ""
         for domain, cfg in _DOMAIN_CONFIGS.items():

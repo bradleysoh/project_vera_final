@@ -39,6 +39,7 @@ from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
+from langchain_community.document_loaders import PyPDFLoader
 
 
 # ==============================================================================
@@ -581,10 +582,15 @@ def load_domain_documents() -> list[dict]:
 
         print(f"\n  📂 Domain: {domain_dir}/")
 
-        # Load .txt files from this domain
-        txt_files = sorted(glob.glob(os.path.join(domain_path, "*.txt")))
-        for filepath in txt_files:
+        # Load .txt and .pdf files from this domain
+        text_files = sorted(glob.glob(os.path.join(domain_path, "*.txt")))
+        pdf_files = sorted(glob.glob(os.path.join(domain_path, "*.pdf")))
+        
+        all_files = sorted(text_files + pdf_files)
+        
+        for filepath in all_files:
             filename = os.path.basename(filepath)
+            ext = os.path.splitext(filename)[1].lower()
 
             # Skip templates
             if filename.startswith("_"):
@@ -598,8 +604,16 @@ def load_domain_documents() -> list[dict]:
 
             # Read content
             try:
-                with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
-                    content = sanitize_text(f.read().strip())
+                if ext == ".txt":
+                    with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+                        content = sanitize_text(f.read().strip())
+                elif ext == ".pdf":
+                    print(f"    📄 Loading PDF: {filename}")
+                    loader = PyPDFLoader(filepath)
+                    pdf_docs = loader.load()
+                    content = sanitize_text("\n".join([d.page_content for d in pdf_docs]).strip())
+                else:
+                    continue
             except Exception as e:
                 print(f"    ❌ Error reading {filename}: {e}")
                 continue
@@ -695,7 +709,7 @@ def create_documents() -> list[Document]:
     if external_docs:
         raw_data = external_docs
         print(f"\n[INFO] Using {len(raw_data)} documents from source_documents/ "
-              f"({len(domain_docs)} domain .txt + {len(json_docs)} json)")
+              f"({len(domain_docs)} domain files + {len(json_docs)} json)")
     else:
         raw_data = MOCK_DOCUMENTS
         print(f"\n[INFO] No external data found. Using {len(raw_data)} inline MOCK_DOCUMENTS.")

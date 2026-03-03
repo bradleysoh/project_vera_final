@@ -13,6 +13,7 @@ RESPONSIBILITY: Auto-discover SQLite databases, convert NL to PRECISION SQL,
 ================================================================================
 """
 
+import os
 import re
 import shared.config as config
 from shared.graph_state import GraphState
@@ -24,6 +25,7 @@ from shared.db_utils import (
     execute_read_only,
     format_results,
 )
+from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
@@ -98,12 +100,25 @@ _SQL_FIX_PROMPT = ChatPromptTemplate.from_messages([
         "DATABASE SCHEMA:\n{schema}\n\n"
         "ORIGINAL SQL:\n{sql}\n\n"
         "ERROR MESSAGE:\n{error}\n\n"
+        "STRICT RULE: Do NOT prefix table names with database file names.\n"
         "Return ONLY the corrected SQL statement, no explanation.\n"
         "Use only columns and tables that exist in the schema above."
     ))
 ])
 
 _MAX_SQL_RETRIES = 3
+
+
+def _sanitize_sql(sql: str) -> str:
+    """
+    Remove database filename prefixes from SQL (e.g. 'products.db.table_name' -> 'table_name').
+    LLMs like Gemini often add these despite instructions.
+    """
+    # Matches patterns like words followed by .db. or .sqlite.
+    sql = re.sub(r'\b[\w-]+\.(?:db|sqlite|sqlite3)\.', '', sql, flags=re.IGNORECASE)
+    # Also catch double prefixes like 'products.db."table"'
+    sql = re.sub(r'\b[\w-]+\.(?:db|sqlite|sqlite3)\."', '"', sql, flags=re.IGNORECASE)
+    return sql.strip()
 
 
 def _self_correct_sql(
@@ -126,7 +141,7 @@ def _self_correct_sql(
     Returns:
         (columns, rows, updated_metadata_log, last_error)
     """
-    current_sql = sql
+    current_sql = _sanitize_sql(sql)
     last_error = ""
 
     for attempt in range(_MAX_SQL_RETRIES):
@@ -166,7 +181,8 @@ def _self_correct_sql(
                         r"(SELECT\s.+?)(?:;|$)", raw_fix,
                         re.IGNORECASE | re.DOTALL,
                     )
-                    current_sql = sql_match.group(1).strip() if sql_match else raw_fix.strip()
+                    raw_sql = sql_match.group(1).strip() if sql_match else raw_fix.strip()
+                    current_sql = _sanitize_sql(raw_sql)
                     metadata_log += f"[DB] Corrected SQL: {current_sql}\n"
                     print(f"[DB Agent] 🔧 Corrected SQL: {current_sql[:100]}")
                 except Exception as fix_err:
