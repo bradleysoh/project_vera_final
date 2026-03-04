@@ -24,3 +24,4 @@ streamlit>=1.40.0
 
 # --- Document Generation ---
 python-docx>=1.1.0
+pydantic>=2.12.0
