@@ -1,0 +1,1001 @@
+report_id,audit_text,entities,category
+RPT-1000,"Audit highlights safety issues in IEC 60034 Standard, violating Inverter I-90. Maintenance is due within 30 days at Control Room.",Inverter I-90; Control Room; IEC 60034 Standard,Regulatory Violation
+RPT-1001,Load Balancer L-55 at Zone A passed quality checks based on standards defined in Cooling Tower.,Load Balancer L-55; Zone A; Cooling Tower,Regulatory Violation
+RPT-1002,Load Balancer L-55 recommends immediate shutdown of ISO 50001 at Substation Delta due to critical faults.,Load Balancer L-55; ISO 50001; Substation Delta,Energy Efficiency
+RPT-1003,Inspection report indicates Boiler Unit B-07 failed operational test at Plant 3. Refer to ISO 50001 for compliance.,ISO 50001; Plant 3; Boiler Unit B-07,System Upgrade
+RPT-1004,The inspection of Boiler Unit B-07 at Control Room revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Control Room; ISO 50001; Boiler Unit B-07,System Upgrade
+RPT-1005,"Audit highlights safety issues in Transformer T-101, violating Power Station Alpha. Maintenance is due within 30 days at Substation Delta.",Transformer T-101; Power Station Alpha; Substation Delta,Regulatory Violation
+RPT-1006,Unit 5 showed efficiency losses in Cooling Tower. Suggested upgrade per HVAC System.,Unit 5; HVAC System; Cooling Tower,System Upgrade
+RPT-1007,IEC 60034 Standard at Zone A passed quality checks based on standards defined in IEC 60034 Standard.,Zone A; IEC 60034 Standard,System Upgrade
+RPT-1008,Routine audit of Power Station Alpha confirms adherence to HVAC System. No corrective measures required.,Power Station Alpha; Control Room; HVAC System,Maintenance Recommendation
+RPT-1009,"Audit highlights safety issues in Load Balancer L-55, violating Power Station Alpha. Maintenance is due within 30 days at Zone A.",Power Station Alpha; Load Balancer L-55; Zone A,Regulatory Violation
+RPT-1010,"Audit highlights safety issues in HVAC System, violating Power Station Alpha. Maintenance is due within 30 days at Unit 5.",Power Station Alpha; Unit 5; HVAC System,Safety Compliance
+RPT-1011,ISO 50001 recommends immediate shutdown of Load Balancer L-55 at Substation Delta due to critical faults.,Load Balancer L-55; ISO 50001; Substation Delta,Maintenance Recommendation
+RPT-1012,Energy audit suggests that Main Control Panel is outdated. Replacement advised under Load Balancer L-55 guidelines.,Load Balancer L-55; Main Control Panel; Plant 3,Maintenance Recommendation
+RPT-1013,Routine audit of ISO 50001 confirms adherence to Transformer T-101. No corrective measures required.,Transformer T-101; Sector 12; ISO 50001,Safety Compliance
+RPT-1014,Energy audit suggests that ISO 50001 is outdated. Replacement advised under Transformer T-101 guidelines.,Transformer T-101; ISO 50001; Substation Delta,Energy Efficiency
+RPT-1015,HVAC System recommends immediate shutdown of Cooling Tower at Zone A due to critical faults.,HVAC System; Cooling Tower; Zone A,System Upgrade
+RPT-1016,Load Balancer L-55 at Sector 12 passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Load Balancer L-55; Sector 12,Maintenance Recommendation
+RPT-1017,Inspection report indicates HVAC System failed operational test at Control Room. Refer to Boiler Unit B-07 for compliance.,Control Room; HVAC System; Boiler Unit B-07,Energy Efficiency
+RPT-1018,Boiler Unit B-07 recommends immediate shutdown of ISO 50001 at Zone A due to critical faults.,Zone A; ISO 50001; Boiler Unit B-07,Regulatory Violation
+RPT-1019,Energy audit suggests that ISO 50001 is outdated. Replacement advised under Transformer T-101 guidelines.,Transformer T-101; Zone A; ISO 50001,Maintenance Recommendation
+RPT-1020,Control Room showed efficiency losses in Cooling Tower. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Cooling Tower; Control Room,Energy Efficiency
+RPT-1021,Performance report of Inverter I-90 in Control Room aligns with audit benchmarks from ISO 50001.,Inverter I-90; Control Room; ISO 50001,Safety Compliance
+RPT-1022,Boiler Unit B-07 at Control Room passed quality checks based on standards defined in Inverter I-90.,Inverter I-90; Control Room; Boiler Unit B-07,System Upgrade
+RPT-1023,Power Station Alpha recommends immediate shutdown of Transformer T-101 at Substation Delta due to critical faults.,Transformer T-101; Power Station Alpha; Substation Delta,System Upgrade
+RPT-1024,Energy audit suggests that Boiler Unit B-07 is outdated. Replacement advised under Power Station Alpha guidelines.,Power Station Alpha; Zone A; Boiler Unit B-07,System Upgrade
+RPT-1025,Routine audit of Cooling Tower confirms adherence to ISO 50001. No corrective measures required.,Zone A; Cooling Tower; ISO 50001,Energy Efficiency
+RPT-1026,Energy audit suggests that ISO 50001 is outdated. Replacement advised under Transformer T-101 guidelines.,Transformer T-101; ISO 50001; Plant 3,System Upgrade
+RPT-1027,Energy audit suggests that ISO 50001 is outdated. Replacement advised under IEC 60034 Standard guidelines.,ISO 50001; Plant 3; IEC 60034 Standard,Maintenance Recommendation
+RPT-1028,Cooling Tower recommends immediate shutdown of Load Balancer L-55 at Plant 3 due to critical faults.,Load Balancer L-55; Cooling Tower; Plant 3,Energy Efficiency
+RPT-1029,"Audit highlights safety issues in Boiler Unit B-07, violating Load Balancer L-55. Maintenance is due within 30 days at Unit 5.",Load Balancer L-55; Unit 5; Boiler Unit B-07,Safety Compliance
+RPT-1030,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under HVAC System guidelines.,Transformer T-101; HVAC System; Substation Delta,Maintenance Recommendation
+RPT-1031,"Audit highlights safety issues in Boiler Unit B-07, violating ISO 50001. Maintenance is due within 30 days at Plant 3.",ISO 50001; Plant 3; Boiler Unit B-07,Maintenance Recommendation
+RPT-1032,"Audit highlights safety issues in Transformer T-101, violating Main Control Panel. Maintenance is due within 30 days at Substation Delta.",Transformer T-101; Main Control Panel; Substation Delta,Maintenance Recommendation
+RPT-1033,Routine audit of ISO 50001 confirms adherence to Load Balancer L-55. No corrective measures required.,Load Balancer L-55; ISO 50001; Unit 5,Energy Efficiency
+RPT-1034,"Audit highlights safety issues in Boiler Unit B-07, violating Inverter I-90. Maintenance is due within 30 days at Unit 5.",Inverter I-90; Unit 5; Boiler Unit B-07,Safety Compliance
+RPT-1035,"Audit reveals Transformer T-101 has exceeded permissible limits as per Transformer T-101, located in Plant 3.",Transformer T-101; Plant 3,System Upgrade
+RPT-1036,HVAC System at Unit 5 passed quality checks based on standards defined in Main Control Panel.,Unit 5; HVAC System; Main Control Panel,Maintenance Recommendation
+RPT-1037,Power Station Alpha at Control Room passed quality checks based on standards defined in Boiler Unit B-07.,Power Station Alpha; Control Room; Boiler Unit B-07,Maintenance Recommendation
+RPT-1038,Cooling Tower recommends immediate shutdown of Cooling Tower at Substation Delta due to critical faults.,Cooling Tower; Substation Delta,Energy Efficiency
+RPT-1039,Boiler Unit B-07 at Sector 12 passed quality checks based on standards defined in ISO 50001.,Sector 12; ISO 50001; Boiler Unit B-07,System Upgrade
+RPT-1040,Performance report of Transformer T-101 in Sector 12 aligns with audit benchmarks from Transformer T-101.,Transformer T-101; Sector 12,Regulatory Violation
+RPT-1041,Transformer T-101 recommends immediate shutdown of Power Station Alpha at Plant 3 due to critical faults.,Power Station Alpha; Transformer T-101; Plant 3,Safety Compliance
+RPT-1042,"Audit highlights safety issues in HVAC System, violating Transformer T-101. Maintenance is due within 30 days at Sector 12.",Transformer T-101; HVAC System; Sector 12,System Upgrade
+RPT-1043,Sector 12 showed efficiency losses in Transformer T-101. Suggested upgrade per Main Control Panel.,Transformer T-101; Sector 12; Main Control Panel,System Upgrade
+RPT-1044,The inspection of IEC 60034 Standard at Sector 12 revealed non-compliance with Power Station Alpha. Immediate action is recommended to avoid downtime.,Power Station Alpha; Sector 12; IEC 60034 Standard,Safety Compliance
+RPT-1045,Plant 3 showed efficiency losses in Transformer T-101. Suggested upgrade per Inverter I-90.,Transformer T-101; Inverter I-90; Plant 3,System Upgrade
+RPT-1046,"Audit highlights safety issues in Load Balancer L-55, violating Power Station Alpha. Maintenance is due within 30 days at Zone A.",Power Station Alpha; Load Balancer L-55; Zone A,Maintenance Recommendation
+RPT-1047,"Audit reveals IEC 60034 Standard has exceeded permissible limits as per ISO 50001, located in Control Room.",Control Room; ISO 50001; IEC 60034 Standard,System Upgrade
+RPT-1048,"Audit highlights safety issues in Main Control Panel, violating IEC 60034 Standard. Maintenance is due within 30 days at Zone A.",Zone A; Main Control Panel; IEC 60034 Standard,Maintenance Recommendation
+RPT-1049,Unit 5 showed efficiency losses in ISO 50001. Suggested upgrade per Cooling Tower.,Unit 5; ISO 50001; Cooling Tower,Maintenance Recommendation
+RPT-1050,Routine audit of IEC 60034 Standard confirms adherence to Main Control Panel. No corrective measures required.,Unit 5; Main Control Panel; IEC 60034 Standard,Energy Efficiency
+RPT-1051,Substation Delta showed efficiency losses in Cooling Tower. Suggested upgrade per Power Station Alpha.,Power Station Alpha; Cooling Tower; Substation Delta,System Upgrade
+RPT-1052,Energy audit suggests that Boiler Unit B-07 is outdated. Replacement advised under Main Control Panel guidelines.,Main Control Panel; Boiler Unit B-07; Substation Delta,Safety Compliance
+RPT-1053,"Audit reveals Inverter I-90 has exceeded permissible limits as per IEC 60034 Standard, located in Substation Delta.",Inverter I-90; Substation Delta; IEC 60034 Standard,System Upgrade
+RPT-1054,Performance report of HVAC System in Substation Delta aligns with audit benchmarks from Main Control Panel.,HVAC System; Main Control Panel; Substation Delta,Maintenance Recommendation
+RPT-1055,Routine audit of IEC 60034 Standard confirms adherence to Main Control Panel. No corrective measures required.,Unit 5; Main Control Panel; IEC 60034 Standard,Safety Compliance
+RPT-1056,Energy audit suggests that Boiler Unit B-07 is outdated. Replacement advised under ISO 50001 guidelines.,Zone A; ISO 50001; Boiler Unit B-07,Maintenance Recommendation
+RPT-1057,Performance report of Transformer T-101 in Unit 5 aligns with audit benchmarks from Cooling Tower.,Transformer T-101; Unit 5; Cooling Tower,Maintenance Recommendation
+RPT-1058,"Audit reveals Transformer T-101 has exceeded permissible limits as per Inverter I-90, located in Substation Delta.",Transformer T-101; Inverter I-90; Substation Delta,Regulatory Violation
+RPT-1059,Performance report of Inverter I-90 in Zone A aligns with audit benchmarks from IEC 60034 Standard.,Inverter I-90; Zone A; IEC 60034 Standard,Maintenance Recommendation
+RPT-1060,The inspection of IEC 60034 Standard at Plant 3 revealed non-compliance with Cooling Tower. Immediate action is recommended to avoid downtime.,Cooling Tower; Plant 3; IEC 60034 Standard,Safety Compliance
+RPT-1061,"Audit reveals Cooling Tower has exceeded permissible limits as per Inverter I-90, located in Control Room.",Inverter I-90; Control Room; Cooling Tower,Maintenance Recommendation
+RPT-1062,"Audit reveals Power Station Alpha has exceeded permissible limits as per Boiler Unit B-07, located in Zone A.",Power Station Alpha; Zone A; Boiler Unit B-07,Safety Compliance
+RPT-1063,"Audit reveals HVAC System has exceeded permissible limits as per HVAC System, located in Unit 5.",Unit 5; HVAC System,System Upgrade
+RPT-1064,Substation Delta showed efficiency losses in Load Balancer L-55. Suggested upgrade per Cooling Tower.,Load Balancer L-55; Cooling Tower; Substation Delta,Energy Efficiency
+RPT-1065,"Audit reveals Inverter I-90 has exceeded permissible limits as per Load Balancer L-55, located in Zone A.",Inverter I-90; Load Balancer L-55; Zone A,Maintenance Recommendation
+RPT-1066,Substation Delta showed efficiency losses in Inverter I-90. Suggested upgrade per Boiler Unit B-07.,Inverter I-90; Boiler Unit B-07; Substation Delta,Safety Compliance
+RPT-1067,Boiler Unit B-07 at Zone A passed quality checks based on standards defined in Inverter I-90.,Inverter I-90; Zone A; Boiler Unit B-07,Safety Compliance
+RPT-1068,IEC 60034 Standard recommends immediate shutdown of Load Balancer L-55 at Sector 12 due to critical faults.,Load Balancer L-55; Sector 12; IEC 60034 Standard,System Upgrade
+RPT-1069,"Audit reveals Cooling Tower has exceeded permissible limits as per Transformer T-101, located in Sector 12.",Transformer T-101; Sector 12; Cooling Tower,Maintenance Recommendation
+RPT-1070,Performance report of Power Station Alpha in Substation Delta aligns with audit benchmarks from Cooling Tower.,Power Station Alpha; Cooling Tower; Substation Delta,System Upgrade
+RPT-1071,Inspection report indicates Cooling Tower failed operational test at Plant 3. Refer to ISO 50001 for compliance.,Cooling Tower; Plant 3; ISO 50001,Energy Efficiency
+RPT-1072,Main Control Panel recommends immediate shutdown of Cooling Tower at Sector 12 due to critical faults.,Sector 12; Cooling Tower; Main Control Panel,Safety Compliance
+RPT-1073,Load Balancer L-55 recommends immediate shutdown of HVAC System at Substation Delta due to critical faults.,Load Balancer L-55; HVAC System; Substation Delta,System Upgrade
+RPT-1074,Power Station Alpha at Sector 12 passed quality checks based on standards defined in ISO 50001.,Power Station Alpha; Sector 12; ISO 50001,Energy Efficiency
+RPT-1075,Main Control Panel at Zone A passed quality checks based on standards defined in Power Station Alpha.,Power Station Alpha; Zone A; Main Control Panel,System Upgrade
+RPT-1076,Load Balancer L-55 recommends immediate shutdown of Power Station Alpha at Substation Delta due to critical faults.,Power Station Alpha; Load Balancer L-55; Substation Delta,System Upgrade
+RPT-1077,"Audit reveals IEC 60034 Standard has exceeded permissible limits as per Cooling Tower, located in Control Room.",Control Room; Cooling Tower; IEC 60034 Standard,System Upgrade
+RPT-1078,Performance report of IEC 60034 Standard in Plant 3 aligns with audit benchmarks from Boiler Unit B-07.,Plant 3; Boiler Unit B-07; IEC 60034 Standard,Regulatory Violation
+RPT-1079,Cooling Tower at Substation Delta passed quality checks based on standards defined in Boiler Unit B-07.,Cooling Tower; Boiler Unit B-07; Substation Delta,Maintenance Recommendation
+RPT-1080,"Audit highlights safety issues in Power Station Alpha, violating Boiler Unit B-07. Maintenance is due within 30 days at Zone A.",Power Station Alpha; Zone A; Boiler Unit B-07,Energy Efficiency
+RPT-1081,Inspection report indicates IEC 60034 Standard failed operational test at Unit 5. Refer to Power Station Alpha for compliance.,Power Station Alpha; Unit 5; IEC 60034 Standard,System Upgrade
+RPT-1082,Energy audit suggests that IEC 60034 Standard is outdated. Replacement advised under Boiler Unit B-07 guidelines.,Sector 12; Boiler Unit B-07; IEC 60034 Standard,Energy Efficiency
+RPT-1083,The inspection of IEC 60034 Standard at Sector 12 revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Sector 12; ISO 50001; IEC 60034 Standard,Energy Efficiency
+RPT-1084,Energy audit suggests that Cooling Tower is outdated. Replacement advised under HVAC System guidelines.,Control Room; HVAC System; Cooling Tower,Safety Compliance
+RPT-1085,Inspection report indicates ISO 50001 failed operational test at Sector 12. Refer to Boiler Unit B-07 for compliance.,Sector 12; ISO 50001; Boiler Unit B-07,Maintenance Recommendation
+RPT-1086,Substation Delta showed efficiency losses in Load Balancer L-55. Suggested upgrade per Boiler Unit B-07.,Load Balancer L-55; Boiler Unit B-07; Substation Delta,Energy Efficiency
+RPT-1087,"Audit reveals Inverter I-90 has exceeded permissible limits as per Inverter I-90, located in Plant 3.",Inverter I-90; Plant 3,Maintenance Recommendation
+RPT-1088,Unit 5 showed efficiency losses in IEC 60034 Standard. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Unit 5; IEC 60034 Standard,System Upgrade
+RPT-1089,The inspection of Main Control Panel at Plant 3 revealed non-compliance with HVAC System. Immediate action is recommended to avoid downtime.,HVAC System; Main Control Panel; Plant 3,System Upgrade
+RPT-1090,Sector 12 showed efficiency losses in Load Balancer L-55. Suggested upgrade per IEC 60034 Standard.,Load Balancer L-55; Sector 12; IEC 60034 Standard,Maintenance Recommendation
+RPT-1091,"Audit reveals Main Control Panel has exceeded permissible limits as per Transformer T-101, located in Control Room.",Transformer T-101; Control Room; Main Control Panel,Maintenance Recommendation
+RPT-1092,The inspection of Load Balancer L-55 at Control Room revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Load Balancer L-55; ISO 50001; Control Room,Energy Efficiency
+RPT-1093,Load Balancer L-55 recommends immediate shutdown of Main Control Panel at Unit 5 due to critical faults.,Load Balancer L-55; Unit 5; Main Control Panel,Regulatory Violation
+RPT-1094,Routine audit of ISO 50001 confirms adherence to Boiler Unit B-07. No corrective measures required.,ISO 50001; Plant 3; Boiler Unit B-07,Energy Efficiency
+RPT-1095,HVAC System at Sector 12 passed quality checks based on standards defined in Boiler Unit B-07.,HVAC System; Sector 12; Boiler Unit B-07,Maintenance Recommendation
+RPT-1096,Control Room showed efficiency losses in Main Control Panel. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Main Control Panel; Control Room,Regulatory Violation
+RPT-1097,Energy audit suggests that Boiler Unit B-07 is outdated. Replacement advised under Boiler Unit B-07 guidelines.,Unit 5; Boiler Unit B-07,Regulatory Violation
+RPT-1098,Transformer T-101 at Substation Delta passed quality checks based on standards defined in Cooling Tower.,Transformer T-101; Cooling Tower; Substation Delta,System Upgrade
+RPT-1099,"Audit reveals Inverter I-90 has exceeded permissible limits as per Boiler Unit B-07, located in Sector 12.",Inverter I-90; Sector 12; Boiler Unit B-07,Regulatory Violation
+RPT-1100,Performance report of Load Balancer L-55 in Control Room aligns with audit benchmarks from IEC 60034 Standard.,Load Balancer L-55; Control Room; IEC 60034 Standard,Energy Efficiency
+RPT-1101,Unit 5 showed efficiency losses in Load Balancer L-55. Suggested upgrade per Boiler Unit B-07.,Load Balancer L-55; Unit 5; Boiler Unit B-07,Regulatory Violation
+RPT-1102,The inspection of Main Control Panel at Substation Delta revealed non-compliance with Main Control Panel. Immediate action is recommended to avoid downtime.,Main Control Panel; Substation Delta,Energy Efficiency
+RPT-1103,Inspection report indicates Inverter I-90 failed operational test at Sector 12. Refer to Transformer T-101 for compliance.,Inverter I-90; Sector 12; Transformer T-101,Regulatory Violation
+RPT-1104,"Audit highlights safety issues in Cooling Tower, violating Cooling Tower. Maintenance is due within 30 days at Plant 3.",Cooling Tower; Plant 3,Maintenance Recommendation
+RPT-1105,"Audit reveals ISO 50001 has exceeded permissible limits as per Inverter I-90, located in Unit 5.",Inverter I-90; Unit 5; ISO 50001,Energy Efficiency
+RPT-1106,IEC 60034 Standard at Sector 12 passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Sector 12; IEC 60034 Standard,Regulatory Violation
+RPT-1107,Load Balancer L-55 recommends immediate shutdown of IEC 60034 Standard at Substation Delta due to critical faults.,Load Balancer L-55; Substation Delta; IEC 60034 Standard,Energy Efficiency
+RPT-1108,Energy audit suggests that Power Station Alpha is outdated. Replacement advised under Main Control Panel guidelines.,Power Station Alpha; Sector 12; Main Control Panel,System Upgrade
+RPT-1109,Sector 12 showed efficiency losses in IEC 60034 Standard. Suggested upgrade per IEC 60034 Standard.,Sector 12; IEC 60034 Standard,Energy Efficiency
+RPT-1110,Cooling Tower recommends immediate shutdown of Load Balancer L-55 at Control Room due to critical faults.,Load Balancer L-55; Cooling Tower; Control Room,System Upgrade
+RPT-1111,"Audit reveals HVAC System has exceeded permissible limits as per Inverter I-90, located in Zone A.",Inverter I-90; HVAC System; Zone A,Regulatory Violation
+RPT-1112,Inspection report indicates Cooling Tower failed operational test at Plant 3. Refer to Main Control Panel for compliance.,Cooling Tower; Main Control Panel; Plant 3,System Upgrade
+RPT-1113,Power Station Alpha recommends immediate shutdown of Power Station Alpha at Control Room due to critical faults.,Power Station Alpha; Control Room,System Upgrade
+RPT-1114,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under ISO 50001 guidelines.,Transformer T-101; Zone A; ISO 50001,Regulatory Violation
+RPT-1115,The inspection of Power Station Alpha at Substation Delta revealed non-compliance with Cooling Tower. Immediate action is recommended to avoid downtime.,Power Station Alpha; Cooling Tower; Substation Delta,Safety Compliance
+RPT-1116,"Audit reveals Load Balancer L-55 has exceeded permissible limits as per Boiler Unit B-07, located in Unit 5.",Load Balancer L-55; Unit 5; Boiler Unit B-07,Maintenance Recommendation
+RPT-1117,Performance report of Power Station Alpha in Sector 12 aligns with audit benchmarks from ISO 50001.,Power Station Alpha; Sector 12; ISO 50001,Energy Efficiency
+RPT-1118,Routine audit of Cooling Tower confirms adherence to ISO 50001. No corrective measures required.,Control Room; Cooling Tower; ISO 50001,Energy Efficiency
+RPT-1119,Inspection report indicates Load Balancer L-55 failed operational test at Zone A. Refer to HVAC System for compliance.,Load Balancer L-55; HVAC System; Zone A,Regulatory Violation
+RPT-1120,Performance report of IEC 60034 Standard in Plant 3 aligns with audit benchmarks from Load Balancer L-55.,Load Balancer L-55; Plant 3; IEC 60034 Standard,Energy Efficiency
+RPT-1121,The inspection of Inverter I-90 at Substation Delta revealed non-compliance with HVAC System. Immediate action is recommended to avoid downtime.,Inverter I-90; HVAC System; Substation Delta,Maintenance Recommendation
+RPT-1122,Routine audit of HVAC System confirms adherence to Main Control Panel. No corrective measures required.,Control Room; HVAC System; Main Control Panel,System Upgrade
+RPT-1123,The inspection of Load Balancer L-55 at Substation Delta revealed non-compliance with Power Station Alpha. Immediate action is recommended to avoid downtime.,Power Station Alpha; Load Balancer L-55; Substation Delta,Safety Compliance
+RPT-1124,"Audit reveals Transformer T-101 has exceeded permissible limits as per Boiler Unit B-07, located in Sector 12.",Transformer T-101; Sector 12; Boiler Unit B-07,Safety Compliance
+RPT-1125,The inspection of Load Balancer L-55 at Sector 12 revealed non-compliance with HVAC System. Immediate action is recommended to avoid downtime.,Load Balancer L-55; HVAC System; Sector 12,Maintenance Recommendation
+RPT-1126,"Audit highlights safety issues in Load Balancer L-55, violating Main Control Panel. Maintenance is due within 30 days at Sector 12.",Load Balancer L-55; Sector 12; Main Control Panel,Maintenance Recommendation
+RPT-1127,The inspection of Boiler Unit B-07 at Substation Delta revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Substation Delta; Boiler Unit B-07; IEC 60034 Standard,Regulatory Violation
+RPT-1128,Inspection report indicates HVAC System failed operational test at Sector 12. Refer to Inverter I-90 for compliance.,Inverter I-90; HVAC System; Sector 12,Regulatory Violation
+RPT-1129,Power Station Alpha recommends immediate shutdown of Main Control Panel at Unit 5 due to critical faults.,Power Station Alpha; Unit 5; Main Control Panel,Energy Efficiency
+RPT-1130,Energy audit suggests that HVAC System is outdated. Replacement advised under Power Station Alpha guidelines.,Power Station Alpha; Unit 5; HVAC System,Energy Efficiency
+RPT-1131,Control Room showed efficiency losses in Cooling Tower. Suggested upgrade per Boiler Unit B-07.,Control Room; Cooling Tower; Boiler Unit B-07,Safety Compliance
+RPT-1132,Performance report of Load Balancer L-55 in Plant 3 aligns with audit benchmarks from Inverter I-90.,Inverter I-90; Load Balancer L-55; Plant 3,Regulatory Violation
+RPT-1133,Inspection report indicates IEC 60034 Standard failed operational test at Unit 5. Refer to Cooling Tower for compliance.,Unit 5; Cooling Tower; IEC 60034 Standard,Regulatory Violation
+RPT-1134,Transformer T-101 at Substation Delta passed quality checks based on standards defined in IEC 60034 Standard.,Transformer T-101; Substation Delta; IEC 60034 Standard,Maintenance Recommendation
+RPT-1135,IEC 60034 Standard recommends immediate shutdown of Load Balancer L-55 at Substation Delta due to critical faults.,Load Balancer L-55; Substation Delta; IEC 60034 Standard,Regulatory Violation
+RPT-1136,The inspection of Transformer T-101 at Substation Delta revealed non-compliance with HVAC System. Immediate action is recommended to avoid downtime.,Transformer T-101; HVAC System; Substation Delta,Safety Compliance
+RPT-1137,"Audit highlights safety issues in Cooling Tower, violating IEC 60034 Standard. Maintenance is due within 30 days at Sector 12.",Sector 12; Cooling Tower; IEC 60034 Standard,Maintenance Recommendation
+RPT-1138,The inspection of Transformer T-101 at Plant 3 revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Transformer T-101; Plant 3,Maintenance Recommendation
+RPT-1139,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under Main Control Panel guidelines.,Transformer T-101; Zone A; Main Control Panel,Regulatory Violation
+RPT-1140,"Audit highlights safety issues in Main Control Panel, violating Power Station Alpha. Maintenance is due within 30 days at Plant 3.",Power Station Alpha; Main Control Panel; Plant 3,System Upgrade
+RPT-1141,"Audit highlights safety issues in Main Control Panel, violating Inverter I-90. Maintenance is due within 30 days at Plant 3.",Inverter I-90; Main Control Panel; Plant 3,Safety Compliance
+RPT-1142,Routine audit of ISO 50001 confirms adherence to Boiler Unit B-07. No corrective measures required.,Unit 5; ISO 50001; Boiler Unit B-07,System Upgrade
+RPT-1143,Transformer T-101 recommends immediate shutdown of ISO 50001 at Plant 3 due to critical faults.,Transformer T-101; ISO 50001; Plant 3,Energy Efficiency
+RPT-1144,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under Power Station Alpha guidelines.,Transformer T-101; Power Station Alpha; Zone A,System Upgrade
+RPT-1145,Sector 12 showed efficiency losses in Power Station Alpha. Suggested upgrade per Transformer T-101.,Power Station Alpha; Sector 12; Transformer T-101,Safety Compliance
+RPT-1146,Power Station Alpha at Unit 5 passed quality checks based on standards defined in ISO 50001.,Power Station Alpha; Unit 5; ISO 50001,Safety Compliance
+RPT-1147,The inspection of Inverter I-90 at Zone A revealed non-compliance with Inverter I-90. Immediate action is recommended to avoid downtime.,Inverter I-90; Zone A,System Upgrade
+RPT-1148,Boiler Unit B-07 recommends immediate shutdown of Inverter I-90 at Unit 5 due to critical faults.,Inverter I-90; Unit 5; Boiler Unit B-07,Regulatory Violation
+RPT-1149,Power Station Alpha at Substation Delta passed quality checks based on standards defined in Cooling Tower.,Power Station Alpha; Cooling Tower; Substation Delta,System Upgrade
+RPT-1150,Zone A showed efficiency losses in Power Station Alpha. Suggested upgrade per Load Balancer L-55.,Power Station Alpha; Load Balancer L-55; Zone A,Maintenance Recommendation
+RPT-1151,Inspection report indicates IEC 60034 Standard failed operational test at Sector 12. Refer to Power Station Alpha for compliance.,Power Station Alpha; Sector 12; IEC 60034 Standard,Maintenance Recommendation
+RPT-1152,Inspection report indicates Boiler Unit B-07 failed operational test at Zone A. Refer to IEC 60034 Standard for compliance.,Zone A; Boiler Unit B-07; IEC 60034 Standard,Energy Efficiency
+RPT-1153,Routine audit of ISO 50001 confirms adherence to ISO 50001. No corrective measures required.,Sector 12; ISO 50001,Energy Efficiency
+RPT-1154,Inspection report indicates Load Balancer L-55 failed operational test at Substation Delta. Refer to IEC 60034 Standard for compliance.,Load Balancer L-55; Substation Delta; IEC 60034 Standard,Maintenance Recommendation
+RPT-1155,IEC 60034 Standard recommends immediate shutdown of Inverter I-90 at Sector 12 due to critical faults.,Inverter I-90; Sector 12; IEC 60034 Standard,Regulatory Violation
+RPT-1156,Inspection report indicates Main Control Panel failed operational test at Zone A. Refer to IEC 60034 Standard for compliance.,Zone A; Main Control Panel; IEC 60034 Standard,System Upgrade
+RPT-1157,Energy audit suggests that Main Control Panel is outdated. Replacement advised under ISO 50001 guidelines.,Unit 5; ISO 50001; Main Control Panel,Regulatory Violation
+RPT-1158,Sector 12 showed efficiency losses in Main Control Panel. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Sector 12; Main Control Panel,Maintenance Recommendation
+RPT-1159,The inspection of Boiler Unit B-07 at Substation Delta revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Substation Delta; Boiler Unit B-07; IEC 60034 Standard,Maintenance Recommendation
+RPT-1160,"Audit highlights safety issues in Boiler Unit B-07, violating Load Balancer L-55. Maintenance is due within 30 days at Control Room.",Load Balancer L-55; Boiler Unit B-07; Control Room,Maintenance Recommendation
+RPT-1161,"Audit highlights safety issues in Power Station Alpha, violating Main Control Panel. Maintenance is due within 30 days at Substation Delta.",Power Station Alpha; Main Control Panel; Substation Delta,Regulatory Violation
+RPT-1162,The inspection of IEC 60034 Standard at Substation Delta revealed non-compliance with Main Control Panel. Immediate action is recommended to avoid downtime.,Substation Delta; Main Control Panel; IEC 60034 Standard,Energy Efficiency
+RPT-1163,"Audit reveals Boiler Unit B-07 has exceeded permissible limits as per Cooling Tower, located in Plant 3.",Cooling Tower; Plant 3; Boiler Unit B-07,Regulatory Violation
+RPT-1164,Load Balancer L-55 at Control Room passed quality checks based on standards defined in Boiler Unit B-07.,Load Balancer L-55; Boiler Unit B-07; Control Room,Safety Compliance
+RPT-1165,Routine audit of IEC 60034 Standard confirms adherence to IEC 60034 Standard. No corrective measures required.,Unit 5; IEC 60034 Standard,Regulatory Violation
+RPT-1166,Routine audit of HVAC System confirms adherence to IEC 60034 Standard. No corrective measures required.,HVAC System; Zone A; IEC 60034 Standard,Maintenance Recommendation
+RPT-1167,Unit 5 showed efficiency losses in HVAC System. Suggested upgrade per Boiler Unit B-07.,Unit 5; HVAC System; Boiler Unit B-07,Maintenance Recommendation
+RPT-1168,Routine audit of ISO 50001 confirms adherence to Inverter I-90. No corrective measures required.,Inverter I-90; Control Room; ISO 50001,Safety Compliance
+RPT-1169,Performance report of Main Control Panel in Substation Delta aligns with audit benchmarks from IEC 60034 Standard.,Substation Delta; Main Control Panel; IEC 60034 Standard,Energy Efficiency
+RPT-1170,Performance report of Boiler Unit B-07 in Zone A aligns with audit benchmarks from HVAC System.,HVAC System; Zone A; Boiler Unit B-07,System Upgrade
+RPT-1171,Energy audit suggests that Load Balancer L-55 is outdated. Replacement advised under Load Balancer L-55 guidelines.,Load Balancer L-55; Plant 3,Energy Efficiency
+RPT-1172,Zone A showed efficiency losses in IEC 60034 Standard. Suggested upgrade per Inverter I-90.,Inverter I-90; Zone A; IEC 60034 Standard,Regulatory Violation
+RPT-1173,Routine audit of Cooling Tower confirms adherence to IEC 60034 Standard. No corrective measures required.,Cooling Tower; Substation Delta; IEC 60034 Standard,Regulatory Violation
+RPT-1174,The inspection of ISO 50001 at Control Room revealed non-compliance with Boiler Unit B-07. Immediate action is recommended to avoid downtime.,Control Room; ISO 50001; Boiler Unit B-07,Maintenance Recommendation
+RPT-1175,Energy audit suggests that Load Balancer L-55 is outdated. Replacement advised under ISO 50001 guidelines.,Load Balancer L-55; ISO 50001; Control Room,Maintenance Recommendation
+RPT-1176,Routine audit of Main Control Panel confirms adherence to Power Station Alpha. No corrective measures required.,Power Station Alpha; Unit 5; Main Control Panel,Regulatory Violation
+RPT-1177,Inspection report indicates Power Station Alpha failed operational test at Control Room. Refer to Main Control Panel for compliance.,Power Station Alpha; Control Room; Main Control Panel,Safety Compliance
+RPT-1178,Performance report of IEC 60034 Standard in Plant 3 aligns with audit benchmarks from Boiler Unit B-07.,Plant 3; Boiler Unit B-07; IEC 60034 Standard,System Upgrade
+RPT-1179,"Audit highlights safety issues in Boiler Unit B-07, violating Boiler Unit B-07. Maintenance is due within 30 days at Zone A.",Zone A; Boiler Unit B-07,System Upgrade
+RPT-1180,Routine audit of Power Station Alpha confirms adherence to ISO 50001. No corrective measures required.,Power Station Alpha; Unit 5; ISO 50001,Maintenance Recommendation
+RPT-1181,Sector 12 showed efficiency losses in HVAC System. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; HVAC System; Sector 12,System Upgrade
+RPT-1182,Inspection report indicates Load Balancer L-55 failed operational test at Substation Delta. Refer to Cooling Tower for compliance.,Load Balancer L-55; Cooling Tower; Substation Delta,Maintenance Recommendation
+RPT-1183,The inspection of IEC 60034 Standard at Control Room revealed non-compliance with Load Balancer L-55. Immediate action is recommended to avoid downtime.,Load Balancer L-55; Control Room; IEC 60034 Standard,System Upgrade
+RPT-1184,Routine audit of HVAC System confirms adherence to Load Balancer L-55. No corrective measures required.,Load Balancer L-55; HVAC System; Plant 3,Regulatory Violation
+RPT-1185,"Audit reveals Boiler Unit B-07 has exceeded permissible limits as per Load Balancer L-55, located in Sector 12.",Load Balancer L-55; Sector 12; Boiler Unit B-07,Maintenance Recommendation
+RPT-1186,The inspection of Load Balancer L-55 at Zone A revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Load Balancer L-55; Zone A; ISO 50001,System Upgrade
+RPT-1187,Control Room showed efficiency losses in Power Station Alpha. Suggested upgrade per Main Control Panel.,Power Station Alpha; Control Room; Main Control Panel,Energy Efficiency
+RPT-1188,"Audit highlights safety issues in IEC 60034 Standard, violating HVAC System. Maintenance is due within 30 days at Plant 3.",HVAC System; Plant 3; IEC 60034 Standard,Energy Efficiency
+RPT-1189,Inspection report indicates Inverter I-90 failed operational test at Substation Delta. Refer to Transformer T-101 for compliance.,Inverter I-90; Transformer T-101; Substation Delta,Energy Efficiency
+RPT-1190,IEC 60034 Standard recommends immediate shutdown of ISO 50001 at Plant 3 due to critical faults.,ISO 50001; Plant 3; IEC 60034 Standard,System Upgrade
+RPT-1191,The inspection of ISO 50001 at Unit 5 revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Unit 5; ISO 50001; IEC 60034 Standard,Regulatory Violation
+RPT-1192,Energy audit suggests that Cooling Tower is outdated. Replacement advised under Power Station Alpha guidelines.,Power Station Alpha; Unit 5; Cooling Tower,Energy Efficiency
+RPT-1193,Performance report of ISO 50001 in Unit 5 aligns with audit benchmarks from Power Station Alpha.,Power Station Alpha; Unit 5; ISO 50001,Energy Efficiency
+RPT-1194,"Audit highlights safety issues in Boiler Unit B-07, violating Cooling Tower. Maintenance is due within 30 days at Zone A.",Zone A; Cooling Tower; Boiler Unit B-07,Regulatory Violation
+RPT-1195,"Audit reveals Main Control Panel has exceeded permissible limits as per Transformer T-101, located in Zone A.",Transformer T-101; Zone A; Main Control Panel,System Upgrade
+RPT-1196,Control Room showed efficiency losses in Main Control Panel. Suggested upgrade per Power Station Alpha.,Power Station Alpha; Control Room; Main Control Panel,Maintenance Recommendation
+RPT-1197,Plant 3 showed efficiency losses in Load Balancer L-55. Suggested upgrade per HVAC System.,Load Balancer L-55; HVAC System; Plant 3,Maintenance Recommendation
+RPT-1198,HVAC System recommends immediate shutdown of Main Control Panel at Substation Delta due to critical faults.,HVAC System; Main Control Panel; Substation Delta,Energy Efficiency
+RPT-1199,Performance report of Load Balancer L-55 in Unit 5 aligns with audit benchmarks from Main Control Panel.,Load Balancer L-55; Unit 5; Main Control Panel,System Upgrade
+RPT-1200,Unit 5 showed efficiency losses in HVAC System. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; HVAC System; Unit 5,Safety Compliance
+RPT-1201,Routine audit of Cooling Tower confirms adherence to IEC 60034 Standard. No corrective measures required.,Control Room; Cooling Tower; IEC 60034 Standard,Regulatory Violation
+RPT-1202,"Audit reveals Load Balancer L-55 has exceeded permissible limits as per IEC 60034 Standard, located in Zone A.",Load Balancer L-55; Zone A; IEC 60034 Standard,Maintenance Recommendation
+RPT-1203,"Audit highlights safety issues in Transformer T-101, violating Cooling Tower. Maintenance is due within 30 days at Zone A.",Transformer T-101; Zone A; Cooling Tower,System Upgrade
+RPT-1204,"Audit highlights safety issues in ISO 50001, violating IEC 60034 Standard. Maintenance is due within 30 days at Sector 12.",Sector 12; ISO 50001; IEC 60034 Standard,Safety Compliance
+RPT-1205,HVAC System recommends immediate shutdown of Transformer T-101 at Zone A due to critical faults.,Transformer T-101; HVAC System; Zone A,Maintenance Recommendation
+RPT-1206,Sector 12 showed efficiency losses in Cooling Tower. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Sector 12; Cooling Tower,Safety Compliance
+RPT-1207,Energy audit suggests that Boiler Unit B-07 is outdated. Replacement advised under ISO 50001 guidelines.,ISO 50001; Plant 3; Boiler Unit B-07,Regulatory Violation
+RPT-1208,Energy audit suggests that Cooling Tower is outdated. Replacement advised under Boiler Unit B-07 guidelines.,Cooling Tower; Boiler Unit B-07; Substation Delta,Maintenance Recommendation
+RPT-1209,Inspection report indicates Cooling Tower failed operational test at Substation Delta. Refer to Boiler Unit B-07 for compliance.,Cooling Tower; Boiler Unit B-07; Substation Delta,Maintenance Recommendation
+RPT-1210,"Audit highlights safety issues in Cooling Tower, violating Load Balancer L-55. Maintenance is due within 30 days at Control Room.",Load Balancer L-55; Cooling Tower; Control Room,System Upgrade
+RPT-1211,Zone A showed efficiency losses in Cooling Tower. Suggested upgrade per IEC 60034 Standard.,Zone A; Cooling Tower; IEC 60034 Standard,Regulatory Violation
+RPT-1212,Routine audit of Boiler Unit B-07 confirms adherence to Power Station Alpha. No corrective measures required.,Power Station Alpha; Zone A; Boiler Unit B-07,Regulatory Violation
+RPT-1213,Performance report of Main Control Panel in Zone A aligns with audit benchmarks from Main Control Panel.,Zone A; Main Control Panel,System Upgrade
+RPT-1214,Energy audit suggests that IEC 60034 Standard is outdated. Replacement advised under IEC 60034 Standard guidelines.,Control Room; IEC 60034 Standard,Safety Compliance
+RPT-1215,HVAC System recommends immediate shutdown of Boiler Unit B-07 at Control Room due to critical faults.,Control Room; HVAC System; Boiler Unit B-07,Regulatory Violation
+RPT-1216,Routine audit of Inverter I-90 confirms adherence to Power Station Alpha. No corrective measures required.,Inverter I-90; Power Station Alpha; Plant 3,Safety Compliance
+RPT-1217,"Audit reveals Power Station Alpha has exceeded permissible limits as per Power Station Alpha, located in Control Room.",Power Station Alpha; Control Room,Regulatory Violation
+RPT-1218,Boiler Unit B-07 recommends immediate shutdown of ISO 50001 at Substation Delta due to critical faults.,ISO 50001; Boiler Unit B-07; Substation Delta,Energy Efficiency
+RPT-1219,ISO 50001 recommends immediate shutdown of ISO 50001 at Unit 5 due to critical faults.,Unit 5; ISO 50001,Safety Compliance
+RPT-1220,"Audit reveals HVAC System has exceeded permissible limits as per IEC 60034 Standard, located in Substation Delta.",HVAC System; Substation Delta; IEC 60034 Standard,Regulatory Violation
+RPT-1221,ISO 50001 recommends immediate shutdown of Cooling Tower at Substation Delta due to critical faults.,Cooling Tower; ISO 50001; Substation Delta,Regulatory Violation
+RPT-1222,Performance report of Cooling Tower in Zone A aligns with audit benchmarks from Power Station Alpha.,Power Station Alpha; Zone A; Cooling Tower,System Upgrade
+RPT-1223,"Audit reveals Transformer T-101 has exceeded permissible limits as per Boiler Unit B-07, located in Plant 3.",Transformer T-101; Plant 3; Boiler Unit B-07,Maintenance Recommendation
+RPT-1224,"Audit highlights safety issues in IEC 60034 Standard, violating Inverter I-90. Maintenance is due within 30 days at Substation Delta.",Inverter I-90; Substation Delta; IEC 60034 Standard,Energy Efficiency
+RPT-1225,Sector 12 showed efficiency losses in Transformer T-101. Suggested upgrade per Power Station Alpha.,Transformer T-101; Power Station Alpha; Sector 12,Energy Efficiency
+RPT-1226,Inspection report indicates HVAC System failed operational test at Unit 5. Refer to Transformer T-101 for compliance.,Transformer T-101; Unit 5; HVAC System,Maintenance Recommendation
+RPT-1227,"Audit reveals Cooling Tower has exceeded permissible limits as per HVAC System, located in Control Room.",Control Room; HVAC System; Cooling Tower,System Upgrade
+RPT-1228,Zone A showed efficiency losses in Boiler Unit B-07. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Zone A; Boiler Unit B-07,Safety Compliance
+RPT-1229,IEC 60034 Standard recommends immediate shutdown of Load Balancer L-55 at Zone A due to critical faults.,Load Balancer L-55; Zone A; IEC 60034 Standard,System Upgrade
+RPT-1230,"Audit highlights safety issues in IEC 60034 Standard, violating Power Station Alpha. Maintenance is due within 30 days at Unit 5.",Power Station Alpha; Unit 5; IEC 60034 Standard,Energy Efficiency
+RPT-1231,"Audit highlights safety issues in HVAC System, violating ISO 50001. Maintenance is due within 30 days at Control Room.",Control Room; HVAC System; ISO 50001,System Upgrade
+RPT-1232,Routine audit of Inverter I-90 confirms adherence to Transformer T-101. No corrective measures required.,Inverter I-90; Control Room; Transformer T-101,System Upgrade
+RPT-1233,Inspection report indicates Main Control Panel failed operational test at Substation Delta. Refer to HVAC System for compliance.,HVAC System; Main Control Panel; Substation Delta,Energy Efficiency
+RPT-1234,Inspection report indicates Power Station Alpha failed operational test at Unit 5. Refer to Main Control Panel for compliance.,Power Station Alpha; Unit 5; Main Control Panel,Safety Compliance
+RPT-1235,HVAC System recommends immediate shutdown of HVAC System at Control Room due to critical faults.,Control Room; HVAC System,Energy Efficiency
+RPT-1236,Power Station Alpha at Plant 3 passed quality checks based on standards defined in Boiler Unit B-07.,Power Station Alpha; Plant 3; Boiler Unit B-07,Energy Efficiency
+RPT-1237,Inspection report indicates Transformer T-101 failed operational test at Unit 5. Refer to Power Station Alpha for compliance.,Transformer T-101; Unit 5; Power Station Alpha,Maintenance Recommendation
+RPT-1238,"Audit reveals Inverter I-90 has exceeded permissible limits as per Power Station Alpha, located in Sector 12.",Inverter I-90; Power Station Alpha; Sector 12,Regulatory Violation
+RPT-1239,"Audit reveals Inverter I-90 has exceeded permissible limits as per Boiler Unit B-07, located in Plant 3.",Inverter I-90; Plant 3; Boiler Unit B-07,Maintenance Recommendation
+RPT-1240,"Audit highlights safety issues in Cooling Tower, violating Transformer T-101. Maintenance is due within 30 days at Sector 12.",Transformer T-101; Sector 12; Cooling Tower,Safety Compliance
+RPT-1241,"Audit highlights safety issues in HVAC System, violating Power Station Alpha. Maintenance is due within 30 days at Zone A.",Power Station Alpha; HVAC System; Zone A,Maintenance Recommendation
+RPT-1242,Inspection report indicates HVAC System failed operational test at Plant 3. Refer to Power Station Alpha for compliance.,Power Station Alpha; HVAC System; Plant 3,Energy Efficiency
+RPT-1243,"Audit reveals IEC 60034 Standard has exceeded permissible limits as per ISO 50001, located in Unit 5.",Unit 5; ISO 50001; IEC 60034 Standard,Safety Compliance
+RPT-1244,The inspection of Transformer T-101 at Substation Delta revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Transformer T-101; ISO 50001; Substation Delta,Safety Compliance
+RPT-1245,Inverter I-90 at Unit 5 passed quality checks based on standards defined in ISO 50001.,Inverter I-90; Unit 5; ISO 50001,Regulatory Violation
+RPT-1246,Energy audit suggests that HVAC System is outdated. Replacement advised under Main Control Panel guidelines.,HVAC System; Sector 12; Main Control Panel,System Upgrade
+RPT-1247,Zone A showed efficiency losses in Inverter I-90. Suggested upgrade per Main Control Panel.,Inverter I-90; Zone A; Main Control Panel,Energy Efficiency
+RPT-1248,"Audit highlights safety issues in IEC 60034 Standard, violating Transformer T-101. Maintenance is due within 30 days at Unit 5.",Transformer T-101; Unit 5; IEC 60034 Standard,Regulatory Violation
+RPT-1249,Routine audit of Transformer T-101 confirms adherence to ISO 50001. No corrective measures required.,Transformer T-101; Unit 5; ISO 50001,Regulatory Violation
+RPT-1250,Zone A showed efficiency losses in Transformer T-101. Suggested upgrade per HVAC System.,Transformer T-101; HVAC System; Zone A,Energy Efficiency
+RPT-1251,The inspection of Inverter I-90 at Plant 3 revealed non-compliance with HVAC System. Immediate action is recommended to avoid downtime.,Inverter I-90; HVAC System; Plant 3,Regulatory Violation
+RPT-1252,Energy audit suggests that ISO 50001 is outdated. Replacement advised under HVAC System guidelines.,Control Room; HVAC System; ISO 50001,Energy Efficiency
+RPT-1253,Routine audit of Inverter I-90 confirms adherence to Load Balancer L-55. No corrective measures required.,Inverter I-90; Load Balancer L-55; Substation Delta,Safety Compliance
+RPT-1254,"Audit highlights safety issues in Transformer T-101, violating IEC 60034 Standard. Maintenance is due within 30 days at Sector 12.",Transformer T-101; Sector 12; IEC 60034 Standard,Safety Compliance
+RPT-1255,Plant 3 showed efficiency losses in Boiler Unit B-07. Suggested upgrade per Cooling Tower.,Cooling Tower; Plant 3; Boiler Unit B-07,Regulatory Violation
+RPT-1256,Substation Delta showed efficiency losses in Load Balancer L-55. Suggested upgrade per ISO 50001.,Load Balancer L-55; ISO 50001; Substation Delta,Energy Efficiency
+RPT-1257,Inverter I-90 recommends immediate shutdown of Transformer T-101 at Unit 5 due to critical faults.,Transformer T-101; Inverter I-90; Unit 5,Regulatory Violation
+RPT-1258,Sector 12 showed efficiency losses in Power Station Alpha. Suggested upgrade per Cooling Tower.,Power Station Alpha; Sector 12; Cooling Tower,Energy Efficiency
+RPT-1259,Routine audit of Transformer T-101 confirms adherence to Inverter I-90. No corrective measures required.,Transformer T-101; Inverter I-90; Plant 3,Energy Efficiency
+RPT-1260,Inspection report indicates HVAC System failed operational test at Sector 12. Refer to ISO 50001 for compliance.,Sector 12; HVAC System; ISO 50001,Regulatory Violation
+RPT-1261,Energy audit suggests that Inverter I-90 is outdated. Replacement advised under ISO 50001 guidelines.,Inverter I-90; ISO 50001; Plant 3,Maintenance Recommendation
+RPT-1262,Sector 12 showed efficiency losses in Power Station Alpha. Suggested upgrade per Cooling Tower.,Power Station Alpha; Sector 12; Cooling Tower,Safety Compliance
+RPT-1263,"Audit reveals ISO 50001 has exceeded permissible limits as per Cooling Tower, located in Zone A.",Zone A; ISO 50001; Cooling Tower,Maintenance Recommendation
+RPT-1264,Unit 5 showed efficiency losses in Main Control Panel. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Unit 5; Main Control Panel,Maintenance Recommendation
+RPT-1265,Cooling Tower recommends immediate shutdown of Main Control Panel at Zone A due to critical faults.,Zone A; Cooling Tower; Main Control Panel,Safety Compliance
+RPT-1266,Inverter I-90 recommends immediate shutdown of Boiler Unit B-07 at Sector 12 due to critical faults.,Inverter I-90; Sector 12; Boiler Unit B-07,Maintenance Recommendation
+RPT-1267,The inspection of Load Balancer L-55 at Plant 3 revealed non-compliance with Cooling Tower. Immediate action is recommended to avoid downtime.,Load Balancer L-55; Cooling Tower; Plant 3,Safety Compliance
+RPT-1268,"Audit reveals HVAC System has exceeded permissible limits as per Transformer T-101, located in Sector 12.",Transformer T-101; HVAC System; Sector 12,Safety Compliance
+RPT-1269,The inspection of ISO 50001 at Zone A revealed non-compliance with Boiler Unit B-07. Immediate action is recommended to avoid downtime.,Zone A; ISO 50001; Boiler Unit B-07,Maintenance Recommendation
+RPT-1270,"Audit highlights safety issues in Load Balancer L-55, violating Cooling Tower. Maintenance is due within 30 days at Sector 12.",Load Balancer L-55; Sector 12; Cooling Tower,Energy Efficiency
+RPT-1271,Zone A showed efficiency losses in Boiler Unit B-07. Suggested upgrade per Cooling Tower.,Zone A; Cooling Tower; Boiler Unit B-07,Energy Efficiency
+RPT-1272,"Audit highlights safety issues in Power Station Alpha, violating ISO 50001. Maintenance is due within 30 days at Unit 5.",Power Station Alpha; Unit 5; ISO 50001,Regulatory Violation
+RPT-1273,IEC 60034 Standard at Plant 3 passed quality checks based on standards defined in Main Control Panel.,Main Control Panel; Plant 3; IEC 60034 Standard,System Upgrade
+RPT-1274,Main Control Panel at Sector 12 passed quality checks based on standards defined in HVAC System.,HVAC System; Sector 12; Main Control Panel,Energy Efficiency
+RPT-1275,Routine audit of Load Balancer L-55 confirms adherence to IEC 60034 Standard. No corrective measures required.,Load Balancer L-55; Sector 12; IEC 60034 Standard,System Upgrade
+RPT-1276,Routine audit of ISO 50001 confirms adherence to HVAC System. No corrective measures required.,Control Room; HVAC System; ISO 50001,Safety Compliance
+RPT-1277,The inspection of Main Control Panel at Unit 5 revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Unit 5; Main Control Panel; IEC 60034 Standard,System Upgrade
+RPT-1278,Performance report of ISO 50001 in Sector 12 aligns with audit benchmarks from Cooling Tower.,Sector 12; ISO 50001; Cooling Tower,Regulatory Violation
+RPT-1279,Performance report of Power Station Alpha in Control Room aligns with audit benchmarks from Transformer T-101.,Power Station Alpha; Control Room; Transformer T-101,Safety Compliance
+RPT-1280,Energy audit suggests that Load Balancer L-55 is outdated. Replacement advised under ISO 50001 guidelines.,Load Balancer L-55; Zone A; ISO 50001,Energy Efficiency
+RPT-1281,"Audit highlights safety issues in Power Station Alpha, violating Transformer T-101. Maintenance is due within 30 days at Sector 12.",Power Station Alpha; Sector 12; Transformer T-101,Energy Efficiency
+RPT-1282,"Audit highlights safety issues in Power Station Alpha, violating Boiler Unit B-07. Maintenance is due within 30 days at Zone A.",Power Station Alpha; Zone A; Boiler Unit B-07,Maintenance Recommendation
+RPT-1283,"Audit highlights safety issues in Load Balancer L-55, violating Boiler Unit B-07. Maintenance is due within 30 days at Control Room.",Load Balancer L-55; Boiler Unit B-07; Control Room,Maintenance Recommendation
+RPT-1284,The inspection of Cooling Tower at Zone A revealed non-compliance with Power Station Alpha. Immediate action is recommended to avoid downtime.,Power Station Alpha; Zone A; Cooling Tower,System Upgrade
+RPT-1285,The inspection of Transformer T-101 at Substation Delta revealed non-compliance with Inverter I-90. Immediate action is recommended to avoid downtime.,Transformer T-101; Inverter I-90; Substation Delta,System Upgrade
+RPT-1286,Main Control Panel at Plant 3 passed quality checks based on standards defined in Load Balancer L-55.,Load Balancer L-55; Main Control Panel; Plant 3,Safety Compliance
+RPT-1287,Main Control Panel recommends immediate shutdown of IEC 60034 Standard at Unit 5 due to critical faults.,Unit 5; Main Control Panel; IEC 60034 Standard,System Upgrade
+RPT-1288,The inspection of Boiler Unit B-07 at Sector 12 revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Transformer T-101; Sector 12; Boiler Unit B-07,Regulatory Violation
+RPT-1289,"Audit highlights safety issues in ISO 50001, violating ISO 50001. Maintenance is due within 30 days at Control Room.",Control Room; ISO 50001,System Upgrade
+RPT-1290,Power Station Alpha recommends immediate shutdown of HVAC System at Control Room due to critical faults.,Power Station Alpha; Control Room; HVAC System,Safety Compliance
+RPT-1291,"Audit highlights safety issues in Boiler Unit B-07, violating Boiler Unit B-07. Maintenance is due within 30 days at Control Room.",Control Room; Boiler Unit B-07,System Upgrade
+RPT-1292,Plant 3 showed efficiency losses in Inverter I-90. Suggested upgrade per ISO 50001.,Inverter I-90; ISO 50001; Plant 3,Regulatory Violation
+RPT-1293,"Audit reveals Transformer T-101 has exceeded permissible limits as per IEC 60034 Standard, located in Control Room.",Transformer T-101; Control Room; IEC 60034 Standard,Regulatory Violation
+RPT-1294,Power Station Alpha at Control Room passed quality checks based on standards defined in Power Station Alpha.,Power Station Alpha; Control Room,Energy Efficiency
+RPT-1295,"Audit highlights safety issues in HVAC System, violating Power Station Alpha. Maintenance is due within 30 days at Plant 3.",Power Station Alpha; HVAC System; Plant 3,System Upgrade
+RPT-1296,Control Room showed efficiency losses in ISO 50001. Suggested upgrade per ISO 50001.,Control Room; ISO 50001,System Upgrade
+RPT-1297,The inspection of Cooling Tower at Control Room revealed non-compliance with Main Control Panel. Immediate action is recommended to avoid downtime.,Control Room; Cooling Tower; Main Control Panel,Safety Compliance
+RPT-1298,Routine audit of Boiler Unit B-07 confirms adherence to ISO 50001. No corrective measures required.,Zone A; ISO 50001; Boiler Unit B-07,System Upgrade
+RPT-1299,Routine audit of Load Balancer L-55 confirms adherence to HVAC System. No corrective measures required.,Load Balancer L-55; HVAC System; Zone A,System Upgrade
+RPT-1300,Energy audit suggests that Inverter I-90 is outdated. Replacement advised under ISO 50001 guidelines.,Inverter I-90; Zone A; ISO 50001,Energy Efficiency
+RPT-1301,Inspection report indicates Load Balancer L-55 failed operational test at Substation Delta. Refer to ISO 50001 for compliance.,Load Balancer L-55; ISO 50001; Substation Delta,Regulatory Violation
+RPT-1302,Unit 5 showed efficiency losses in IEC 60034 Standard. Suggested upgrade per Transformer T-101.,Transformer T-101; Unit 5; IEC 60034 Standard,Regulatory Violation
+RPT-1303,The inspection of Cooling Tower at Unit 5 revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Unit 5; Cooling Tower; IEC 60034 Standard,Regulatory Violation
+RPT-1304,Main Control Panel at Substation Delta passed quality checks based on standards defined in Cooling Tower.,Cooling Tower; Main Control Panel; Substation Delta,Regulatory Violation
+RPT-1305,Energy audit suggests that HVAC System is outdated. Replacement advised under ISO 50001 guidelines.,Sector 12; HVAC System; ISO 50001,Regulatory Violation
+RPT-1306,Routine audit of ISO 50001 confirms adherence to Boiler Unit B-07. No corrective measures required.,ISO 50001; Boiler Unit B-07; Substation Delta,Safety Compliance
+RPT-1307,Inspection report indicates Transformer T-101 failed operational test at Zone A. Refer to HVAC System for compliance.,Transformer T-101; HVAC System; Zone A,Regulatory Violation
+RPT-1308,Energy audit suggests that HVAC System is outdated. Replacement advised under Load Balancer L-55 guidelines.,Load Balancer L-55; HVAC System; Control Room,Maintenance Recommendation
+RPT-1309,"Audit highlights safety issues in Boiler Unit B-07, violating IEC 60034 Standard. Maintenance is due within 30 days at Unit 5.",Unit 5; Boiler Unit B-07; IEC 60034 Standard,Safety Compliance
+RPT-1310,The inspection of IEC 60034 Standard at Plant 3 revealed non-compliance with Power Station Alpha. Immediate action is recommended to avoid downtime.,Power Station Alpha; Plant 3; IEC 60034 Standard,Safety Compliance
+RPT-1311,Control Room showed efficiency losses in Cooling Tower. Suggested upgrade per HVAC System.,Control Room; HVAC System; Cooling Tower,System Upgrade
+RPT-1312,Performance report of HVAC System in Substation Delta aligns with audit benchmarks from Load Balancer L-55.,Load Balancer L-55; HVAC System; Substation Delta,Safety Compliance
+RPT-1313,"Audit highlights safety issues in Boiler Unit B-07, violating Inverter I-90. Maintenance is due within 30 days at Sector 12.",Inverter I-90; Sector 12; Boiler Unit B-07,System Upgrade
+RPT-1314,"Audit highlights safety issues in IEC 60034 Standard, violating ISO 50001. Maintenance is due within 30 days at Zone A.",Zone A; ISO 50001; IEC 60034 Standard,Regulatory Violation
+RPT-1315,Substation Delta showed efficiency losses in Boiler Unit B-07. Suggested upgrade per Transformer T-101.,Transformer T-101; Boiler Unit B-07; Substation Delta,Regulatory Violation
+RPT-1316,"Audit reveals Transformer T-101 has exceeded permissible limits as per Boiler Unit B-07, located in Control Room.",Transformer T-101; Control Room; Boiler Unit B-07,System Upgrade
+RPT-1317,Zone A showed efficiency losses in Power Station Alpha. Suggested upgrade per IEC 60034 Standard.,Power Station Alpha; Zone A; IEC 60034 Standard,Maintenance Recommendation
+RPT-1318,Power Station Alpha recommends immediate shutdown of Boiler Unit B-07 at Plant 3 due to critical faults.,Power Station Alpha; Plant 3; Boiler Unit B-07,System Upgrade
+RPT-1319,"Audit reveals Main Control Panel has exceeded permissible limits as per Main Control Panel, located in Control Room.",Control Room; Main Control Panel,System Upgrade
+RPT-1320,"Audit reveals Power Station Alpha has exceeded permissible limits as per HVAC System, located in Control Room.",Power Station Alpha; Control Room; HVAC System,Safety Compliance
+RPT-1321,Routine audit of IEC 60034 Standard confirms adherence to Inverter I-90. No corrective measures required.,Inverter I-90; Zone A; IEC 60034 Standard,Regulatory Violation
+RPT-1322,Performance report of Load Balancer L-55 in Sector 12 aligns with audit benchmarks from Cooling Tower.,Load Balancer L-55; Sector 12; Cooling Tower,System Upgrade
+RPT-1323,Inspection report indicates ISO 50001 failed operational test at Unit 5. Refer to Power Station Alpha for compliance.,Power Station Alpha; Unit 5; ISO 50001,System Upgrade
+RPT-1324,Performance report of ISO 50001 in Control Room aligns with audit benchmarks from Inverter I-90.,Inverter I-90; Control Room; ISO 50001,System Upgrade
+RPT-1325,"Audit reveals Cooling Tower has exceeded permissible limits as per Transformer T-101, located in Unit 5.",Transformer T-101; Unit 5; Cooling Tower,Regulatory Violation
+RPT-1326,Boiler Unit B-07 at Unit 5 passed quality checks based on standards defined in HVAC System.,Unit 5; HVAC System; Boiler Unit B-07,Regulatory Violation
+RPT-1327,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under Boiler Unit B-07 guidelines.,Transformer T-101; Boiler Unit B-07; Substation Delta,Regulatory Violation
+RPT-1328,Performance report of Power Station Alpha in Sector 12 aligns with audit benchmarks from Boiler Unit B-07.,Power Station Alpha; Sector 12; Boiler Unit B-07,System Upgrade
+RPT-1329,Performance report of ISO 50001 in Plant 3 aligns with audit benchmarks from Load Balancer L-55.,Load Balancer L-55; ISO 50001; Plant 3,Maintenance Recommendation
+RPT-1330,"Audit highlights safety issues in HVAC System, violating Main Control Panel. Maintenance is due within 30 days at Zone A.",Zone A; HVAC System; Main Control Panel,Regulatory Violation
+RPT-1331,Inverter I-90 at Plant 3 passed quality checks based on standards defined in Boiler Unit B-07.,Inverter I-90; Plant 3; Boiler Unit B-07,System Upgrade
+RPT-1332,"Audit reveals Main Control Panel has exceeded permissible limits as per Inverter I-90, located in Plant 3.",Inverter I-90; Main Control Panel; Plant 3,Energy Efficiency
+RPT-1333,"Audit reveals Power Station Alpha has exceeded permissible limits as per Main Control Panel, located in Control Room.",Power Station Alpha; Control Room; Main Control Panel,Maintenance Recommendation
+RPT-1334,"Audit highlights safety issues in Cooling Tower, violating Main Control Panel. Maintenance is due within 30 days at Plant 3.",Cooling Tower; Main Control Panel; Plant 3,Maintenance Recommendation
+RPT-1335,Energy audit suggests that Load Balancer L-55 is outdated. Replacement advised under IEC 60034 Standard guidelines.,Load Balancer L-55; Control Room; IEC 60034 Standard,Energy Efficiency
+RPT-1336,"Audit reveals Load Balancer L-55 has exceeded permissible limits as per Cooling Tower, located in Plant 3.",Load Balancer L-55; Cooling Tower; Plant 3,Energy Efficiency
+RPT-1337,The inspection of Boiler Unit B-07 at Unit 5 revealed non-compliance with Load Balancer L-55. Immediate action is recommended to avoid downtime.,Load Balancer L-55; Unit 5; Boiler Unit B-07,Energy Efficiency
+RPT-1338,Routine audit of Inverter I-90 confirms adherence to Main Control Panel. No corrective measures required.,Inverter I-90; Main Control Panel; Plant 3,System Upgrade
+RPT-1339,Energy audit suggests that Cooling Tower is outdated. Replacement advised under Transformer T-101 guidelines.,Transformer T-101; Sector 12; Cooling Tower,Energy Efficiency
+RPT-1340,Zone A showed efficiency losses in Load Balancer L-55. Suggested upgrade per IEC 60034 Standard.,Load Balancer L-55; Zone A; IEC 60034 Standard,System Upgrade
+RPT-1341,Boiler Unit B-07 at Substation Delta passed quality checks based on standards defined in Cooling Tower.,Cooling Tower; Boiler Unit B-07; Substation Delta,Regulatory Violation
+RPT-1342,Performance report of Cooling Tower in Control Room aligns with audit benchmarks from IEC 60034 Standard.,Control Room; Cooling Tower; IEC 60034 Standard,System Upgrade
+RPT-1343,Inverter I-90 at Plant 3 passed quality checks based on standards defined in ISO 50001.,Inverter I-90; ISO 50001; Plant 3,System Upgrade
+RPT-1344,The inspection of HVAC System at Plant 3 revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Transformer T-101; HVAC System; Plant 3,Maintenance Recommendation
+RPT-1345,The inspection of Boiler Unit B-07 at Unit 5 revealed non-compliance with Inverter I-90. Immediate action is recommended to avoid downtime.,Inverter I-90; Unit 5; Boiler Unit B-07,Regulatory Violation
+RPT-1346,ISO 50001 recommends immediate shutdown of Load Balancer L-55 at Unit 5 due to critical faults.,Load Balancer L-55; ISO 50001; Unit 5,Regulatory Violation
+RPT-1347,"Audit highlights safety issues in Load Balancer L-55, violating ISO 50001. Maintenance is due within 30 days at Substation Delta.",Load Balancer L-55; ISO 50001; Substation Delta,Maintenance Recommendation
+RPT-1348,Cooling Tower recommends immediate shutdown of Boiler Unit B-07 at Control Room due to critical faults.,Control Room; Cooling Tower; Boiler Unit B-07,Safety Compliance
+RPT-1349,Energy audit suggests that Load Balancer L-55 is outdated. Replacement advised under Load Balancer L-55 guidelines.,Load Balancer L-55; Sector 12,Regulatory Violation
+RPT-1350,The inspection of Inverter I-90 at Control Room revealed non-compliance with HVAC System. Immediate action is recommended to avoid downtime.,Inverter I-90; Control Room; HVAC System,System Upgrade
+RPT-1351,"Audit reveals Load Balancer L-55 has exceeded permissible limits as per ISO 50001, located in Substation Delta.",Load Balancer L-55; ISO 50001; Substation Delta,Regulatory Violation
+RPT-1352,Substation Delta showed efficiency losses in Load Balancer L-55. Suggested upgrade per HVAC System.,Load Balancer L-55; HVAC System; Substation Delta,Energy Efficiency
+RPT-1353,HVAC System recommends immediate shutdown of Boiler Unit B-07 at Sector 12 due to critical faults.,HVAC System; Sector 12; Boiler Unit B-07,Regulatory Violation
+RPT-1354,The inspection of HVAC System at Unit 5 revealed non-compliance with Load Balancer L-55. Immediate action is recommended to avoid downtime.,Load Balancer L-55; HVAC System; Unit 5,System Upgrade
+RPT-1355,IEC 60034 Standard at Zone A passed quality checks based on standards defined in Load Balancer L-55.,Load Balancer L-55; Zone A; IEC 60034 Standard,Energy Efficiency
+RPT-1356,ISO 50001 at Sector 12 passed quality checks based on standards defined in ISO 50001.,Sector 12; ISO 50001,Maintenance Recommendation
+RPT-1357,"Audit highlights safety issues in Cooling Tower, violating ISO 50001. Maintenance is due within 30 days at Zone A.",Zone A; Cooling Tower; ISO 50001,Regulatory Violation
+RPT-1358,Inspection report indicates Boiler Unit B-07 failed operational test at Substation Delta. Refer to Load Balancer L-55 for compliance.,Load Balancer L-55; Boiler Unit B-07; Substation Delta,Safety Compliance
+RPT-1359,"Audit reveals Power Station Alpha has exceeded permissible limits as per Boiler Unit B-07, located in Plant 3.",Power Station Alpha; Plant 3; Boiler Unit B-07,System Upgrade
+RPT-1360,Energy audit suggests that IEC 60034 Standard is outdated. Replacement advised under Inverter I-90 guidelines.,Inverter I-90; Unit 5; IEC 60034 Standard,System Upgrade
+RPT-1361,Performance report of Boiler Unit B-07 in Plant 3 aligns with audit benchmarks from HVAC System.,HVAC System; Plant 3; Boiler Unit B-07,System Upgrade
+RPT-1362,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under Inverter I-90 guidelines.,Transformer T-101; Inverter I-90; Zone A,Maintenance Recommendation
+RPT-1363,Routine audit of Load Balancer L-55 confirms adherence to IEC 60034 Standard. No corrective measures required.,Load Balancer L-55; Zone A; IEC 60034 Standard,Maintenance Recommendation
+RPT-1364,The inspection of Main Control Panel at Plant 3 revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Transformer T-101; Main Control Panel; Plant 3,Energy Efficiency
+RPT-1365,"Audit reveals HVAC System has exceeded permissible limits as per Power Station Alpha, located in Plant 3.",Power Station Alpha; HVAC System; Plant 3,Regulatory Violation
+RPT-1366,The inspection of HVAC System at Sector 12 revealed non-compliance with Power Station Alpha. Immediate action is recommended to avoid downtime.,Power Station Alpha; HVAC System; Sector 12,System Upgrade
+RPT-1367,Performance report of Inverter I-90 in Control Room aligns with audit benchmarks from Inverter I-90.,Inverter I-90; Control Room,System Upgrade
+RPT-1368,Plant 3 showed efficiency losses in Load Balancer L-55. Suggested upgrade per Cooling Tower.,Load Balancer L-55; Cooling Tower; Plant 3,Regulatory Violation
+RPT-1369,Routine audit of HVAC System confirms adherence to Cooling Tower. No corrective measures required.,Control Room; HVAC System; Cooling Tower,System Upgrade
+RPT-1370,Energy audit suggests that ISO 50001 is outdated. Replacement advised under Inverter I-90 guidelines.,Inverter I-90; Control Room; ISO 50001,Regulatory Violation
+RPT-1371,Control Room showed efficiency losses in Transformer T-101. Suggested upgrade per Power Station Alpha.,Transformer T-101; Control Room; Power Station Alpha,Safety Compliance
+RPT-1372,"Audit highlights safety issues in Inverter I-90, violating Inverter I-90. Maintenance is due within 30 days at Control Room.",Inverter I-90; Control Room,System Upgrade
+RPT-1373,Energy audit suggests that HVAC System is outdated. Replacement advised under Boiler Unit B-07 guidelines.,HVAC System; Zone A; Boiler Unit B-07,Regulatory Violation
+RPT-1374,The inspection of Cooling Tower at Sector 12 revealed non-compliance with Cooling Tower. Immediate action is recommended to avoid downtime.,Sector 12; Cooling Tower,System Upgrade
+RPT-1375,The inspection of IEC 60034 Standard at Substation Delta revealed non-compliance with Load Balancer L-55. Immediate action is recommended to avoid downtime.,Load Balancer L-55; Substation Delta; IEC 60034 Standard,Safety Compliance
+RPT-1376,Transformer T-101 at Unit 5 passed quality checks based on standards defined in Boiler Unit B-07.,Transformer T-101; Unit 5; Boiler Unit B-07,Safety Compliance
+RPT-1377,Plant 3 showed efficiency losses in Load Balancer L-55. Suggested upgrade per Inverter I-90.,Inverter I-90; Load Balancer L-55; Plant 3,Regulatory Violation
+RPT-1378,The inspection of Boiler Unit B-07 at Substation Delta revealed non-compliance with Main Control Panel. Immediate action is recommended to avoid downtime.,Main Control Panel; Boiler Unit B-07; Substation Delta,Regulatory Violation
+RPT-1379,The inspection of IEC 60034 Standard at Substation Delta revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Substation Delta; IEC 60034 Standard,Safety Compliance
+RPT-1380,"Audit highlights safety issues in ISO 50001, violating Boiler Unit B-07. Maintenance is due within 30 days at Unit 5.",Unit 5; ISO 50001; Boiler Unit B-07,System Upgrade
+RPT-1381,Energy audit suggests that Boiler Unit B-07 is outdated. Replacement advised under Main Control Panel guidelines.,Plant 3; Main Control Panel; Boiler Unit B-07,System Upgrade
+RPT-1382,Inspection report indicates Transformer T-101 failed operational test at Plant 3. Refer to Cooling Tower for compliance.,Transformer T-101; Cooling Tower; Plant 3,Regulatory Violation
+RPT-1383,Cooling Tower at Unit 5 passed quality checks based on standards defined in HVAC System.,Unit 5; HVAC System; Cooling Tower,Regulatory Violation
+RPT-1384,Routine audit of Inverter I-90 confirms adherence to Power Station Alpha. No corrective measures required.,Inverter I-90; Power Station Alpha; Sector 12,Energy Efficiency
+RPT-1385,"Audit highlights safety issues in Load Balancer L-55, violating Main Control Panel. Maintenance is due within 30 days at Sector 12.",Load Balancer L-55; Sector 12; Main Control Panel,Regulatory Violation
+RPT-1386,Routine audit of Boiler Unit B-07 confirms adherence to ISO 50001. No corrective measures required.,Unit 5; ISO 50001; Boiler Unit B-07,System Upgrade
+RPT-1387,Energy audit suggests that Cooling Tower is outdated. Replacement advised under Main Control Panel guidelines.,Zone A; Cooling Tower; Main Control Panel,System Upgrade
+RPT-1388,The inspection of HVAC System at Zone A revealed non-compliance with Inverter I-90. Immediate action is recommended to avoid downtime.,Inverter I-90; HVAC System; Zone A,Regulatory Violation
+RPT-1389,Energy audit suggests that Inverter I-90 is outdated. Replacement advised under HVAC System guidelines.,Inverter I-90; HVAC System; Zone A,Regulatory Violation
+RPT-1390,ISO 50001 at Sector 12 passed quality checks based on standards defined in Main Control Panel.,Sector 12; ISO 50001; Main Control Panel,Energy Efficiency
+RPT-1391,Performance report of Power Station Alpha in Control Room aligns with audit benchmarks from IEC 60034 Standard.,Power Station Alpha; Control Room; IEC 60034 Standard,Safety Compliance
+RPT-1392,Unit 5 showed efficiency losses in Main Control Panel. Suggested upgrade per ISO 50001.,Unit 5; ISO 50001; Main Control Panel,Regulatory Violation
+RPT-1393,HVAC System recommends immediate shutdown of Main Control Panel at Unit 5 due to critical faults.,Unit 5; HVAC System; Main Control Panel,Energy Efficiency
+RPT-1394,Routine audit of Boiler Unit B-07 confirms adherence to Power Station Alpha. No corrective measures required.,Power Station Alpha; Sector 12; Boiler Unit B-07,Energy Efficiency
+RPT-1395,ISO 50001 at Unit 5 passed quality checks based on standards defined in Main Control Panel.,Unit 5; ISO 50001; Main Control Panel,System Upgrade
+RPT-1396,Substation Delta showed efficiency losses in Boiler Unit B-07. Suggested upgrade per Transformer T-101.,Transformer T-101; Boiler Unit B-07; Substation Delta,System Upgrade
+RPT-1397,Routine audit of Cooling Tower confirms adherence to Inverter I-90. No corrective measures required.,Inverter I-90; Sector 12; Cooling Tower,Safety Compliance
+RPT-1398,Plant 3 showed efficiency losses in Transformer T-101. Suggested upgrade per IEC 60034 Standard.,Transformer T-101; Plant 3; IEC 60034 Standard,Regulatory Violation
+RPT-1399,Inspection report indicates Boiler Unit B-07 failed operational test at Control Room. Refer to Power Station Alpha for compliance.,Power Station Alpha; Control Room; Boiler Unit B-07,Energy Efficiency
+RPT-1400,Routine audit of Power Station Alpha confirms adherence to Transformer T-101. No corrective measures required.,Power Station Alpha; Unit 5; Transformer T-101,Safety Compliance
+RPT-1401,Cooling Tower at Control Room passed quality checks based on standards defined in HVAC System.,Control Room; HVAC System; Cooling Tower,Energy Efficiency
+RPT-1402,"Audit reveals ISO 50001 has exceeded permissible limits as per Boiler Unit B-07, located in Unit 5.",Unit 5; ISO 50001; Boiler Unit B-07,Maintenance Recommendation
+RPT-1403,Inverter I-90 at Substation Delta passed quality checks based on standards defined in Power Station Alpha.,Inverter I-90; Power Station Alpha; Substation Delta,Safety Compliance
+RPT-1404,IEC 60034 Standard recommends immediate shutdown of Power Station Alpha at Substation Delta due to critical faults.,Power Station Alpha; Substation Delta; IEC 60034 Standard,Maintenance Recommendation
+RPT-1405,"Audit highlights safety issues in Boiler Unit B-07, violating ISO 50001. Maintenance is due within 30 days at Substation Delta.",ISO 50001; Boiler Unit B-07; Substation Delta,System Upgrade
+RPT-1406,Inspection report indicates Boiler Unit B-07 failed operational test at Unit 5. Refer to Power Station Alpha for compliance.,Power Station Alpha; Unit 5; Boiler Unit B-07,Maintenance Recommendation
+RPT-1407,Routine audit of IEC 60034 Standard confirms adherence to IEC 60034 Standard. No corrective measures required.,Control Room; IEC 60034 Standard,System Upgrade
+RPT-1408,Inspection report indicates Main Control Panel failed operational test at Substation Delta. Refer to Power Station Alpha for compliance.,Power Station Alpha; Main Control Panel; Substation Delta,Maintenance Recommendation
+RPT-1409,"Audit reveals ISO 50001 has exceeded permissible limits as per Transformer T-101, located in Zone A.",Transformer T-101; Zone A; ISO 50001,System Upgrade
+RPT-1410,Energy audit suggests that Power Station Alpha is outdated. Replacement advised under Power Station Alpha guidelines.,Power Station Alpha; Substation Delta,System Upgrade
+RPT-1411,The inspection of IEC 60034 Standard at Substation Delta revealed non-compliance with Cooling Tower. Immediate action is recommended to avoid downtime.,Cooling Tower; Substation Delta; IEC 60034 Standard,System Upgrade
+RPT-1412,Power Station Alpha at Unit 5 passed quality checks based on standards defined in IEC 60034 Standard.,Power Station Alpha; Unit 5; IEC 60034 Standard,System Upgrade
+RPT-1413,Power Station Alpha recommends immediate shutdown of Transformer T-101 at Substation Delta due to critical faults.,Transformer T-101; Power Station Alpha; Substation Delta,Safety Compliance
+RPT-1414,The inspection of Boiler Unit B-07 at Sector 12 revealed non-compliance with Cooling Tower. Immediate action is recommended to avoid downtime.,Sector 12; Cooling Tower; Boiler Unit B-07,Maintenance Recommendation
+RPT-1415,Main Control Panel at Control Room passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Control Room; Main Control Panel,Energy Efficiency
+RPT-1416,Control Room showed efficiency losses in Power Station Alpha. Suggested upgrade per Boiler Unit B-07.,Power Station Alpha; Control Room; Boiler Unit B-07,Safety Compliance
+RPT-1417,ISO 50001 recommends immediate shutdown of IEC 60034 Standard at Plant 3 due to critical faults.,ISO 50001; Plant 3; IEC 60034 Standard,Energy Efficiency
+RPT-1418,Energy audit suggests that Load Balancer L-55 is outdated. Replacement advised under Transformer T-101 guidelines.,Transformer T-101; Load Balancer L-55; Control Room,Safety Compliance
+RPT-1419,Performance report of ISO 50001 in Plant 3 aligns with audit benchmarks from IEC 60034 Standard.,ISO 50001; Plant 3; IEC 60034 Standard,Maintenance Recommendation
+RPT-1420,Boiler Unit B-07 at Sector 12 passed quality checks based on standards defined in ISO 50001.,Sector 12; ISO 50001; Boiler Unit B-07,Energy Efficiency
+RPT-1421,HVAC System recommends immediate shutdown of Main Control Panel at Plant 3 due to critical faults.,HVAC System; Main Control Panel; Plant 3,Energy Efficiency
+RPT-1422,"Audit reveals Transformer T-101 has exceeded permissible limits as per Inverter I-90, located in Sector 12.",Transformer T-101; Inverter I-90; Sector 12,System Upgrade
+RPT-1423,HVAC System recommends immediate shutdown of Boiler Unit B-07 at Unit 5 due to critical faults.,Unit 5; HVAC System; Boiler Unit B-07,Maintenance Recommendation
+RPT-1424,Performance report of IEC 60034 Standard in Zone A aligns with audit benchmarks from Boiler Unit B-07.,Zone A; Boiler Unit B-07; IEC 60034 Standard,System Upgrade
+RPT-1425,"Audit reveals Transformer T-101 has exceeded permissible limits as per Main Control Panel, located in Sector 12.",Transformer T-101; Sector 12; Main Control Panel,System Upgrade
+RPT-1426,Performance report of IEC 60034 Standard in Sector 12 aligns with audit benchmarks from Main Control Panel.,Sector 12; Main Control Panel; IEC 60034 Standard,Regulatory Violation
+RPT-1427,Energy audit suggests that Main Control Panel is outdated. Replacement advised under Inverter I-90 guidelines.,Inverter I-90; Zone A; Main Control Panel,System Upgrade
+RPT-1428,Control Room showed efficiency losses in Power Station Alpha. Suggested upgrade per ISO 50001.,Power Station Alpha; Control Room; ISO 50001,Regulatory Violation
+RPT-1429,"Audit reveals Cooling Tower has exceeded permissible limits as per HVAC System, located in Zone A.",HVAC System; Cooling Tower; Zone A,Energy Efficiency
+RPT-1430,"Audit highlights safety issues in Main Control Panel, violating Power Station Alpha. Maintenance is due within 30 days at Substation Delta.",Power Station Alpha; Main Control Panel; Substation Delta,System Upgrade
+RPT-1431,Energy audit suggests that Power Station Alpha is outdated. Replacement advised under Boiler Unit B-07 guidelines.,Power Station Alpha; Control Room; Boiler Unit B-07,System Upgrade
+RPT-1432,The inspection of Main Control Panel at Sector 12 revealed non-compliance with HVAC System. Immediate action is recommended to avoid downtime.,HVAC System; Sector 12; Main Control Panel,System Upgrade
+RPT-1433,Zone A showed efficiency losses in ISO 50001. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Zone A; ISO 50001,Maintenance Recommendation
+RPT-1434,ISO 50001 recommends immediate shutdown of IEC 60034 Standard at Substation Delta due to critical faults.,ISO 50001; Substation Delta; IEC 60034 Standard,Maintenance Recommendation
+RPT-1435,Zone A showed efficiency losses in Transformer T-101. Suggested upgrade per Boiler Unit B-07.,Transformer T-101; Zone A; Boiler Unit B-07,Safety Compliance
+RPT-1436,"Audit highlights safety issues in Load Balancer L-55, violating Cooling Tower. Maintenance is due within 30 days at Plant 3.",Load Balancer L-55; Cooling Tower; Plant 3,Energy Efficiency
+RPT-1437,Substation Delta showed efficiency losses in Boiler Unit B-07. Suggested upgrade per ISO 50001.,ISO 50001; Boiler Unit B-07; Substation Delta,System Upgrade
+RPT-1438,"Audit reveals Cooling Tower has exceeded permissible limits as per Cooling Tower, located in Plant 3.",Cooling Tower; Plant 3,Maintenance Recommendation
+RPT-1439,The inspection of HVAC System at Plant 3 revealed non-compliance with HVAC System. Immediate action is recommended to avoid downtime.,HVAC System; Plant 3,Maintenance Recommendation
+RPT-1440,Performance report of Transformer T-101 in Substation Delta aligns with audit benchmarks from IEC 60034 Standard.,Transformer T-101; Substation Delta; IEC 60034 Standard,System Upgrade
+RPT-1441,Performance report of Inverter I-90 in Substation Delta aligns with audit benchmarks from Load Balancer L-55.,Inverter I-90; Load Balancer L-55; Substation Delta,Maintenance Recommendation
+RPT-1442,Performance report of Power Station Alpha in Sector 12 aligns with audit benchmarks from HVAC System.,Power Station Alpha; HVAC System; Sector 12,Maintenance Recommendation
+RPT-1443,Sector 12 showed efficiency losses in Cooling Tower. Suggested upgrade per IEC 60034 Standard.,Sector 12; Cooling Tower; IEC 60034 Standard,Energy Efficiency
+RPT-1444,Transformer T-101 at Plant 3 passed quality checks based on standards defined in Boiler Unit B-07.,Transformer T-101; Plant 3; Boiler Unit B-07,Energy Efficiency
+RPT-1445,Inverter I-90 recommends immediate shutdown of Power Station Alpha at Control Room due to critical faults.,Power Station Alpha; Inverter I-90; Control Room,Maintenance Recommendation
+RPT-1446,"Audit highlights safety issues in Power Station Alpha, violating IEC 60034 Standard. Maintenance is due within 30 days at Control Room.",Power Station Alpha; Control Room; IEC 60034 Standard,Maintenance Recommendation
+RPT-1447,Performance report of Transformer T-101 in Unit 5 aligns with audit benchmarks from HVAC System.,Transformer T-101; Unit 5; HVAC System,Regulatory Violation
+RPT-1448,Performance report of Main Control Panel in Substation Delta aligns with audit benchmarks from Cooling Tower.,Cooling Tower; Main Control Panel; Substation Delta,Safety Compliance
+RPT-1449,Sector 12 showed efficiency losses in Cooling Tower. Suggested upgrade per IEC 60034 Standard.,Sector 12; Cooling Tower; IEC 60034 Standard,Safety Compliance
+RPT-1450,Unit 5 showed efficiency losses in Power Station Alpha. Suggested upgrade per Load Balancer L-55.,Power Station Alpha; Load Balancer L-55; Unit 5,System Upgrade
+RPT-1451,Transformer T-101 recommends immediate shutdown of IEC 60034 Standard at Zone A due to critical faults.,Transformer T-101; Zone A; IEC 60034 Standard,Maintenance Recommendation
+RPT-1452,Zone A showed efficiency losses in HVAC System. Suggested upgrade per Cooling Tower.,HVAC System; Cooling Tower; Zone A,System Upgrade
+RPT-1453,Energy audit suggests that Load Balancer L-55 is outdated. Replacement advised under HVAC System guidelines.,Load Balancer L-55; HVAC System; Control Room,System Upgrade
+RPT-1454,Inspection report indicates ISO 50001 failed operational test at Substation Delta. Refer to IEC 60034 Standard for compliance.,ISO 50001; Substation Delta; IEC 60034 Standard,Safety Compliance
+RPT-1455,Routine audit of Power Station Alpha confirms adherence to Power Station Alpha. No corrective measures required.,Power Station Alpha; Sector 12,System Upgrade
+RPT-1456,Performance report of Power Station Alpha in Control Room aligns with audit benchmarks from Transformer T-101.,Power Station Alpha; Control Room; Transformer T-101,Regulatory Violation
+RPT-1457,Load Balancer L-55 at Plant 3 passed quality checks based on standards defined in Cooling Tower.,Load Balancer L-55; Cooling Tower; Plant 3,Maintenance Recommendation
+RPT-1458,HVAC System at Substation Delta passed quality checks based on standards defined in Cooling Tower.,HVAC System; Cooling Tower; Substation Delta,Energy Efficiency
+RPT-1459,The inspection of Inverter I-90 at Sector 12 revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Inverter I-90; Sector 12; Transformer T-101,Safety Compliance
+RPT-1460,HVAC System at Sector 12 passed quality checks based on standards defined in Load Balancer L-55.,Load Balancer L-55; HVAC System; Sector 12,System Upgrade
+RPT-1461,The inspection of IEC 60034 Standard at Sector 12 revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Transformer T-101; Sector 12; IEC 60034 Standard,Energy Efficiency
+RPT-1462,ISO 50001 at Plant 3 passed quality checks based on standards defined in Power Station Alpha.,Power Station Alpha; ISO 50001; Plant 3,Regulatory Violation
+RPT-1463,Energy audit suggests that Inverter I-90 is outdated. Replacement advised under IEC 60034 Standard guidelines.,Inverter I-90; Zone A; IEC 60034 Standard,Maintenance Recommendation
+RPT-1464,Power Station Alpha at Control Room passed quality checks based on standards defined in ISO 50001.,Power Station Alpha; Control Room; ISO 50001,Regulatory Violation
+RPT-1465,"Audit highlights safety issues in HVAC System, violating Load Balancer L-55. Maintenance is due within 30 days at Zone A.",Load Balancer L-55; HVAC System; Zone A,Regulatory Violation
+RPT-1466,"Audit highlights safety issues in Main Control Panel, violating ISO 50001. Maintenance is due within 30 days at Sector 12.",Sector 12; ISO 50001; Main Control Panel,Regulatory Violation
+RPT-1467,"Audit highlights safety issues in HVAC System, violating Cooling Tower. Maintenance is due within 30 days at Sector 12.",Sector 12; HVAC System; Cooling Tower,System Upgrade
+RPT-1468,Boiler Unit B-07 at Substation Delta passed quality checks based on standards defined in HVAC System.,HVAC System; Boiler Unit B-07; Substation Delta,Energy Efficiency
+RPT-1469,Inspection report indicates Cooling Tower failed operational test at Control Room. Refer to Boiler Unit B-07 for compliance.,Control Room; Cooling Tower; Boiler Unit B-07,Safety Compliance
+RPT-1470,Power Station Alpha recommends immediate shutdown of Boiler Unit B-07 at Control Room due to critical faults.,Power Station Alpha; Control Room; Boiler Unit B-07,Energy Efficiency
+RPT-1471,The inspection of Inverter I-90 at Substation Delta revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Inverter I-90; Transformer T-101; Substation Delta,Safety Compliance
+RPT-1472,Inspection report indicates Transformer T-101 failed operational test at Zone A. Refer to IEC 60034 Standard for compliance.,Transformer T-101; Zone A; IEC 60034 Standard,Maintenance Recommendation
+RPT-1473,IEC 60034 Standard recommends immediate shutdown of Transformer T-101 at Control Room due to critical faults.,Transformer T-101; Control Room; IEC 60034 Standard,System Upgrade
+RPT-1474,"Audit highlights safety issues in Power Station Alpha, violating Cooling Tower. Maintenance is due within 30 days at Sector 12.",Power Station Alpha; Sector 12; Cooling Tower,System Upgrade
+RPT-1475,Routine audit of Power Station Alpha confirms adherence to IEC 60034 Standard. No corrective measures required.,Power Station Alpha; Control Room; IEC 60034 Standard,Energy Efficiency
+RPT-1476,Plant 3 showed efficiency losses in Load Balancer L-55. Suggested upgrade per Main Control Panel.,Load Balancer L-55; Main Control Panel; Plant 3,Safety Compliance
+RPT-1477,HVAC System recommends immediate shutdown of Inverter I-90 at Unit 5 due to critical faults.,Inverter I-90; Unit 5; HVAC System,Regulatory Violation
+RPT-1478,"Audit reveals Cooling Tower has exceeded permissible limits as per Power Station Alpha, located in Substation Delta.",Power Station Alpha; Cooling Tower; Substation Delta,Maintenance Recommendation
+RPT-1479,Performance report of Load Balancer L-55 in Control Room aligns with audit benchmarks from HVAC System.,Load Balancer L-55; HVAC System; Control Room,Safety Compliance
+RPT-1480,"Audit highlights safety issues in Power Station Alpha, violating Load Balancer L-55. Maintenance is due within 30 days at Control Room.",Power Station Alpha; Load Balancer L-55; Control Room,Energy Efficiency
+RPT-1481,Sector 12 showed efficiency losses in IEC 60034 Standard. Suggested upgrade per Inverter I-90.,Inverter I-90; Sector 12; IEC 60034 Standard,Energy Efficiency
+RPT-1482,Load Balancer L-55 at Sector 12 passed quality checks based on standards defined in Load Balancer L-55.,Load Balancer L-55; Sector 12,Regulatory Violation
+RPT-1483,"Audit reveals Power Station Alpha has exceeded permissible limits as per Inverter I-90, located in Control Room.",Power Station Alpha; Inverter I-90; Control Room,Energy Efficiency
+RPT-1484,"Audit reveals Transformer T-101 has exceeded permissible limits as per HVAC System, located in Sector 12.",Transformer T-101; HVAC System; Sector 12,Energy Efficiency
+RPT-1485,Load Balancer L-55 at Control Room passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Load Balancer L-55; Control Room,Energy Efficiency
+RPT-1486,"Audit reveals Main Control Panel has exceeded permissible limits as per Inverter I-90, located in Zone A.",Inverter I-90; Zone A; Main Control Panel,Regulatory Violation
+RPT-1487,Routine audit of Load Balancer L-55 confirms adherence to Cooling Tower. No corrective measures required.,Load Balancer L-55; Cooling Tower; Control Room,Regulatory Violation
+RPT-1488,Routine audit of Power Station Alpha confirms adherence to Cooling Tower. No corrective measures required.,Power Station Alpha; Cooling Tower; Plant 3,Energy Efficiency
+RPT-1489,Performance report of Power Station Alpha in Control Room aligns with audit benchmarks from Inverter I-90.,Power Station Alpha; Inverter I-90; Control Room,Safety Compliance
+RPT-1490,Performance report of ISO 50001 in Plant 3 aligns with audit benchmarks from Cooling Tower.,ISO 50001; Plant 3; Cooling Tower,Maintenance Recommendation
+RPT-1491,"Audit highlights safety issues in Power Station Alpha, violating Power Station Alpha. Maintenance is due within 30 days at Unit 5.",Power Station Alpha; Unit 5,Energy Efficiency
+RPT-1492,"Audit highlights safety issues in Inverter I-90, violating Power Station Alpha. Maintenance is due within 30 days at Sector 12.",Inverter I-90; Power Station Alpha; Sector 12,Energy Efficiency
+RPT-1493,The inspection of Boiler Unit B-07 at Zone A revealed non-compliance with Power Station Alpha. Immediate action is recommended to avoid downtime.,Power Station Alpha; Zone A; Boiler Unit B-07,System Upgrade
+RPT-1494,"Audit reveals Cooling Tower has exceeded permissible limits as per Load Balancer L-55, located in Sector 12.",Load Balancer L-55; Sector 12; Cooling Tower,Energy Efficiency
+RPT-1495,Load Balancer L-55 recommends immediate shutdown of Inverter I-90 at Plant 3 due to critical faults.,Inverter I-90; Load Balancer L-55; Plant 3,Safety Compliance
+RPT-1496,Cooling Tower recommends immediate shutdown of Load Balancer L-55 at Zone A due to critical faults.,Load Balancer L-55; Zone A; Cooling Tower,System Upgrade
+RPT-1497,The inspection of Main Control Panel at Sector 12 revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Transformer T-101; Sector 12; Main Control Panel,Maintenance Recommendation
+RPT-1498,The inspection of IEC 60034 Standard at Substation Delta revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,ISO 50001; Substation Delta; IEC 60034 Standard,Regulatory Violation
+RPT-1499,Energy audit suggests that IEC 60034 Standard is outdated. Replacement advised under HVAC System guidelines.,HVAC System; Substation Delta; IEC 60034 Standard,Maintenance Recommendation
+RPT-1500,Routine audit of Boiler Unit B-07 confirms adherence to Power Station Alpha. No corrective measures required.,Power Station Alpha; Plant 3; Boiler Unit B-07,Maintenance Recommendation
+RPT-1501,"Audit highlights safety issues in Transformer T-101, violating Transformer T-101. Maintenance is due within 30 days at Unit 5.",Transformer T-101; Unit 5,System Upgrade
+RPT-1502,Load Balancer L-55 recommends immediate shutdown of Cooling Tower at Unit 5 due to critical faults.,Load Balancer L-55; Cooling Tower; Unit 5,Energy Efficiency
+RPT-1503,Cooling Tower at Substation Delta passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Cooling Tower; Substation Delta,Energy Efficiency
+RPT-1504,Inverter I-90 recommends immediate shutdown of Power Station Alpha at Substation Delta due to critical faults.,Power Station Alpha; Inverter I-90; Substation Delta,System Upgrade
+RPT-1505,Performance report of ISO 50001 in Zone A aligns with audit benchmarks from IEC 60034 Standard.,Zone A; ISO 50001; IEC 60034 Standard,Regulatory Violation
+RPT-1506,Performance report of Cooling Tower in Substation Delta aligns with audit benchmarks from Main Control Panel.,Cooling Tower; Main Control Panel; Substation Delta,Maintenance Recommendation
+RPT-1507,Routine audit of Main Control Panel confirms adherence to Inverter I-90. No corrective measures required.,Inverter I-90; Main Control Panel; Substation Delta,Regulatory Violation
+RPT-1508,Inspection report indicates IEC 60034 Standard failed operational test at Zone A. Refer to Power Station Alpha for compliance.,Power Station Alpha; Zone A; IEC 60034 Standard,Regulatory Violation
+RPT-1509,"Audit reveals HVAC System has exceeded permissible limits as per Inverter I-90, located in Unit 5.",Inverter I-90; Unit 5; HVAC System,Maintenance Recommendation
+RPT-1510,Energy audit suggests that Inverter I-90 is outdated. Replacement advised under Cooling Tower guidelines.,Inverter I-90; Zone A; Cooling Tower,Safety Compliance
+RPT-1511,"Audit highlights safety issues in Boiler Unit B-07, violating ISO 50001. Maintenance is due within 30 days at Sector 12.",Sector 12; ISO 50001; Boiler Unit B-07,Energy Efficiency
+RPT-1512,Routine audit of ISO 50001 confirms adherence to Load Balancer L-55. No corrective measures required.,Load Balancer L-55; ISO 50001; Unit 5,Regulatory Violation
+RPT-1513,Zone A showed efficiency losses in Main Control Panel. Suggested upgrade per Boiler Unit B-07.,Zone A; Main Control Panel; Boiler Unit B-07,Energy Efficiency
+RPT-1514,The inspection of Inverter I-90 at Plant 3 revealed non-compliance with Inverter I-90. Immediate action is recommended to avoid downtime.,Inverter I-90; Plant 3,System Upgrade
+RPT-1515,Power Station Alpha at Sector 12 passed quality checks based on standards defined in Cooling Tower.,Power Station Alpha; Sector 12; Cooling Tower,Regulatory Violation
+RPT-1516,Inspection report indicates Inverter I-90 failed operational test at Unit 5. Refer to Main Control Panel for compliance.,Inverter I-90; Unit 5; Main Control Panel,Energy Efficiency
+RPT-1517,Routine audit of Boiler Unit B-07 confirms adherence to Main Control Panel. No corrective measures required.,Control Room; Main Control Panel; Boiler Unit B-07,Regulatory Violation
+RPT-1518,Power Station Alpha recommends immediate shutdown of IEC 60034 Standard at Plant 3 due to critical faults.,Power Station Alpha; Plant 3; IEC 60034 Standard,Regulatory Violation
+RPT-1519,Routine audit of Transformer T-101 confirms adherence to Power Station Alpha. No corrective measures required.,Transformer T-101; Power Station Alpha; Sector 12,System Upgrade
+RPT-1520,Routine audit of HVAC System confirms adherence to Load Balancer L-55. No corrective measures required.,Load Balancer L-55; HVAC System; Unit 5,Energy Efficiency
+RPT-1521,Transformer T-101 recommends immediate shutdown of Transformer T-101 at Zone A due to critical faults.,Transformer T-101; Zone A,Safety Compliance
+RPT-1522,"Audit highlights safety issues in ISO 50001, violating Boiler Unit B-07. Maintenance is due within 30 days at Substation Delta.",ISO 50001; Boiler Unit B-07; Substation Delta,Safety Compliance
+RPT-1523,Inverter I-90 recommends immediate shutdown of Inverter I-90 at Plant 3 due to critical faults.,Inverter I-90; Plant 3,Maintenance Recommendation
+RPT-1524,Routine audit of Boiler Unit B-07 confirms adherence to HVAC System. No corrective measures required.,Control Room; HVAC System; Boiler Unit B-07,Safety Compliance
+RPT-1525,Performance report of ISO 50001 in Plant 3 aligns with audit benchmarks from Main Control Panel.,ISO 50001; Main Control Panel; Plant 3,System Upgrade
+RPT-1526,The inspection of ISO 50001 at Control Room revealed non-compliance with Cooling Tower. Immediate action is recommended to avoid downtime.,Control Room; ISO 50001; Cooling Tower,Safety Compliance
+RPT-1527,"Audit reveals Inverter I-90 has exceeded permissible limits as per Power Station Alpha, located in Substation Delta.",Inverter I-90; Power Station Alpha; Substation Delta,System Upgrade
+RPT-1528,"Audit highlights safety issues in Cooling Tower, violating IEC 60034 Standard. Maintenance is due within 30 days at Unit 5.",Unit 5; Cooling Tower; IEC 60034 Standard,System Upgrade
+RPT-1529,The inspection of Inverter I-90 at Zone A revealed non-compliance with Boiler Unit B-07. Immediate action is recommended to avoid downtime.,Inverter I-90; Zone A; Boiler Unit B-07,Regulatory Violation
+RPT-1530,Control Room showed efficiency losses in ISO 50001. Suggested upgrade per Transformer T-101.,Transformer T-101; Control Room; ISO 50001,Regulatory Violation
+RPT-1531,Routine audit of Load Balancer L-55 confirms adherence to HVAC System. No corrective measures required.,Load Balancer L-55; HVAC System; Control Room,Safety Compliance
+RPT-1532,ISO 50001 at Substation Delta passed quality checks based on standards defined in IEC 60034 Standard.,ISO 50001; Substation Delta; IEC 60034 Standard,Regulatory Violation
+RPT-1533,Performance report of Boiler Unit B-07 in Control Room aligns with audit benchmarks from Inverter I-90.,Inverter I-90; Control Room; Boiler Unit B-07,System Upgrade
+RPT-1534,Cooling Tower at Plant 3 passed quality checks based on standards defined in IEC 60034 Standard.,Cooling Tower; Plant 3; IEC 60034 Standard,System Upgrade
+RPT-1535,Inspection report indicates Power Station Alpha failed operational test at Plant 3. Refer to Boiler Unit B-07 for compliance.,Power Station Alpha; Plant 3; Boiler Unit B-07,Regulatory Violation
+RPT-1536,The inspection of Transformer T-101 at Zone A revealed non-compliance with Load Balancer L-55. Immediate action is recommended to avoid downtime.,Transformer T-101; Load Balancer L-55; Zone A,Regulatory Violation
+RPT-1537,Inspection report indicates Transformer T-101 failed operational test at Control Room. Refer to Cooling Tower for compliance.,Transformer T-101; Control Room; Cooling Tower,Regulatory Violation
+RPT-1538,ISO 50001 at Control Room passed quality checks based on standards defined in Load Balancer L-55.,Load Balancer L-55; ISO 50001; Control Room,Safety Compliance
+RPT-1539,"Audit reveals Cooling Tower has exceeded permissible limits as per Transformer T-101, located in Substation Delta.",Transformer T-101; Cooling Tower; Substation Delta,Safety Compliance
+RPT-1540,ISO 50001 at Plant 3 passed quality checks based on standards defined in Main Control Panel.,ISO 50001; Main Control Panel; Plant 3,Energy Efficiency
+RPT-1541,Performance report of Power Station Alpha in Zone A aligns with audit benchmarks from Inverter I-90.,Power Station Alpha; Inverter I-90; Zone A,Regulatory Violation
+RPT-1542,Performance report of Transformer T-101 in Sector 12 aligns with audit benchmarks from Inverter I-90.,Transformer T-101; Inverter I-90; Sector 12,Energy Efficiency
+RPT-1543,The inspection of Power Station Alpha at Unit 5 revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Power Station Alpha; Unit 5; ISO 50001,Safety Compliance
+RPT-1544,Energy audit suggests that Main Control Panel is outdated. Replacement advised under ISO 50001 guidelines.,ISO 50001; Main Control Panel; Substation Delta,Safety Compliance
+RPT-1545,Boiler Unit B-07 at Zone A passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Zone A; Boiler Unit B-07,Energy Efficiency
+RPT-1546,Energy audit suggests that Boiler Unit B-07 is outdated. Replacement advised under Boiler Unit B-07 guidelines.,Sector 12; Boiler Unit B-07,System Upgrade
+RPT-1547,"Audit reveals Transformer T-101 has exceeded permissible limits as per Inverter I-90, located in Substation Delta.",Transformer T-101; Inverter I-90; Substation Delta,Safety Compliance
+RPT-1548,Inspection report indicates HVAC System failed operational test at Zone A. Refer to HVAC System for compliance.,HVAC System; Zone A,Maintenance Recommendation
+RPT-1549,Inverter I-90 at Unit 5 passed quality checks based on standards defined in HVAC System.,Inverter I-90; Unit 5; HVAC System,Regulatory Violation
+RPT-1550,Energy audit suggests that ISO 50001 is outdated. Replacement advised under Transformer T-101 guidelines.,Transformer T-101; Unit 5; ISO 50001,Maintenance Recommendation
+RPT-1551,Power Station Alpha at Control Room passed quality checks based on standards defined in Transformer T-101.,Power Station Alpha; Control Room; Transformer T-101,Maintenance Recommendation
+RPT-1552,"Audit highlights safety issues in Inverter I-90, violating ISO 50001. Maintenance is due within 30 days at Substation Delta.",Inverter I-90; ISO 50001; Substation Delta,Energy Efficiency
+RPT-1553,Boiler Unit B-07 at Control Room passed quality checks based on standards defined in HVAC System.,Control Room; HVAC System; Boiler Unit B-07,Energy Efficiency
+RPT-1554,The inspection of Power Station Alpha at Substation Delta revealed non-compliance with HVAC System. Immediate action is recommended to avoid downtime.,Power Station Alpha; HVAC System; Substation Delta,Regulatory Violation
+RPT-1555,Cooling Tower recommends immediate shutdown of Main Control Panel at Unit 5 due to critical faults.,Unit 5; Cooling Tower; Main Control Panel,Energy Efficiency
+RPT-1556,HVAC System recommends immediate shutdown of Power Station Alpha at Plant 3 due to critical faults.,Power Station Alpha; HVAC System; Plant 3,Safety Compliance
+RPT-1557,"Audit reveals ISO 50001 has exceeded permissible limits as per HVAC System, located in Plant 3.",HVAC System; ISO 50001; Plant 3,Energy Efficiency
+RPT-1558,The inspection of ISO 50001 at Plant 3 revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,ISO 50001; Plant 3; IEC 60034 Standard,Regulatory Violation
+RPT-1559,"Audit reveals ISO 50001 has exceeded permissible limits as per Load Balancer L-55, located in Substation Delta.",Load Balancer L-55; ISO 50001; Substation Delta,Maintenance Recommendation
+RPT-1560,The inspection of ISO 50001 at Sector 12 revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Sector 12; ISO 50001,Regulatory Violation
+RPT-1561,Power Station Alpha recommends immediate shutdown of Cooling Tower at Zone A due to critical faults.,Power Station Alpha; Zone A; Cooling Tower,Regulatory Violation
+RPT-1562,"Audit highlights safety issues in Boiler Unit B-07, violating Power Station Alpha. Maintenance is due within 30 days at Control Room.",Power Station Alpha; Control Room; Boiler Unit B-07,Energy Efficiency
+RPT-1563,"Audit reveals Inverter I-90 has exceeded permissible limits as per Power Station Alpha, located in Zone A.",Inverter I-90; Power Station Alpha; Zone A,Maintenance Recommendation
+RPT-1564,Performance report of Boiler Unit B-07 in Substation Delta aligns with audit benchmarks from Load Balancer L-55.,Load Balancer L-55; Boiler Unit B-07; Substation Delta,System Upgrade
+RPT-1565,Zone A showed efficiency losses in Boiler Unit B-07. Suggested upgrade per Boiler Unit B-07.,Zone A; Boiler Unit B-07,Energy Efficiency
+RPT-1566,Inspection report indicates Boiler Unit B-07 failed operational test at Substation Delta. Refer to IEC 60034 Standard for compliance.,Substation Delta; Boiler Unit B-07; IEC 60034 Standard,Regulatory Violation
+RPT-1567,"Audit reveals Inverter I-90 has exceeded permissible limits as per ISO 50001, located in Zone A.",Inverter I-90; Zone A; ISO 50001,Safety Compliance
+RPT-1568,The inspection of IEC 60034 Standard at Control Room revealed non-compliance with Power Station Alpha. Immediate action is recommended to avoid downtime.,Power Station Alpha; Control Room; IEC 60034 Standard,Energy Efficiency
+RPT-1569,Energy audit suggests that HVAC System is outdated. Replacement advised under ISO 50001 guidelines.,HVAC System; ISO 50001; Substation Delta,Safety Compliance
+RPT-1570,Performance report of Boiler Unit B-07 in Unit 5 aligns with audit benchmarks from Main Control Panel.,Unit 5; Main Control Panel; Boiler Unit B-07,Safety Compliance
+RPT-1571,Power Station Alpha recommends immediate shutdown of Load Balancer L-55 at Unit 5 due to critical faults.,Power Station Alpha; Load Balancer L-55; Unit 5,Regulatory Violation
+RPT-1572,"Audit highlights safety issues in Inverter I-90, violating Transformer T-101. Maintenance is due within 30 days at Unit 5.",Inverter I-90; Unit 5; Transformer T-101,Safety Compliance
+RPT-1573,Routine audit of Load Balancer L-55 confirms adherence to IEC 60034 Standard. No corrective measures required.,Load Balancer L-55; Unit 5; IEC 60034 Standard,Maintenance Recommendation
+RPT-1574,Performance report of Transformer T-101 in Zone A aligns with audit benchmarks from Transformer T-101.,Transformer T-101; Zone A,Regulatory Violation
+RPT-1575,"Audit reveals Transformer T-101 has exceeded permissible limits as per Inverter I-90, located in Zone A.",Transformer T-101; Inverter I-90; Zone A,Regulatory Violation
+RPT-1576,The inspection of IEC 60034 Standard at Control Room revealed non-compliance with Load Balancer L-55. Immediate action is recommended to avoid downtime.,Load Balancer L-55; Control Room; IEC 60034 Standard,Safety Compliance
+RPT-1577,Inverter I-90 at Sector 12 passed quality checks based on standards defined in ISO 50001.,Inverter I-90; Sector 12; ISO 50001,System Upgrade
+RPT-1578,"Audit highlights safety issues in Main Control Panel, violating Boiler Unit B-07. Maintenance is due within 30 days at Zone A.",Zone A; Main Control Panel; Boiler Unit B-07,Maintenance Recommendation
+RPT-1579,Inspection report indicates Inverter I-90 failed operational test at Zone A. Refer to IEC 60034 Standard for compliance.,Inverter I-90; Zone A; IEC 60034 Standard,System Upgrade
+RPT-1580,Performance report of Transformer T-101 in Unit 5 aligns with audit benchmarks from Boiler Unit B-07.,Transformer T-101; Unit 5; Boiler Unit B-07,Maintenance Recommendation
+RPT-1581,Inspection report indicates Cooling Tower failed operational test at Unit 5. Refer to ISO 50001 for compliance.,Unit 5; Cooling Tower; ISO 50001,Maintenance Recommendation
+RPT-1582,Performance report of Boiler Unit B-07 in Zone A aligns with audit benchmarks from ISO 50001.,Zone A; ISO 50001; Boiler Unit B-07,Regulatory Violation
+RPT-1583,Zone A showed efficiency losses in Main Control Panel. Suggested upgrade per HVAC System.,Zone A; HVAC System; Main Control Panel,Regulatory Violation
+RPT-1584,Substation Delta showed efficiency losses in HVAC System. Suggested upgrade per Cooling Tower.,HVAC System; Cooling Tower; Substation Delta,Regulatory Violation
+RPT-1585,ISO 50001 at Control Room passed quality checks based on standards defined in Boiler Unit B-07.,Control Room; ISO 50001; Boiler Unit B-07,Energy Efficiency
+RPT-1586,Performance report of HVAC System in Control Room aligns with audit benchmarks from Load Balancer L-55.,Load Balancer L-55; HVAC System; Control Room,Maintenance Recommendation
+RPT-1587,"Audit reveals Load Balancer L-55 has exceeded permissible limits as per HVAC System, located in Substation Delta.",Load Balancer L-55; HVAC System; Substation Delta,Energy Efficiency
+RPT-1588,Inspection report indicates Main Control Panel failed operational test at Unit 5. Refer to IEC 60034 Standard for compliance.,Unit 5; Main Control Panel; IEC 60034 Standard,Energy Efficiency
+RPT-1589,Performance report of Power Station Alpha in Plant 3 aligns with audit benchmarks from ISO 50001.,Power Station Alpha; ISO 50001; Plant 3,Energy Efficiency
+RPT-1590,Power Station Alpha at Zone A passed quality checks based on standards defined in Inverter I-90.,Power Station Alpha; Inverter I-90; Zone A,System Upgrade
+RPT-1591,"Audit reveals Load Balancer L-55 has exceeded permissible limits as per ISO 50001, located in Zone A.",Load Balancer L-55; Zone A; ISO 50001,Regulatory Violation
+RPT-1592,The inspection of Main Control Panel at Zone A revealed non-compliance with Load Balancer L-55. Immediate action is recommended to avoid downtime.,Load Balancer L-55; Zone A; Main Control Panel,Energy Efficiency
+RPT-1593,"Audit highlights safety issues in ISO 50001, violating ISO 50001. Maintenance is due within 30 days at Unit 5.",Unit 5; ISO 50001,System Upgrade
+RPT-1594,Inspection report indicates ISO 50001 failed operational test at Substation Delta. Refer to Cooling Tower for compliance.,ISO 50001; Cooling Tower; Substation Delta,System Upgrade
+RPT-1595,Routine audit of Load Balancer L-55 confirms adherence to Load Balancer L-55. No corrective measures required.,Load Balancer L-55; Unit 5,Maintenance Recommendation
+RPT-1596,Transformer T-101 at Control Room passed quality checks based on standards defined in Cooling Tower.,Transformer T-101; Control Room; Cooling Tower,Regulatory Violation
+RPT-1597,"Audit highlights safety issues in Load Balancer L-55, violating Load Balancer L-55. Maintenance is due within 30 days at Zone A.",Load Balancer L-55; Zone A,Maintenance Recommendation
+RPT-1598,Control Room showed efficiency losses in IEC 60034 Standard. Suggested upgrade per Transformer T-101.,Transformer T-101; Control Room; IEC 60034 Standard,Regulatory Violation
+RPT-1599,Load Balancer L-55 at Sector 12 passed quality checks based on standards defined in Main Control Panel.,Load Balancer L-55; Sector 12; Main Control Panel,System Upgrade
+RPT-1600,"Audit reveals ISO 50001 has exceeded permissible limits as per Cooling Tower, located in Substation Delta.",ISO 50001; Cooling Tower; Substation Delta,Maintenance Recommendation
+RPT-1601,IEC 60034 Standard recommends immediate shutdown of ISO 50001 at Plant 3 due to critical faults.,ISO 50001; Plant 3; IEC 60034 Standard,Safety Compliance
+RPT-1602,Performance report of Load Balancer L-55 in Control Room aligns with audit benchmarks from IEC 60034 Standard.,Load Balancer L-55; Control Room; IEC 60034 Standard,Regulatory Violation
+RPT-1603,Cooling Tower recommends immediate shutdown of ISO 50001 at Unit 5 due to critical faults.,Unit 5; ISO 50001; Cooling Tower,System Upgrade
+RPT-1604,Performance report of IEC 60034 Standard in Substation Delta aligns with audit benchmarks from Load Balancer L-55.,Load Balancer L-55; Substation Delta; IEC 60034 Standard,Regulatory Violation
+RPT-1605,"Audit reveals Boiler Unit B-07 has exceeded permissible limits as per ISO 50001, located in Control Room.",Control Room; ISO 50001; Boiler Unit B-07,Maintenance Recommendation
+RPT-1606,"Audit highlights safety issues in Main Control Panel, violating Load Balancer L-55. Maintenance is due within 30 days at Unit 5.",Load Balancer L-55; Unit 5; Main Control Panel,Energy Efficiency
+RPT-1607,Control Room showed efficiency losses in Transformer T-101. Suggested upgrade per Power Station Alpha.,Transformer T-101; Control Room; Power Station Alpha,Maintenance Recommendation
+RPT-1608,Performance report of Cooling Tower in Zone A aligns with audit benchmarks from Load Balancer L-55.,Load Balancer L-55; Zone A; Cooling Tower,Maintenance Recommendation
+RPT-1609,IEC 60034 Standard at Sector 12 passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Sector 12; IEC 60034 Standard,Safety Compliance
+RPT-1610,Inspection report indicates Load Balancer L-55 failed operational test at Control Room. Refer to Load Balancer L-55 for compliance.,Load Balancer L-55; Control Room,Maintenance Recommendation
+RPT-1611,"Audit reveals Main Control Panel has exceeded permissible limits as per Transformer T-101, located in Plant 3.",Transformer T-101; Main Control Panel; Plant 3,Maintenance Recommendation
+RPT-1612,Performance report of Main Control Panel in Plant 3 aligns with audit benchmarks from Transformer T-101.,Transformer T-101; Main Control Panel; Plant 3,Regulatory Violation
+RPT-1613,IEC 60034 Standard at Plant 3 passed quality checks based on standards defined in Cooling Tower.,Cooling Tower; Plant 3; IEC 60034 Standard,Regulatory Violation
+RPT-1614,Substation Delta showed efficiency losses in Cooling Tower. Suggested upgrade per Boiler Unit B-07.,Cooling Tower; Boiler Unit B-07; Substation Delta,Energy Efficiency
+RPT-1615,The inspection of HVAC System at Sector 12 revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Transformer T-101; HVAC System; Sector 12,System Upgrade
+RPT-1616,The inspection of IEC 60034 Standard at Substation Delta revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Substation Delta; IEC 60034 Standard,Maintenance Recommendation
+RPT-1617,Inspection report indicates Main Control Panel failed operational test at Control Room. Refer to Load Balancer L-55 for compliance.,Load Balancer L-55; Main Control Panel; Control Room,Energy Efficiency
+RPT-1618,Inspection report indicates Cooling Tower failed operational test at Plant 3. Refer to Inverter I-90 for compliance.,Inverter I-90; Cooling Tower; Plant 3,System Upgrade
+RPT-1619,"Audit reveals Transformer T-101 has exceeded permissible limits as per Transformer T-101, located in Sector 12.",Transformer T-101; Sector 12,Energy Efficiency
+RPT-1620,Inverter I-90 at Unit 5 passed quality checks based on standards defined in Boiler Unit B-07.,Inverter I-90; Unit 5; Boiler Unit B-07,Maintenance Recommendation
+RPT-1621,Inverter I-90 at Sector 12 passed quality checks based on standards defined in Load Balancer L-55.,Inverter I-90; Load Balancer L-55; Sector 12,System Upgrade
+RPT-1622,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under IEC 60034 Standard guidelines.,Transformer T-101; Control Room; IEC 60034 Standard,System Upgrade
+RPT-1623,Routine audit of Cooling Tower confirms adherence to Transformer T-101. No corrective measures required.,Transformer T-101; Control Room; Cooling Tower,Regulatory Violation
+RPT-1624,"Audit highlights safety issues in Main Control Panel, violating Inverter I-90. Maintenance is due within 30 days at Sector 12.",Inverter I-90; Sector 12; Main Control Panel,Regulatory Violation
+RPT-1625,The inspection of Transformer T-101 at Control Room revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Transformer T-101; Control Room,Maintenance Recommendation
+RPT-1626,Zone A showed efficiency losses in Main Control Panel. Suggested upgrade per IEC 60034 Standard.,Zone A; Main Control Panel; IEC 60034 Standard,Maintenance Recommendation
+RPT-1627,Substation Delta showed efficiency losses in Main Control Panel. Suggested upgrade per Transformer T-101.,Transformer T-101; Main Control Panel; Substation Delta,Regulatory Violation
+RPT-1628,"Audit highlights safety issues in Load Balancer L-55, violating Power Station Alpha. Maintenance is due within 30 days at Substation Delta.",Power Station Alpha; Load Balancer L-55; Substation Delta,Safety Compliance
+RPT-1629,Routine audit of ISO 50001 confirms adherence to Cooling Tower. No corrective measures required.,Control Room; ISO 50001; Cooling Tower,System Upgrade
+RPT-1630,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under ISO 50001 guidelines.,Transformer T-101; ISO 50001; Plant 3,Energy Efficiency
+RPT-1631,Energy audit suggests that IEC 60034 Standard is outdated. Replacement advised under Main Control Panel guidelines.,Zone A; Main Control Panel; IEC 60034 Standard,Safety Compliance
+RPT-1632,ISO 50001 at Sector 12 passed quality checks based on standards defined in Main Control Panel.,Sector 12; ISO 50001; Main Control Panel,Maintenance Recommendation
+RPT-1633,The inspection of Inverter I-90 at Zone A revealed non-compliance with Boiler Unit B-07. Immediate action is recommended to avoid downtime.,Inverter I-90; Zone A; Boiler Unit B-07,System Upgrade
+RPT-1634,Energy audit suggests that Power Station Alpha is outdated. Replacement advised under ISO 50001 guidelines.,Power Station Alpha; ISO 50001; Plant 3,Energy Efficiency
+RPT-1635,Boiler Unit B-07 at Plant 3 passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Plant 3; Boiler Unit B-07,Safety Compliance
+RPT-1636,Performance report of IEC 60034 Standard in Zone A aligns with audit benchmarks from Load Balancer L-55.,Load Balancer L-55; Zone A; IEC 60034 Standard,Maintenance Recommendation
+RPT-1637,Inspection report indicates Power Station Alpha failed operational test at Plant 3. Refer to Load Balancer L-55 for compliance.,Power Station Alpha; Load Balancer L-55; Plant 3,Maintenance Recommendation
+RPT-1638,Sector 12 showed efficiency losses in Power Station Alpha. Suggested upgrade per Transformer T-101.,Power Station Alpha; Sector 12; Transformer T-101,Regulatory Violation
+RPT-1639,ISO 50001 recommends immediate shutdown of Inverter I-90 at Unit 5 due to critical faults.,Inverter I-90; Unit 5; ISO 50001,Regulatory Violation
+RPT-1640,Power Station Alpha recommends immediate shutdown of Boiler Unit B-07 at Substation Delta due to critical faults.,Power Station Alpha; Boiler Unit B-07; Substation Delta,System Upgrade
+RPT-1641,The inspection of Boiler Unit B-07 at Unit 5 revealed non-compliance with Cooling Tower. Immediate action is recommended to avoid downtime.,Unit 5; Cooling Tower; Boiler Unit B-07,Safety Compliance
+RPT-1642,Performance report of Boiler Unit B-07 in Unit 5 aligns with audit benchmarks from IEC 60034 Standard.,Unit 5; Boiler Unit B-07; IEC 60034 Standard,Maintenance Recommendation
+RPT-1643,Load Balancer L-55 at Zone A passed quality checks based on standards defined in Main Control Panel.,Load Balancer L-55; Zone A; Main Control Panel,Energy Efficiency
+RPT-1644,Inverter I-90 at Zone A passed quality checks based on standards defined in Power Station Alpha.,Inverter I-90; Power Station Alpha; Zone A,Safety Compliance
+RPT-1645,Routine audit of Inverter I-90 confirms adherence to Transformer T-101. No corrective measures required.,Inverter I-90; Zone A; Transformer T-101,System Upgrade
+RPT-1646,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under Power Station Alpha guidelines.,Transformer T-101; Power Station Alpha; Plant 3,System Upgrade
+RPT-1647,"Audit highlights safety issues in Inverter I-90, violating ISO 50001. Maintenance is due within 30 days at Unit 5.",Inverter I-90; Unit 5; ISO 50001,Safety Compliance
+RPT-1648,Energy audit suggests that Power Station Alpha is outdated. Replacement advised under Boiler Unit B-07 guidelines.,Power Station Alpha; Zone A; Boiler Unit B-07,Energy Efficiency
+RPT-1649,Zone A showed efficiency losses in IEC 60034 Standard. Suggested upgrade per ISO 50001.,Zone A; ISO 50001; IEC 60034 Standard,Energy Efficiency
+RPT-1650,IEC 60034 Standard at Sector 12 passed quality checks based on standards defined in HVAC System.,HVAC System; Sector 12; IEC 60034 Standard,Regulatory Violation
+RPT-1651,IEC 60034 Standard at Plant 3 passed quality checks based on standards defined in HVAC System.,HVAC System; Plant 3; IEC 60034 Standard,Safety Compliance
+RPT-1652,Transformer T-101 at Sector 12 passed quality checks based on standards defined in HVAC System.,Transformer T-101; HVAC System; Sector 12,Regulatory Violation
+RPT-1653,The inspection of ISO 50001 at Plant 3 revealed non-compliance with Boiler Unit B-07. Immediate action is recommended to avoid downtime.,ISO 50001; Plant 3; Boiler Unit B-07,Safety Compliance
+RPT-1654,IEC 60034 Standard recommends immediate shutdown of Load Balancer L-55 at Zone A due to critical faults.,Load Balancer L-55; Zone A; IEC 60034 Standard,Energy Efficiency
+RPT-1655,ISO 50001 at Control Room passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Control Room; ISO 50001,Maintenance Recommendation
+RPT-1656,Inspection report indicates Transformer T-101 failed operational test at Plant 3. Refer to Boiler Unit B-07 for compliance.,Transformer T-101; Plant 3; Boiler Unit B-07,Maintenance Recommendation
+RPT-1657,Inspection report indicates Power Station Alpha failed operational test at Zone A. Refer to IEC 60034 Standard for compliance.,Power Station Alpha; Zone A; IEC 60034 Standard,System Upgrade
+RPT-1658,"Audit reveals IEC 60034 Standard has exceeded permissible limits as per Transformer T-101, located in Unit 5.",Transformer T-101; Unit 5; IEC 60034 Standard,Safety Compliance
+RPT-1659,"Audit reveals IEC 60034 Standard has exceeded permissible limits as per Boiler Unit B-07, located in Unit 5.",Unit 5; Boiler Unit B-07; IEC 60034 Standard,Safety Compliance
+RPT-1660,Inspection report indicates Inverter I-90 failed operational test at Zone A. Refer to Inverter I-90 for compliance.,Inverter I-90; Zone A,Safety Compliance
+RPT-1661,"Audit reveals IEC 60034 Standard has exceeded permissible limits as per IEC 60034 Standard, located in Sector 12.",Sector 12; IEC 60034 Standard,Energy Efficiency
+RPT-1662,The inspection of HVAC System at Control Room revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Control Room; HVAC System; ISO 50001,Energy Efficiency
+RPT-1663,Cooling Tower recommends immediate shutdown of ISO 50001 at Substation Delta due to critical faults.,ISO 50001; Cooling Tower; Substation Delta,Regulatory Violation
+RPT-1664,"Audit reveals Transformer T-101 has exceeded permissible limits as per IEC 60034 Standard, located in Unit 5.",Transformer T-101; Unit 5; IEC 60034 Standard,Safety Compliance
+RPT-1665,The inspection of Inverter I-90 at Unit 5 revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Inverter I-90; Unit 5; ISO 50001,Energy Efficiency
+RPT-1666,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under Transformer T-101 guidelines.,Transformer T-101; Plant 3,Maintenance Recommendation
+RPT-1667,Performance report of HVAC System in Control Room aligns with audit benchmarks from ISO 50001.,Control Room; HVAC System; ISO 50001,Safety Compliance
+RPT-1668,The inspection of Power Station Alpha at Unit 5 revealed non-compliance with Power Station Alpha. Immediate action is recommended to avoid downtime.,Power Station Alpha; Unit 5,Energy Efficiency
+RPT-1669,Routine audit of IEC 60034 Standard confirms adherence to Transformer T-101. No corrective measures required.,Transformer T-101; Substation Delta; IEC 60034 Standard,System Upgrade
+RPT-1670,The inspection of Load Balancer L-55 at Unit 5 revealed non-compliance with Boiler Unit B-07. Immediate action is recommended to avoid downtime.,Load Balancer L-55; Unit 5; Boiler Unit B-07,Maintenance Recommendation
+RPT-1671,"Audit highlights safety issues in Inverter I-90, violating Main Control Panel. Maintenance is due within 30 days at Unit 5.",Inverter I-90; Unit 5; Main Control Panel,Safety Compliance
+RPT-1672,"Audit highlights safety issues in ISO 50001, violating Load Balancer L-55. Maintenance is due within 30 days at Sector 12.",Load Balancer L-55; Sector 12; ISO 50001,Safety Compliance
+RPT-1673,"Audit highlights safety issues in Main Control Panel, violating Cooling Tower. Maintenance is due within 30 days at Substation Delta.",Cooling Tower; Main Control Panel; Substation Delta,Safety Compliance
+RPT-1674,"Audit reveals ISO 50001 has exceeded permissible limits as per Main Control Panel, located in Substation Delta.",ISO 50001; Main Control Panel; Substation Delta,Safety Compliance
+RPT-1675,Cooling Tower at Zone A passed quality checks based on standards defined in Load Balancer L-55.,Load Balancer L-55; Zone A; Cooling Tower,System Upgrade
+RPT-1676,Energy audit suggests that Boiler Unit B-07 is outdated. Replacement advised under HVAC System guidelines.,Control Room; HVAC System; Boiler Unit B-07,System Upgrade
+RPT-1677,"Audit reveals ISO 50001 has exceeded permissible limits as per Boiler Unit B-07, located in Plant 3.",ISO 50001; Plant 3; Boiler Unit B-07,Energy Efficiency
+RPT-1678,"Audit reveals ISO 50001 has exceeded permissible limits as per Load Balancer L-55, located in Plant 3.",Load Balancer L-55; ISO 50001; Plant 3,Maintenance Recommendation
+RPT-1679,Boiler Unit B-07 recommends immediate shutdown of Cooling Tower at Substation Delta due to critical faults.,Cooling Tower; Boiler Unit B-07; Substation Delta,Regulatory Violation
+RPT-1680,IEC 60034 Standard recommends immediate shutdown of Power Station Alpha at Sector 12 due to critical faults.,Power Station Alpha; Sector 12; IEC 60034 Standard,Regulatory Violation
+RPT-1681,ISO 50001 at Control Room passed quality checks based on standards defined in ISO 50001.,Control Room; ISO 50001,Safety Compliance
+RPT-1682,Substation Delta showed efficiency losses in Transformer T-101. Suggested upgrade per Cooling Tower.,Transformer T-101; Cooling Tower; Substation Delta,System Upgrade
+RPT-1683,Cooling Tower at Plant 3 passed quality checks based on standards defined in Load Balancer L-55.,Load Balancer L-55; Cooling Tower; Plant 3,System Upgrade
+RPT-1684,Unit 5 showed efficiency losses in Cooling Tower. Suggested upgrade per Cooling Tower.,Unit 5; Cooling Tower,Regulatory Violation
+RPT-1685,Inverter I-90 recommends immediate shutdown of ISO 50001 at Unit 5 due to critical faults.,Inverter I-90; Unit 5; ISO 50001,Energy Efficiency
+RPT-1686,"Audit reveals IEC 60034 Standard has exceeded permissible limits as per ISO 50001, located in Plant 3.",ISO 50001; Plant 3; IEC 60034 Standard,Regulatory Violation
+RPT-1687,Inspection report indicates Boiler Unit B-07 failed operational test at Unit 5. Refer to Transformer T-101 for compliance.,Transformer T-101; Unit 5; Boiler Unit B-07,Maintenance Recommendation
+RPT-1688,Sector 12 showed efficiency losses in HVAC System. Suggested upgrade per Inverter I-90.,Inverter I-90; HVAC System; Sector 12,Energy Efficiency
+RPT-1689,Performance report of Main Control Panel in Plant 3 aligns with audit benchmarks from Transformer T-101.,Transformer T-101; Main Control Panel; Plant 3,System Upgrade
+RPT-1690,HVAC System at Plant 3 passed quality checks based on standards defined in Inverter I-90.,Inverter I-90; HVAC System; Plant 3,System Upgrade
+RPT-1691,"Audit reveals Main Control Panel has exceeded permissible limits as per Cooling Tower, located in Substation Delta.",Cooling Tower; Main Control Panel; Substation Delta,Energy Efficiency
+RPT-1692,Inspection report indicates ISO 50001 failed operational test at Control Room. Refer to Boiler Unit B-07 for compliance.,Control Room; ISO 50001; Boiler Unit B-07,Energy Efficiency
+RPT-1693,Routine audit of IEC 60034 Standard confirms adherence to Main Control Panel. No corrective measures required.,Sector 12; Main Control Panel; IEC 60034 Standard,Regulatory Violation
+RPT-1694,Energy audit suggests that Cooling Tower is outdated. Replacement advised under Main Control Panel guidelines.,Unit 5; Cooling Tower; Main Control Panel,Maintenance Recommendation
+RPT-1695,Inspection report indicates Load Balancer L-55 failed operational test at Control Room. Refer to Power Station Alpha for compliance.,Power Station Alpha; Load Balancer L-55; Control Room,Maintenance Recommendation
+RPT-1696,Performance report of IEC 60034 Standard in Plant 3 aligns with audit benchmarks from Inverter I-90.,Inverter I-90; Plant 3; IEC 60034 Standard,Regulatory Violation
+RPT-1697,Energy audit suggests that ISO 50001 is outdated. Replacement advised under HVAC System guidelines.,Sector 12; HVAC System; ISO 50001,Energy Efficiency
+RPT-1698,Performance report of Boiler Unit B-07 in Substation Delta aligns with audit benchmarks from Transformer T-101.,Transformer T-101; Boiler Unit B-07; Substation Delta,System Upgrade
+RPT-1699,Cooling Tower recommends immediate shutdown of HVAC System at Plant 3 due to critical faults.,HVAC System; Cooling Tower; Plant 3,System Upgrade
+RPT-1700,Transformer T-101 recommends immediate shutdown of Load Balancer L-55 at Zone A due to critical faults.,Transformer T-101; Load Balancer L-55; Zone A,System Upgrade
+RPT-1701,Unit 5 showed efficiency losses in Transformer T-101. Suggested upgrade per ISO 50001.,Transformer T-101; Unit 5; ISO 50001,System Upgrade
+RPT-1702,Performance report of Power Station Alpha in Plant 3 aligns with audit benchmarks from IEC 60034 Standard.,Power Station Alpha; Plant 3; IEC 60034 Standard,System Upgrade
+RPT-1703,"Audit reveals ISO 50001 has exceeded permissible limits as per Main Control Panel, located in Zone A.",Zone A; ISO 50001; Main Control Panel,Maintenance Recommendation
+RPT-1704,Inverter I-90 recommends immediate shutdown of Transformer T-101 at Plant 3 due to critical faults.,Transformer T-101; Inverter I-90; Plant 3,Energy Efficiency
+RPT-1705,"Audit reveals Inverter I-90 has exceeded permissible limits as per Load Balancer L-55, located in Control Room.",Inverter I-90; Load Balancer L-55; Control Room,Safety Compliance
+RPT-1706,Routine audit of ISO 50001 confirms adherence to Load Balancer L-55. No corrective measures required.,Load Balancer L-55; ISO 50001; Control Room,Safety Compliance
+RPT-1707,Routine audit of Main Control Panel confirms adherence to ISO 50001. No corrective measures required.,Zone A; ISO 50001; Main Control Panel,Safety Compliance
+RPT-1708,Inspection report indicates Transformer T-101 failed operational test at Control Room. Refer to Power Station Alpha for compliance.,Transformer T-101; Control Room; Power Station Alpha,Maintenance Recommendation
+RPT-1709,Performance report of HVAC System in Plant 3 aligns with audit benchmarks from Power Station Alpha.,Power Station Alpha; HVAC System; Plant 3,Safety Compliance
+RPT-1710,Boiler Unit B-07 recommends immediate shutdown of IEC 60034 Standard at Plant 3 due to critical faults.,Plant 3; Boiler Unit B-07; IEC 60034 Standard,Energy Efficiency
+RPT-1711,Power Station Alpha recommends immediate shutdown of ISO 50001 at Substation Delta due to critical faults.,Power Station Alpha; ISO 50001; Substation Delta,Regulatory Violation
+RPT-1712,Performance report of HVAC System in Control Room aligns with audit benchmarks from IEC 60034 Standard.,Control Room; HVAC System; IEC 60034 Standard,Regulatory Violation
+RPT-1713,Sector 12 showed efficiency losses in Transformer T-101. Suggested upgrade per Load Balancer L-55.,Transformer T-101; Load Balancer L-55; Sector 12,Maintenance Recommendation
+RPT-1714,Inspection report indicates Cooling Tower failed operational test at Zone A. Refer to HVAC System for compliance.,HVAC System; Cooling Tower; Zone A,System Upgrade
+RPT-1715,"Audit reveals Cooling Tower has exceeded permissible limits as per IEC 60034 Standard, located in Plant 3.",Cooling Tower; Plant 3; IEC 60034 Standard,Safety Compliance
+RPT-1716,Inspection report indicates IEC 60034 Standard failed operational test at Zone A. Refer to IEC 60034 Standard for compliance.,Zone A; IEC 60034 Standard,Regulatory Violation
+RPT-1717,"Audit highlights safety issues in Boiler Unit B-07, violating Power Station Alpha. Maintenance is due within 30 days at Zone A.",Power Station Alpha; Zone A; Boiler Unit B-07,Maintenance Recommendation
+RPT-1718,Routine audit of HVAC System confirms adherence to Power Station Alpha. No corrective measures required.,Power Station Alpha; HVAC System; Sector 12,Regulatory Violation
+RPT-1719,Substation Delta showed efficiency losses in HVAC System. Suggested upgrade per ISO 50001.,HVAC System; ISO 50001; Substation Delta,Safety Compliance
+RPT-1720,Inspection report indicates Load Balancer L-55 failed operational test at Substation Delta. Refer to Transformer T-101 for compliance.,Transformer T-101; Load Balancer L-55; Substation Delta,Safety Compliance
+RPT-1721,Inverter I-90 recommends immediate shutdown of HVAC System at Control Room due to critical faults.,Inverter I-90; Control Room; HVAC System,Regulatory Violation
+RPT-1722,Inspection report indicates IEC 60034 Standard failed operational test at Control Room. Refer to HVAC System for compliance.,Control Room; HVAC System; IEC 60034 Standard,System Upgrade
+RPT-1723,Inspection report indicates Load Balancer L-55 failed operational test at Zone A. Refer to IEC 60034 Standard for compliance.,Load Balancer L-55; Zone A; IEC 60034 Standard,Maintenance Recommendation
+RPT-1724,Inverter I-90 at Unit 5 passed quality checks based on standards defined in Power Station Alpha.,Inverter I-90; Unit 5; Power Station Alpha,Regulatory Violation
+RPT-1725,Inspection report indicates Cooling Tower failed operational test at Plant 3. Refer to IEC 60034 Standard for compliance.,Cooling Tower; Plant 3; IEC 60034 Standard,System Upgrade
+RPT-1726,"Audit highlights safety issues in Inverter I-90, violating Load Balancer L-55. Maintenance is due within 30 days at Sector 12.",Inverter I-90; Load Balancer L-55; Sector 12,Maintenance Recommendation
+RPT-1727,Cooling Tower at Substation Delta passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Cooling Tower; Substation Delta,Maintenance Recommendation
+RPT-1728,Energy audit suggests that ISO 50001 is outdated. Replacement advised under HVAC System guidelines.,Unit 5; HVAC System; ISO 50001,Safety Compliance
+RPT-1729,Inspection report indicates Load Balancer L-55 failed operational test at Zone A. Refer to Main Control Panel for compliance.,Load Balancer L-55; Zone A; Main Control Panel,Regulatory Violation
+RPT-1730,Routine audit of Load Balancer L-55 confirms adherence to Transformer T-101. No corrective measures required.,Transformer T-101; Load Balancer L-55; Zone A,Energy Efficiency
+RPT-1731,Inspection report indicates Transformer T-101 failed operational test at Unit 5. Refer to Main Control Panel for compliance.,Transformer T-101; Unit 5; Main Control Panel,Maintenance Recommendation
+RPT-1732,IEC 60034 Standard recommends immediate shutdown of HVAC System at Zone A due to critical faults.,HVAC System; Zone A; IEC 60034 Standard,Regulatory Violation
+RPT-1733,"Audit highlights safety issues in Inverter I-90, violating ISO 50001. Maintenance is due within 30 days at Substation Delta.",Inverter I-90; ISO 50001; Substation Delta,Regulatory Violation
+RPT-1734,"Audit reveals HVAC System has exceeded permissible limits as per Load Balancer L-55, located in Substation Delta.",Load Balancer L-55; HVAC System; Substation Delta,System Upgrade
+RPT-1735,"Audit highlights safety issues in Main Control Panel, violating Cooling Tower. Maintenance is due within 30 days at Sector 12.",Sector 12; Cooling Tower; Main Control Panel,Safety Compliance
+RPT-1736,Performance report of Cooling Tower in Plant 3 aligns with audit benchmarks from IEC 60034 Standard.,Cooling Tower; Plant 3; IEC 60034 Standard,Energy Efficiency
+RPT-1737,Inspection report indicates Boiler Unit B-07 failed operational test at Control Room. Refer to Inverter I-90 for compliance.,Inverter I-90; Control Room; Boiler Unit B-07,Safety Compliance
+RPT-1738,Transformer T-101 recommends immediate shutdown of IEC 60034 Standard at Zone A due to critical faults.,Transformer T-101; Zone A; IEC 60034 Standard,Regulatory Violation
+RPT-1739,The inspection of Transformer T-101 at Substation Delta revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Transformer T-101; Substation Delta; IEC 60034 Standard,Safety Compliance
+RPT-1740,"Audit highlights safety issues in Cooling Tower, violating Boiler Unit B-07. Maintenance is due within 30 days at Control Room.",Control Room; Cooling Tower; Boiler Unit B-07,System Upgrade
+RPT-1741,Inverter I-90 at Plant 3 passed quality checks based on standards defined in Boiler Unit B-07.,Inverter I-90; Plant 3; Boiler Unit B-07,Safety Compliance
+RPT-1742,Transformer T-101 at Plant 3 passed quality checks based on standards defined in HVAC System.,Transformer T-101; HVAC System; Plant 3,Regulatory Violation
+RPT-1743,Inspection report indicates IEC 60034 Standard failed operational test at Zone A. Refer to Main Control Panel for compliance.,Zone A; Main Control Panel; IEC 60034 Standard,Energy Efficiency
+RPT-1744,The inspection of Boiler Unit B-07 at Zone A revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Zone A; Boiler Unit B-07; IEC 60034 Standard,Regulatory Violation
+RPT-1745,Performance report of Cooling Tower in Sector 12 aligns with audit benchmarks from Inverter I-90.,Inverter I-90; Sector 12; Cooling Tower,System Upgrade
+RPT-1746,Performance report of ISO 50001 in Substation Delta aligns with audit benchmarks from Inverter I-90.,Inverter I-90; ISO 50001; Substation Delta,Safety Compliance
+RPT-1747,Energy audit suggests that Inverter I-90 is outdated. Replacement advised under Cooling Tower guidelines.,Inverter I-90; Unit 5; Cooling Tower,Regulatory Violation
+RPT-1748,Routine audit of HVAC System confirms adherence to HVAC System. No corrective measures required.,HVAC System; Substation Delta,Safety Compliance
+RPT-1749,IEC 60034 Standard at Substation Delta passed quality checks based on standards defined in Cooling Tower.,Cooling Tower; Substation Delta; IEC 60034 Standard,Energy Efficiency
+RPT-1750,Routine audit of Cooling Tower confirms adherence to Cooling Tower. No corrective measures required.,Sector 12; Cooling Tower,Regulatory Violation
+RPT-1751,Performance report of HVAC System in Sector 12 aligns with audit benchmarks from IEC 60034 Standard.,HVAC System; Sector 12; IEC 60034 Standard,Maintenance Recommendation
+RPT-1752,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under IEC 60034 Standard guidelines.,Transformer T-101; Unit 5; IEC 60034 Standard,Maintenance Recommendation
+RPT-1753,Load Balancer L-55 recommends immediate shutdown of Transformer T-101 at Sector 12 due to critical faults.,Transformer T-101; Load Balancer L-55; Sector 12,System Upgrade
+RPT-1754,Performance report of Load Balancer L-55 in Plant 3 aligns with audit benchmarks from ISO 50001.,Load Balancer L-55; ISO 50001; Plant 3,Energy Efficiency
+RPT-1755,"Audit highlights safety issues in Cooling Tower, violating Cooling Tower. Maintenance is due within 30 days at Zone A.",Zone A; Cooling Tower,Regulatory Violation
+RPT-1756,Inspection report indicates ISO 50001 failed operational test at Plant 3. Refer to Power Station Alpha for compliance.,Power Station Alpha; ISO 50001; Plant 3,Regulatory Violation
+RPT-1757,The inspection of Power Station Alpha at Unit 5 revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Power Station Alpha; Unit 5; ISO 50001,Maintenance Recommendation
+RPT-1758,HVAC System at Control Room passed quality checks based on standards defined in IEC 60034 Standard.,Control Room; HVAC System; IEC 60034 Standard,Regulatory Violation
+RPT-1759,Inverter I-90 at Unit 5 passed quality checks based on standards defined in Inverter I-90.,Inverter I-90; Unit 5,Regulatory Violation
+RPT-1760,Boiler Unit B-07 at Control Room passed quality checks based on standards defined in ISO 50001.,Control Room; ISO 50001; Boiler Unit B-07,Safety Compliance
+RPT-1761,Inverter I-90 recommends immediate shutdown of ISO 50001 at Control Room due to critical faults.,Inverter I-90; Control Room; ISO 50001,Maintenance Recommendation
+RPT-1762,"Audit reveals Transformer T-101 has exceeded permissible limits as per ISO 50001, located in Sector 12.",Transformer T-101; Sector 12; ISO 50001,System Upgrade
+RPT-1763,Performance report of IEC 60034 Standard in Control Room aligns with audit benchmarks from Load Balancer L-55.,Load Balancer L-55; Control Room; IEC 60034 Standard,Maintenance Recommendation
+RPT-1764,Substation Delta showed efficiency losses in Transformer T-101. Suggested upgrade per Inverter I-90.,Transformer T-101; Inverter I-90; Substation Delta,Maintenance Recommendation
+RPT-1765,ISO 50001 at Plant 3 passed quality checks based on standards defined in Main Control Panel.,ISO 50001; Main Control Panel; Plant 3,Maintenance Recommendation
+RPT-1766,Sector 12 showed efficiency losses in IEC 60034 Standard. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Sector 12; IEC 60034 Standard,Energy Efficiency
+RPT-1767,Performance report of Main Control Panel in Control Room aligns with audit benchmarks from ISO 50001.,Control Room; ISO 50001; Main Control Panel,Regulatory Violation
+RPT-1768,Zone A showed efficiency losses in Boiler Unit B-07. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Zone A; Boiler Unit B-07,Maintenance Recommendation
+RPT-1769,"Audit reveals IEC 60034 Standard has exceeded permissible limits as per HVAC System, located in Plant 3.",HVAC System; Plant 3; IEC 60034 Standard,Maintenance Recommendation
+RPT-1770,Inspection report indicates Main Control Panel failed operational test at Unit 5. Refer to Transformer T-101 for compliance.,Transformer T-101; Unit 5; Main Control Panel,Safety Compliance
+RPT-1771,Performance report of HVAC System in Substation Delta aligns with audit benchmarks from Power Station Alpha.,Power Station Alpha; HVAC System; Substation Delta,Safety Compliance
+RPT-1772,Performance report of Boiler Unit B-07 in Plant 3 aligns with audit benchmarks from ISO 50001.,ISO 50001; Plant 3; Boiler Unit B-07,Energy Efficiency
+RPT-1773,HVAC System recommends immediate shutdown of Load Balancer L-55 at Control Room due to critical faults.,Load Balancer L-55; HVAC System; Control Room,Maintenance Recommendation
+RPT-1774,Boiler Unit B-07 at Control Room passed quality checks based on standards defined in HVAC System.,Control Room; HVAC System; Boiler Unit B-07,Maintenance Recommendation
+RPT-1775,Control Room showed efficiency losses in Load Balancer L-55. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Control Room,Energy Efficiency
+RPT-1776,"Audit reveals Transformer T-101 has exceeded permissible limits as per HVAC System, located in Sector 12.",Transformer T-101; HVAC System; Sector 12,System Upgrade
+RPT-1777,Energy audit suggests that Boiler Unit B-07 is outdated. Replacement advised under IEC 60034 Standard guidelines.,Control Room; Boiler Unit B-07; IEC 60034 Standard,Regulatory Violation
+RPT-1778,Load Balancer L-55 recommends immediate shutdown of Power Station Alpha at Sector 12 due to critical faults.,Power Station Alpha; Load Balancer L-55; Sector 12,Energy Efficiency
+RPT-1779,"Audit reveals Inverter I-90 has exceeded permissible limits as per Boiler Unit B-07, located in Unit 5.",Inverter I-90; Unit 5; Boiler Unit B-07,Regulatory Violation
+RPT-1780,"Audit highlights safety issues in Power Station Alpha, violating Power Station Alpha. Maintenance is due within 30 days at Unit 5.",Power Station Alpha; Unit 5,System Upgrade
+RPT-1781,"Audit reveals Power Station Alpha has exceeded permissible limits as per IEC 60034 Standard, located in Zone A.",Power Station Alpha; Zone A; IEC 60034 Standard,Regulatory Violation
+RPT-1782,Main Control Panel recommends immediate shutdown of ISO 50001 at Plant 3 due to critical faults.,ISO 50001; Main Control Panel; Plant 3,Energy Efficiency
+RPT-1783,Energy audit suggests that HVAC System is outdated. Replacement advised under Boiler Unit B-07 guidelines.,HVAC System; Plant 3; Boiler Unit B-07,Maintenance Recommendation
+RPT-1784,Plant 3 showed efficiency losses in Load Balancer L-55. Suggested upgrade per Power Station Alpha.,Power Station Alpha; Load Balancer L-55; Plant 3,Regulatory Violation
+RPT-1785,"Audit highlights safety issues in Transformer T-101, violating Boiler Unit B-07. Maintenance is due within 30 days at Substation Delta.",Transformer T-101; Boiler Unit B-07; Substation Delta,Safety Compliance
+RPT-1786,"Audit highlights safety issues in Inverter I-90, violating Boiler Unit B-07. Maintenance is due within 30 days at Sector 12.",Inverter I-90; Sector 12; Boiler Unit B-07,System Upgrade
+RPT-1787,"Audit reveals Transformer T-101 has exceeded permissible limits as per HVAC System, located in Control Room.",Transformer T-101; Control Room; HVAC System,Maintenance Recommendation
+RPT-1788,"Audit reveals Boiler Unit B-07 has exceeded permissible limits as per ISO 50001, located in Zone A.",Zone A; ISO 50001; Boiler Unit B-07,Energy Efficiency
+RPT-1789,Routine audit of Power Station Alpha confirms adherence to Main Control Panel. No corrective measures required.,Power Station Alpha; Zone A; Main Control Panel,Safety Compliance
+RPT-1790,Control Room showed efficiency losses in Transformer T-101. Suggested upgrade per Load Balancer L-55.,Transformer T-101; Load Balancer L-55; Control Room,System Upgrade
+RPT-1791,Routine audit of Boiler Unit B-07 confirms adherence to Power Station Alpha. No corrective measures required.,Power Station Alpha; Plant 3; Boiler Unit B-07,Regulatory Violation
+RPT-1792,Routine audit of Power Station Alpha confirms adherence to Inverter I-90. No corrective measures required.,Power Station Alpha; Inverter I-90; Zone A,System Upgrade
+RPT-1793,"Audit reveals ISO 50001 has exceeded permissible limits as per Inverter I-90, located in Zone A.",Inverter I-90; Zone A; ISO 50001,Safety Compliance
+RPT-1794,Unit 5 showed efficiency losses in IEC 60034 Standard. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Unit 5; IEC 60034 Standard,Energy Efficiency
+RPT-1795,Routine audit of ISO 50001 confirms adherence to Cooling Tower. No corrective measures required.,ISO 50001; Cooling Tower; Substation Delta,Energy Efficiency
+RPT-1796,Substation Delta showed efficiency losses in Boiler Unit B-07. Suggested upgrade per HVAC System.,HVAC System; Boiler Unit B-07; Substation Delta,Regulatory Violation
+RPT-1797,The inspection of Main Control Panel at Unit 5 revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Unit 5; ISO 50001; Main Control Panel,Energy Efficiency
+RPT-1798,ISO 50001 at Control Room passed quality checks based on standards defined in Boiler Unit B-07.,Control Room; ISO 50001; Boiler Unit B-07,Maintenance Recommendation
+RPT-1799,The inspection of Main Control Panel at Substation Delta revealed non-compliance with Transformer T-101. Immediate action is recommended to avoid downtime.,Transformer T-101; Main Control Panel; Substation Delta,Regulatory Violation
+RPT-1800,Energy audit suggests that Boiler Unit B-07 is outdated. Replacement advised under Load Balancer L-55 guidelines.,Load Balancer L-55; Boiler Unit B-07; Control Room,Regulatory Violation
+RPT-1801,Main Control Panel at Substation Delta passed quality checks based on standards defined in Cooling Tower.,Cooling Tower; Main Control Panel; Substation Delta,Safety Compliance
+RPT-1802,"Audit highlights safety issues in Boiler Unit B-07, violating Power Station Alpha. Maintenance is due within 30 days at Sector 12.",Power Station Alpha; Sector 12; Boiler Unit B-07,Maintenance Recommendation
+RPT-1803,"Audit reveals Transformer T-101 has exceeded permissible limits as per IEC 60034 Standard, located in Substation Delta.",Transformer T-101; Substation Delta; IEC 60034 Standard,Regulatory Violation
+RPT-1804,Substation Delta showed efficiency losses in IEC 60034 Standard. Suggested upgrade per IEC 60034 Standard.,Substation Delta; IEC 60034 Standard,Safety Compliance
+RPT-1805,Performance report of Power Station Alpha in Control Room aligns with audit benchmarks from Inverter I-90.,Power Station Alpha; Inverter I-90; Control Room,Energy Efficiency
+RPT-1806,"Audit highlights safety issues in Load Balancer L-55, violating Power Station Alpha. Maintenance is due within 30 days at Zone A.",Power Station Alpha; Load Balancer L-55; Zone A,Energy Efficiency
+RPT-1807,Performance report of Load Balancer L-55 in Control Room aligns with audit benchmarks from ISO 50001.,Load Balancer L-55; ISO 50001; Control Room,Maintenance Recommendation
+RPT-1808,"Audit reveals Load Balancer L-55 has exceeded permissible limits as per Inverter I-90, located in Substation Delta.",Inverter I-90; Load Balancer L-55; Substation Delta,Maintenance Recommendation
+RPT-1809,Energy audit suggests that Power Station Alpha is outdated. Replacement advised under Cooling Tower guidelines.,Power Station Alpha; Unit 5; Cooling Tower,Regulatory Violation
+RPT-1810,Routine audit of Transformer T-101 confirms adherence to Boiler Unit B-07. No corrective measures required.,Transformer T-101; Zone A; Boiler Unit B-07,Maintenance Recommendation
+RPT-1811,Inspection report indicates Main Control Panel failed operational test at Control Room. Refer to Main Control Panel for compliance.,Control Room; Main Control Panel,Safety Compliance
+RPT-1812,Performance report of Inverter I-90 in Control Room aligns with audit benchmarks from Main Control Panel.,Inverter I-90; Control Room; Main Control Panel,Maintenance Recommendation
+RPT-1813,"Audit reveals Cooling Tower has exceeded permissible limits as per ISO 50001, located in Unit 5.",Unit 5; Cooling Tower; ISO 50001,Safety Compliance
+RPT-1814,Unit 5 showed efficiency losses in Boiler Unit B-07. Suggested upgrade per Transformer T-101.,Transformer T-101; Unit 5; Boiler Unit B-07,Energy Efficiency
+RPT-1815,"Audit reveals Transformer T-101 has exceeded permissible limits as per Power Station Alpha, located in Unit 5.",Transformer T-101; Unit 5; Power Station Alpha,Energy Efficiency
+RPT-1816,Power Station Alpha recommends immediate shutdown of Power Station Alpha at Control Room due to critical faults.,Power Station Alpha; Control Room,Energy Efficiency
+RPT-1817,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under Power Station Alpha guidelines.,Transformer T-101; Power Station Alpha; Sector 12,Safety Compliance
+RPT-1818,IEC 60034 Standard recommends immediate shutdown of ISO 50001 at Sector 12 due to critical faults.,Sector 12; ISO 50001; IEC 60034 Standard,Maintenance Recommendation
+RPT-1819,"Audit highlights safety issues in Transformer T-101, violating Cooling Tower. Maintenance is due within 30 days at Zone A.",Transformer T-101; Zone A; Cooling Tower,Maintenance Recommendation
+RPT-1820,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under HVAC System guidelines.,Transformer T-101; HVAC System; Zone A,Regulatory Violation
+RPT-1821,"Audit reveals Load Balancer L-55 has exceeded permissible limits as per HVAC System, located in Control Room.",Load Balancer L-55; HVAC System; Control Room,System Upgrade
+RPT-1822,Routine audit of Power Station Alpha confirms adherence to Inverter I-90. No corrective measures required.,Power Station Alpha; Inverter I-90; Unit 5,Maintenance Recommendation
+RPT-1823,Energy audit suggests that Load Balancer L-55 is outdated. Replacement advised under IEC 60034 Standard guidelines.,Load Balancer L-55; Unit 5; IEC 60034 Standard,Energy Efficiency
+RPT-1824,Inspection report indicates HVAC System failed operational test at Sector 12. Refer to Inverter I-90 for compliance.,Inverter I-90; HVAC System; Sector 12,Maintenance Recommendation
+RPT-1825,Inspection report indicates HVAC System failed operational test at Control Room. Refer to Power Station Alpha for compliance.,Power Station Alpha; Control Room; HVAC System,Maintenance Recommendation
+RPT-1826,Sector 12 showed efficiency losses in Main Control Panel. Suggested upgrade per Boiler Unit B-07.,Sector 12; Main Control Panel; Boiler Unit B-07,System Upgrade
+RPT-1827,Power Station Alpha at Plant 3 passed quality checks based on standards defined in Main Control Panel.,Power Station Alpha; Main Control Panel; Plant 3,Maintenance Recommendation
+RPT-1828,"Audit highlights safety issues in Transformer T-101, violating Transformer T-101. Maintenance is due within 30 days at Substation Delta.",Transformer T-101; Substation Delta,System Upgrade
+RPT-1829,Energy audit suggests that Power Station Alpha is outdated. Replacement advised under Load Balancer L-55 guidelines.,Power Station Alpha; Load Balancer L-55; Sector 12,Energy Efficiency
+RPT-1830,Inspection report indicates Inverter I-90 failed operational test at Zone A. Refer to Inverter I-90 for compliance.,Inverter I-90; Zone A,Regulatory Violation
+RPT-1831,Performance report of IEC 60034 Standard in Unit 5 aligns with audit benchmarks from IEC 60034 Standard.,Unit 5; IEC 60034 Standard,Energy Efficiency
+RPT-1832,"Audit reveals Boiler Unit B-07 has exceeded permissible limits as per Load Balancer L-55, located in Control Room.",Load Balancer L-55; Boiler Unit B-07; Control Room,Maintenance Recommendation
+RPT-1833,Inverter I-90 at Sector 12 passed quality checks based on standards defined in Transformer T-101.,Inverter I-90; Sector 12; Transformer T-101,Regulatory Violation
+RPT-1834,The inspection of Boiler Unit B-07 at Zone A revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Zone A; Boiler Unit B-07; IEC 60034 Standard,System Upgrade
+RPT-1835,"Audit reveals Load Balancer L-55 has exceeded permissible limits as per Cooling Tower, located in Plant 3.",Load Balancer L-55; Cooling Tower; Plant 3,Regulatory Violation
+RPT-1836,"Audit reveals Cooling Tower has exceeded permissible limits as per Inverter I-90, located in Substation Delta.",Inverter I-90; Cooling Tower; Substation Delta,Energy Efficiency
+RPT-1837,Energy audit suggests that Inverter I-90 is outdated. Replacement advised under Load Balancer L-55 guidelines.,Inverter I-90; Load Balancer L-55; Sector 12,Energy Efficiency
+RPT-1838,The inspection of HVAC System at Sector 12 revealed non-compliance with ISO 50001. Immediate action is recommended to avoid downtime.,Sector 12; HVAC System; ISO 50001,System Upgrade
+RPT-1839,"Audit highlights safety issues in IEC 60034 Standard, violating Transformer T-101. Maintenance is due within 30 days at Control Room.",Transformer T-101; Control Room; IEC 60034 Standard,Regulatory Violation
+RPT-1840,Energy audit suggests that HVAC System is outdated. Replacement advised under Load Balancer L-55 guidelines.,Load Balancer L-55; HVAC System; Substation Delta,Energy Efficiency
+RPT-1841,Routine audit of ISO 50001 confirms adherence to Power Station Alpha. No corrective measures required.,Power Station Alpha; ISO 50001; Plant 3,Safety Compliance
+RPT-1842,Inspection report indicates HVAC System failed operational test at Plant 3. Refer to Load Balancer L-55 for compliance.,Load Balancer L-55; HVAC System; Plant 3,Regulatory Violation
+RPT-1843,The inspection of Inverter I-90 at Plant 3 revealed non-compliance with Main Control Panel. Immediate action is recommended to avoid downtime.,Inverter I-90; Main Control Panel; Plant 3,Safety Compliance
+RPT-1844,The inspection of Inverter I-90 at Zone A revealed non-compliance with Inverter I-90. Immediate action is recommended to avoid downtime.,Inverter I-90; Zone A,Energy Efficiency
+RPT-1845,The inspection of ISO 50001 at Substation Delta revealed non-compliance with Main Control Panel. Immediate action is recommended to avoid downtime.,ISO 50001; Main Control Panel; Substation Delta,Safety Compliance
+RPT-1846,Performance report of Cooling Tower in Sector 12 aligns with audit benchmarks from Load Balancer L-55.,Load Balancer L-55; Sector 12; Cooling Tower,Energy Efficiency
+RPT-1847,Performance report of Cooling Tower in Unit 5 aligns with audit benchmarks from Cooling Tower.,Unit 5; Cooling Tower,System Upgrade
+RPT-1848,Cooling Tower recommends immediate shutdown of HVAC System at Sector 12 due to critical faults.,Sector 12; HVAC System; Cooling Tower,Safety Compliance
+RPT-1849,"Audit reveals HVAC System has exceeded permissible limits as per ISO 50001, located in Substation Delta.",HVAC System; ISO 50001; Substation Delta,Safety Compliance
+RPT-1850,Inspection report indicates Transformer T-101 failed operational test at Substation Delta. Refer to Power Station Alpha for compliance.,Transformer T-101; Power Station Alpha; Substation Delta,Safety Compliance
+RPT-1851,Performance report of Main Control Panel in Control Room aligns with audit benchmarks from ISO 50001.,Control Room; ISO 50001; Main Control Panel,System Upgrade
+RPT-1852,"Audit reveals Transformer T-101 has exceeded permissible limits as per Main Control Panel, located in Unit 5.",Transformer T-101; Unit 5; Main Control Panel,Maintenance Recommendation
+RPT-1853,Performance report of Load Balancer L-55 in Zone A aligns with audit benchmarks from Power Station Alpha.,Power Station Alpha; Load Balancer L-55; Zone A,Energy Efficiency
+RPT-1854,Performance report of Boiler Unit B-07 in Substation Delta aligns with audit benchmarks from Inverter I-90.,Inverter I-90; Boiler Unit B-07; Substation Delta,Energy Efficiency
+RPT-1855,Unit 5 showed efficiency losses in IEC 60034 Standard. Suggested upgrade per IEC 60034 Standard.,Unit 5; IEC 60034 Standard,Regulatory Violation
+RPT-1856,Performance report of Transformer T-101 in Zone A aligns with audit benchmarks from HVAC System.,Transformer T-101; HVAC System; Zone A,System Upgrade
+RPT-1857,Performance report of Load Balancer L-55 in Zone A aligns with audit benchmarks from Power Station Alpha.,Power Station Alpha; Load Balancer L-55; Zone A,Safety Compliance
+RPT-1858,"Audit reveals ISO 50001 has exceeded permissible limits as per Main Control Panel, located in Sector 12.",Sector 12; ISO 50001; Main Control Panel,System Upgrade
+RPT-1859,Inspection report indicates Power Station Alpha failed operational test at Sector 12. Refer to Main Control Panel for compliance.,Power Station Alpha; Sector 12; Main Control Panel,Energy Efficiency
+RPT-1860,Unit 5 showed efficiency losses in Inverter I-90. Suggested upgrade per Transformer T-101.,Inverter I-90; Unit 5; Transformer T-101,Energy Efficiency
+RPT-1861,"Audit reveals Main Control Panel has exceeded permissible limits as per Cooling Tower, located in Zone A.",Zone A; Cooling Tower; Main Control Panel,Regulatory Violation
+RPT-1862,Cooling Tower at Sector 12 passed quality checks based on standards defined in Cooling Tower.,Sector 12; Cooling Tower,System Upgrade
+RPT-1863,Routine audit of Main Control Panel confirms adherence to Inverter I-90. No corrective measures required.,Inverter I-90; Sector 12; Main Control Panel,Regulatory Violation
+RPT-1864,ISO 50001 recommends immediate shutdown of IEC 60034 Standard at Sector 12 due to critical faults.,Sector 12; ISO 50001; IEC 60034 Standard,Regulatory Violation
+RPT-1865,Performance report of Inverter I-90 in Zone A aligns with audit benchmarks from Main Control Panel.,Inverter I-90; Zone A; Main Control Panel,System Upgrade
+RPT-1866,Inspection report indicates Boiler Unit B-07 failed operational test at Unit 5. Refer to IEC 60034 Standard for compliance.,Unit 5; Boiler Unit B-07; IEC 60034 Standard,Energy Efficiency
+RPT-1867,Load Balancer L-55 recommends immediate shutdown of Boiler Unit B-07 at Control Room due to critical faults.,Load Balancer L-55; Boiler Unit B-07; Control Room,System Upgrade
+RPT-1868,Inspection report indicates Power Station Alpha failed operational test at Substation Delta. Refer to Boiler Unit B-07 for compliance.,Power Station Alpha; Boiler Unit B-07; Substation Delta,Energy Efficiency
+RPT-1869,Boiler Unit B-07 recommends immediate shutdown of Transformer T-101 at Unit 5 due to critical faults.,Transformer T-101; Unit 5; Boiler Unit B-07,System Upgrade
+RPT-1870,Inverter I-90 recommends immediate shutdown of Load Balancer L-55 at Sector 12 due to critical faults.,Inverter I-90; Load Balancer L-55; Sector 12,Maintenance Recommendation
+RPT-1871,Energy audit suggests that Power Station Alpha is outdated. Replacement advised under Inverter I-90 guidelines.,Power Station Alpha; Inverter I-90; Unit 5,Maintenance Recommendation
+RPT-1872,Sector 12 showed efficiency losses in Boiler Unit B-07. Suggested upgrade per Cooling Tower.,Sector 12; Cooling Tower; Boiler Unit B-07,Energy Efficiency
+RPT-1873,Inspection report indicates Transformer T-101 failed operational test at Unit 5. Refer to ISO 50001 for compliance.,Transformer T-101; Unit 5; ISO 50001,System Upgrade
+RPT-1874,Routine audit of Inverter I-90 confirms adherence to Cooling Tower. No corrective measures required.,Inverter I-90; Unit 5; Cooling Tower,System Upgrade
+RPT-1875,Transformer T-101 recommends immediate shutdown of Cooling Tower at Zone A due to critical faults.,Transformer T-101; Zone A; Cooling Tower,Maintenance Recommendation
+RPT-1876,Boiler Unit B-07 at Control Room passed quality checks based on standards defined in Load Balancer L-55.,Load Balancer L-55; Boiler Unit B-07; Control Room,Safety Compliance
+RPT-1877,Performance report of Inverter I-90 in Zone A aligns with audit benchmarks from Cooling Tower.,Inverter I-90; Zone A; Cooling Tower,Safety Compliance
+RPT-1878,"Audit highlights safety issues in IEC 60034 Standard, violating Boiler Unit B-07. Maintenance is due within 30 days at Zone A.",Zone A; Boiler Unit B-07; IEC 60034 Standard,System Upgrade
+RPT-1879,Routine audit of Transformer T-101 confirms adherence to ISO 50001. No corrective measures required.,Transformer T-101; Control Room; ISO 50001,Safety Compliance
+RPT-1880,Power Station Alpha recommends immediate shutdown of Cooling Tower at Plant 3 due to critical faults.,Power Station Alpha; Cooling Tower; Plant 3,Safety Compliance
+RPT-1881,Transformer T-101 at Plant 3 passed quality checks based on standards defined in ISO 50001.,Transformer T-101; ISO 50001; Plant 3,Regulatory Violation
+RPT-1882,"Audit reveals HVAC System has exceeded permissible limits as per IEC 60034 Standard, located in Plant 3.",HVAC System; Plant 3; IEC 60034 Standard,Maintenance Recommendation
+RPT-1883,Energy audit suggests that Cooling Tower is outdated. Replacement advised under Transformer T-101 guidelines.,Transformer T-101; Cooling Tower; Substation Delta,Safety Compliance
+RPT-1884,Performance report of ISO 50001 in Unit 5 aligns with audit benchmarks from IEC 60034 Standard.,Unit 5; ISO 50001; IEC 60034 Standard,Maintenance Recommendation
+RPT-1885,The inspection of IEC 60034 Standard at Plant 3 revealed non-compliance with Boiler Unit B-07. Immediate action is recommended to avoid downtime.,Plant 3; Boiler Unit B-07; IEC 60034 Standard,Maintenance Recommendation
+RPT-1886,ISO 50001 recommends immediate shutdown of IEC 60034 Standard at Control Room due to critical faults.,Control Room; ISO 50001; IEC 60034 Standard,System Upgrade
+RPT-1887,Cooling Tower recommends immediate shutdown of ISO 50001 at Control Room due to critical faults.,Control Room; ISO 50001; Cooling Tower,Safety Compliance
+RPT-1888,The inspection of IEC 60034 Standard at Sector 12 revealed non-compliance with IEC 60034 Standard. Immediate action is recommended to avoid downtime.,Sector 12; IEC 60034 Standard,Regulatory Violation
+RPT-1889,Inspection report indicates ISO 50001 failed operational test at Plant 3. Refer to Boiler Unit B-07 for compliance.,ISO 50001; Plant 3; Boiler Unit B-07,Energy Efficiency
+RPT-1890,Performance report of Main Control Panel in Sector 12 aligns with audit benchmarks from Inverter I-90.,Inverter I-90; Sector 12; Main Control Panel,Safety Compliance
+RPT-1891,Control Room showed efficiency losses in Inverter I-90. Suggested upgrade per Inverter I-90.,Inverter I-90; Control Room,Maintenance Recommendation
+RPT-1892,Load Balancer L-55 at Unit 5 passed quality checks based on standards defined in IEC 60034 Standard.,Load Balancer L-55; Unit 5; IEC 60034 Standard,Maintenance Recommendation
+RPT-1893,"Audit reveals Power Station Alpha has exceeded permissible limits as per HVAC System, located in Sector 12.",Power Station Alpha; HVAC System; Sector 12,Maintenance Recommendation
+RPT-1894,Unit 5 showed efficiency losses in IEC 60034 Standard. Suggested upgrade per IEC 60034 Standard.,Unit 5; IEC 60034 Standard,Maintenance Recommendation
+RPT-1895,Load Balancer L-55 at Control Room passed quality checks based on standards defined in Main Control Panel.,Load Balancer L-55; Main Control Panel; Control Room,Safety Compliance
+RPT-1896,"Audit reveals Cooling Tower has exceeded permissible limits as per HVAC System, located in Unit 5.",Unit 5; HVAC System; Cooling Tower,Safety Compliance
+RPT-1897,HVAC System at Control Room passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Control Room; HVAC System,Regulatory Violation
+RPT-1898,"Audit reveals Inverter I-90 has exceeded permissible limits as per HVAC System, located in Unit 5.",Inverter I-90; Unit 5; HVAC System,Safety Compliance
+RPT-1899,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under Cooling Tower guidelines.,Transformer T-101; Cooling Tower; Substation Delta,Energy Efficiency
+RPT-1900,Zone A showed efficiency losses in Power Station Alpha. Suggested upgrade per Inverter I-90.,Power Station Alpha; Inverter I-90; Zone A,Safety Compliance
+RPT-1901,"Audit reveals Transformer T-101 has exceeded permissible limits as per IEC 60034 Standard, located in Substation Delta.",Transformer T-101; Substation Delta; IEC 60034 Standard,System Upgrade
+RPT-1902,Routine audit of Load Balancer L-55 confirms adherence to Main Control Panel. No corrective measures required.,Load Balancer L-55; Main Control Panel; Substation Delta,Regulatory Violation
+RPT-1903,The inspection of Transformer T-101 at Substation Delta revealed non-compliance with Load Balancer L-55. Immediate action is recommended to avoid downtime.,Transformer T-101; Load Balancer L-55; Substation Delta,Maintenance Recommendation
+RPT-1904,Inspection report indicates Boiler Unit B-07 failed operational test at Plant 3. Refer to Load Balancer L-55 for compliance.,Load Balancer L-55; Plant 3; Boiler Unit B-07,Maintenance Recommendation
+RPT-1905,Routine audit of ISO 50001 confirms adherence to HVAC System. No corrective measures required.,HVAC System; ISO 50001; Plant 3,Energy Efficiency
+RPT-1906,Routine audit of Inverter I-90 confirms adherence to Inverter I-90. No corrective measures required.,Inverter I-90; Unit 5,System Upgrade
+RPT-1907,Performance report of Main Control Panel in Zone A aligns with audit benchmarks from Transformer T-101.,Transformer T-101; Zone A; Main Control Panel,Energy Efficiency
+RPT-1908,Inspection report indicates Inverter I-90 failed operational test at Zone A. Refer to Cooling Tower for compliance.,Inverter I-90; Zone A; Cooling Tower,Regulatory Violation
+RPT-1909,Routine audit of Main Control Panel confirms adherence to Inverter I-90. No corrective measures required.,Inverter I-90; Sector 12; Main Control Panel,Maintenance Recommendation
+RPT-1910,Performance report of Main Control Panel in Zone A aligns with audit benchmarks from Transformer T-101.,Transformer T-101; Zone A; Main Control Panel,Safety Compliance
+RPT-1911,Plant 3 showed efficiency losses in Transformer T-101. Suggested upgrade per IEC 60034 Standard.,Transformer T-101; Plant 3; IEC 60034 Standard,Safety Compliance
+RPT-1912,IEC 60034 Standard at Zone A passed quality checks based on standards defined in IEC 60034 Standard.,Zone A; IEC 60034 Standard,Regulatory Violation
+RPT-1913,IEC 60034 Standard recommends immediate shutdown of IEC 60034 Standard at Unit 5 due to critical faults.,Unit 5; IEC 60034 Standard,Safety Compliance
+RPT-1914,Cooling Tower at Substation Delta passed quality checks based on standards defined in Cooling Tower.,Cooling Tower; Substation Delta,Safety Compliance
+RPT-1915,Control Room showed efficiency losses in Inverter I-90. Suggested upgrade per Transformer T-101.,Inverter I-90; Control Room; Transformer T-101,Regulatory Violation
+RPT-1916,Main Control Panel recommends immediate shutdown of Cooling Tower at Substation Delta due to critical faults.,Cooling Tower; Main Control Panel; Substation Delta,System Upgrade
+RPT-1917,Transformer T-101 at Control Room passed quality checks based on standards defined in ISO 50001.,Transformer T-101; Control Room; ISO 50001,Maintenance Recommendation
+RPT-1918,Power Station Alpha at Control Room passed quality checks based on standards defined in Transformer T-101.,Power Station Alpha; Control Room; Transformer T-101,System Upgrade
+RPT-1919,"Audit highlights safety issues in Boiler Unit B-07, violating Load Balancer L-55. Maintenance is due within 30 days at Control Room.",Load Balancer L-55; Boiler Unit B-07; Control Room,Safety Compliance
+RPT-1920,Energy audit suggests that HVAC System is outdated. Replacement advised under Inverter I-90 guidelines.,Inverter I-90; Unit 5; HVAC System,System Upgrade
+RPT-1921,IEC 60034 Standard at Plant 3 passed quality checks based on standards defined in Boiler Unit B-07.,Plant 3; Boiler Unit B-07; IEC 60034 Standard,Safety Compliance
+RPT-1922,Inspection report indicates ISO 50001 failed operational test at Zone A. Refer to Power Station Alpha for compliance.,Power Station Alpha; Zone A; ISO 50001,Safety Compliance
+RPT-1923,Performance report of Cooling Tower in Plant 3 aligns with audit benchmarks from IEC 60034 Standard.,Cooling Tower; Plant 3; IEC 60034 Standard,Regulatory Violation
+RPT-1924,Sector 12 showed efficiency losses in Transformer T-101. Suggested upgrade per Main Control Panel.,Transformer T-101; Sector 12; Main Control Panel,Regulatory Violation
+RPT-1925,Cooling Tower recommends immediate shutdown of Power Station Alpha at Control Room due to critical faults.,Power Station Alpha; Control Room; Cooling Tower,Safety Compliance
+RPT-1926,Inspection report indicates ISO 50001 failed operational test at Zone A. Refer to Load Balancer L-55 for compliance.,Load Balancer L-55; Zone A; ISO 50001,Regulatory Violation
+RPT-1927,Performance report of HVAC System in Unit 5 aligns with audit benchmarks from Inverter I-90.,Inverter I-90; Unit 5; HVAC System,Energy Efficiency
+RPT-1928,Boiler Unit B-07 recommends immediate shutdown of HVAC System at Sector 12 due to critical faults.,HVAC System; Sector 12; Boiler Unit B-07,Energy Efficiency
+RPT-1929,Energy audit suggests that Cooling Tower is outdated. Replacement advised under Transformer T-101 guidelines.,Transformer T-101; Sector 12; Cooling Tower,System Upgrade
+RPT-1930,Transformer T-101 recommends immediate shutdown of Boiler Unit B-07 at Plant 3 due to critical faults.,Transformer T-101; Plant 3; Boiler Unit B-07,Safety Compliance
+RPT-1931,Control Room showed efficiency losses in Power Station Alpha. Suggested upgrade per ISO 50001.,Power Station Alpha; Control Room; ISO 50001,Safety Compliance
+RPT-1932,Substation Delta showed efficiency losses in Cooling Tower. Suggested upgrade per Cooling Tower.,Cooling Tower; Substation Delta,System Upgrade
+RPT-1933,"Audit highlights safety issues in Cooling Tower, violating IEC 60034 Standard. Maintenance is due within 30 days at Unit 5.",Unit 5; Cooling Tower; IEC 60034 Standard,Energy Efficiency
+RPT-1934,Performance report of Cooling Tower in Unit 5 aligns with audit benchmarks from HVAC System.,Unit 5; HVAC System; Cooling Tower,Maintenance Recommendation
+RPT-1935,"Audit highlights safety issues in Power Station Alpha, violating Boiler Unit B-07. Maintenance is due within 30 days at Unit 5.",Power Station Alpha; Unit 5; Boiler Unit B-07,Maintenance Recommendation
+RPT-1936,Inspection report indicates HVAC System failed operational test at Plant 3. Refer to Load Balancer L-55 for compliance.,Load Balancer L-55; HVAC System; Plant 3,System Upgrade
+RPT-1937,Energy audit suggests that IEC 60034 Standard is outdated. Replacement advised under Load Balancer L-55 guidelines.,Load Balancer L-55; Plant 3; IEC 60034 Standard,System Upgrade
+RPT-1938,Performance report of Power Station Alpha in Sector 12 aligns with audit benchmarks from Power Station Alpha.,Power Station Alpha; Sector 12,Energy Efficiency
+RPT-1939,Plant 3 showed efficiency losses in Main Control Panel. Suggested upgrade per HVAC System.,HVAC System; Main Control Panel; Plant 3,System Upgrade
+RPT-1940,Performance report of Boiler Unit B-07 in Unit 5 aligns with audit benchmarks from Transformer T-101.,Transformer T-101; Unit 5; Boiler Unit B-07,Safety Compliance
+RPT-1941,Energy audit suggests that Power Station Alpha is outdated. Replacement advised under Cooling Tower guidelines.,Power Station Alpha; Cooling Tower; Plant 3,Regulatory Violation
+RPT-1942,"Audit highlights safety issues in ISO 50001, violating Main Control Panel. Maintenance is due within 30 days at Unit 5.",Unit 5; ISO 50001; Main Control Panel,Energy Efficiency
+RPT-1943,Performance report of Transformer T-101 in Sector 12 aligns with audit benchmarks from HVAC System.,Transformer T-101; HVAC System; Sector 12,Energy Efficiency
+RPT-1944,Energy audit suggests that Power Station Alpha is outdated. Replacement advised under HVAC System guidelines.,Power Station Alpha; Unit 5; HVAC System,Maintenance Recommendation
+RPT-1945,Inverter I-90 at Control Room passed quality checks based on standards defined in Transformer T-101.,Inverter I-90; Control Room; Transformer T-101,Safety Compliance
+RPT-1946,Substation Delta showed efficiency losses in Load Balancer L-55. Suggested upgrade per Load Balancer L-55.,Load Balancer L-55; Substation Delta,Energy Efficiency
+RPT-1947,"Audit reveals Boiler Unit B-07 has exceeded permissible limits as per Inverter I-90, located in Zone A.",Inverter I-90; Zone A; Boiler Unit B-07,System Upgrade
+RPT-1948,"Audit reveals ISO 50001 has exceeded permissible limits as per HVAC System, located in Control Room.",Control Room; HVAC System; ISO 50001,Regulatory Violation
+RPT-1949,"Audit reveals Inverter I-90 has exceeded permissible limits as per IEC 60034 Standard, located in Substation Delta.",Inverter I-90; Substation Delta; IEC 60034 Standard,Regulatory Violation
+RPT-1950,Performance report of Boiler Unit B-07 in Unit 5 aligns with audit benchmarks from Inverter I-90.,Inverter I-90; Unit 5; Boiler Unit B-07,Maintenance Recommendation
+RPT-1951,Inspection report indicates Transformer T-101 failed operational test at Unit 5. Refer to Cooling Tower for compliance.,Transformer T-101; Unit 5; Cooling Tower,Maintenance Recommendation
+RPT-1952,Substation Delta showed efficiency losses in Inverter I-90. Suggested upgrade per Cooling Tower.,Inverter I-90; Cooling Tower; Substation Delta,Maintenance Recommendation
+RPT-1953,Unit 5 showed efficiency losses in Power Station Alpha. Suggested upgrade per Boiler Unit B-07.,Power Station Alpha; Unit 5; Boiler Unit B-07,Energy Efficiency
+RPT-1954,Routine audit of Inverter I-90 confirms adherence to Main Control Panel. No corrective measures required.,Inverter I-90; Zone A; Main Control Panel,System Upgrade
+RPT-1955,"Audit reveals Transformer T-101 has exceeded permissible limits as per HVAC System, located in Plant 3.",Transformer T-101; HVAC System; Plant 3,Energy Efficiency
+RPT-1956,Transformer T-101 recommends immediate shutdown of ISO 50001 at Control Room due to critical faults.,Transformer T-101; Control Room; ISO 50001,Energy Efficiency
+RPT-1957,Main Control Panel recommends immediate shutdown of Transformer T-101 at Unit 5 due to critical faults.,Transformer T-101; Unit 5; Main Control Panel,Maintenance Recommendation
+RPT-1958,HVAC System recommends immediate shutdown of Main Control Panel at Sector 12 due to critical faults.,HVAC System; Sector 12; Main Control Panel,Energy Efficiency
+RPT-1959,Power Station Alpha recommends immediate shutdown of Main Control Panel at Plant 3 due to critical faults.,Power Station Alpha; Main Control Panel; Plant 3,Safety Compliance
+RPT-1960,Energy audit suggests that HVAC System is outdated. Replacement advised under Transformer T-101 guidelines.,Transformer T-101; HVAC System; Zone A,Regulatory Violation
+RPT-1961,"Audit highlights safety issues in HVAC System, violating Inverter I-90. Maintenance is due within 30 days at Unit 5.",Inverter I-90; Unit 5; HVAC System,Energy Efficiency
+RPT-1962,Energy audit suggests that Main Control Panel is outdated. Replacement advised under IEC 60034 Standard guidelines.,Zone A; Main Control Panel; IEC 60034 Standard,Maintenance Recommendation
+RPT-1963,Zone A showed efficiency losses in Power Station Alpha. Suggested upgrade per Power Station Alpha.,Power Station Alpha; Zone A,Regulatory Violation
+RPT-1964,Routine audit of ISO 50001 confirms adherence to Load Balancer L-55. No corrective measures required.,Load Balancer L-55; Sector 12; ISO 50001,Energy Efficiency
+RPT-1965,Sector 12 showed efficiency losses in HVAC System. Suggested upgrade per Inverter I-90.,Inverter I-90; HVAC System; Sector 12,System Upgrade
+RPT-1966,IEC 60034 Standard recommends immediate shutdown of HVAC System at Substation Delta due to critical faults.,HVAC System; Substation Delta; IEC 60034 Standard,System Upgrade
+RPT-1967,ISO 50001 at Plant 3 passed quality checks based on standards defined in Cooling Tower.,ISO 50001; Plant 3; Cooling Tower,Safety Compliance
+RPT-1968,"Audit highlights safety issues in HVAC System, violating IEC 60034 Standard. Maintenance is due within 30 days at Sector 12.",HVAC System; Sector 12; IEC 60034 Standard,Regulatory Violation
+RPT-1969,"Audit highlights safety issues in HVAC System, violating Inverter I-90. Maintenance is due within 30 days at Unit 5.",Inverter I-90; Unit 5; HVAC System,Safety Compliance
+RPT-1970,Energy audit suggests that Inverter I-90 is outdated. Replacement advised under Cooling Tower guidelines.,Inverter I-90; Sector 12; Cooling Tower,Safety Compliance
+RPT-1971,"Audit reveals Main Control Panel has exceeded permissible limits as per Cooling Tower, located in Substation Delta.",Cooling Tower; Main Control Panel; Substation Delta,System Upgrade
+RPT-1972,Routine audit of Cooling Tower confirms adherence to Load Balancer L-55. No corrective measures required.,Load Balancer L-55; Cooling Tower; Substation Delta,Maintenance Recommendation
+RPT-1973,Cooling Tower recommends immediate shutdown of HVAC System at Control Room due to critical faults.,Control Room; HVAC System; Cooling Tower,Energy Efficiency
+RPT-1974,Energy audit suggests that ISO 50001 is outdated. Replacement advised under Cooling Tower guidelines.,Zone A; ISO 50001; Cooling Tower,Energy Efficiency
+RPT-1975,Inspection report indicates IEC 60034 Standard failed operational test at Sector 12. Refer to Inverter I-90 for compliance.,Inverter I-90; Sector 12; IEC 60034 Standard,Energy Efficiency
+RPT-1976,The inspection of Main Control Panel at Plant 3 revealed non-compliance with Inverter I-90. Immediate action is recommended to avoid downtime.,Inverter I-90; Main Control Panel; Plant 3,Regulatory Violation
+RPT-1977,"Audit reveals HVAC System has exceeded permissible limits as per Inverter I-90, located in Sector 12.",Inverter I-90; HVAC System; Sector 12,Regulatory Violation
+RPT-1978,IEC 60034 Standard at Plant 3 passed quality checks based on standards defined in Transformer T-101.,Transformer T-101; Plant 3; IEC 60034 Standard,Energy Efficiency
+RPT-1979,Main Control Panel at Plant 3 passed quality checks based on standards defined in ISO 50001.,ISO 50001; Main Control Panel; Plant 3,Safety Compliance
+RPT-1980,"Audit highlights safety issues in Cooling Tower, violating Power Station Alpha. Maintenance is due within 30 days at Plant 3.",Power Station Alpha; Cooling Tower; Plant 3,Energy Efficiency
+RPT-1981,Performance report of Power Station Alpha in Substation Delta aligns with audit benchmarks from Inverter I-90.,Power Station Alpha; Inverter I-90; Substation Delta,Regulatory Violation
+RPT-1982,HVAC System at Zone A passed quality checks based on standards defined in Boiler Unit B-07.,HVAC System; Zone A; Boiler Unit B-07,Energy Efficiency
+RPT-1983,Inspection report indicates Boiler Unit B-07 failed operational test at Sector 12. Refer to Load Balancer L-55 for compliance.,Load Balancer L-55; Sector 12; Boiler Unit B-07,Safety Compliance
+RPT-1984,Energy audit suggests that HVAC System is outdated. Replacement advised under HVAC System guidelines.,HVAC System; Plant 3,Regulatory Violation
+RPT-1985,Boiler Unit B-07 at Zone A passed quality checks based on standards defined in Power Station Alpha.,Power Station Alpha; Zone A; Boiler Unit B-07,Energy Efficiency
+RPT-1986,Power Station Alpha at Unit 5 passed quality checks based on standards defined in Main Control Panel.,Power Station Alpha; Unit 5; Main Control Panel,Energy Efficiency
+RPT-1987,Routine audit of Load Balancer L-55 confirms adherence to Load Balancer L-55. No corrective measures required.,Load Balancer L-55; Zone A,Energy Efficiency
+RPT-1988,Zone A showed efficiency losses in ISO 50001. Suggested upgrade per ISO 50001.,Zone A; ISO 50001,Energy Efficiency
+RPT-1989,The inspection of HVAC System at Control Room revealed non-compliance with Load Balancer L-55. Immediate action is recommended to avoid downtime.,Load Balancer L-55; HVAC System; Control Room,Maintenance Recommendation
+RPT-1990,Performance report of ISO 50001 in Sector 12 aligns with audit benchmarks from ISO 50001.,Sector 12; ISO 50001,System Upgrade
+RPT-1991,Boiler Unit B-07 recommends immediate shutdown of IEC 60034 Standard at Unit 5 due to critical faults.,Unit 5; Boiler Unit B-07; IEC 60034 Standard,Maintenance Recommendation
+RPT-1992,Inspection report indicates Load Balancer L-55 failed operational test at Control Room. Refer to Power Station Alpha for compliance.,Power Station Alpha; Load Balancer L-55; Control Room,Regulatory Violation
+RPT-1993,The inspection of Power Station Alpha at Sector 12 revealed non-compliance with Boiler Unit B-07. Immediate action is recommended to avoid downtime.,Power Station Alpha; Sector 12; Boiler Unit B-07,Safety Compliance
+RPT-1994,Zone A showed efficiency losses in Main Control Panel. Suggested upgrade per Transformer T-101.,Transformer T-101; Zone A; Main Control Panel,Regulatory Violation
+RPT-1995,The inspection of Cooling Tower at Substation Delta revealed non-compliance with Cooling Tower. Immediate action is recommended to avoid downtime.,Cooling Tower; Substation Delta,System Upgrade
+RPT-1996,Routine audit of Boiler Unit B-07 confirms adherence to Transformer T-101. No corrective measures required.,Transformer T-101; Boiler Unit B-07; Substation Delta,System Upgrade
+RPT-1997,Cooling Tower recommends immediate shutdown of Boiler Unit B-07 at Zone A due to critical faults.,Zone A; Cooling Tower; Boiler Unit B-07,Maintenance Recommendation
+RPT-1998,Boiler Unit B-07 at Control Room passed quality checks based on standards defined in Boiler Unit B-07.,Control Room; Boiler Unit B-07,Regulatory Violation
+RPT-1999,Energy audit suggests that Transformer T-101 is outdated. Replacement advised under Load Balancer L-55 guidelines.,Transformer T-101; Load Balancer L-55; Zone A,Maintenance Recommendation
