@@ -1,65 +1,25 @@
 import os
 import re
-import json
 import glob
-import pandas as pd  # Critical: Added for Kaggle CSV support
+import pandas as pd
 from dotenv import load_dotenv
 
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
-from langchain_community.document_loaders import PyPDFLoader
 
 # --- CONFIGURATION ---
 load_dotenv()
-from shared.config import LLM_BACKEND, get_embeddings
+from shared.config import get_embeddings
 
 COLLECTION_NAME = "vera_documents"
+# Define a persistent path in your project folder
+CHROMA_PATH = os.path.join(os.path.dirname(__file__), "chroma_db") 
 SOURCE_DOCUMENTS_DIR = os.path.join(os.path.dirname(__file__), "source_documents")
-
-# --- FILE TYPE MAPPINGS ---
-FILE_TYPE_TO_SOURCE = {
-    "Spec": "datasheet",
-    "Email": "email",
-    "SOP": "sop",
-    "DB": "db_info",
-    "Data": "dataset",  # New mapping for CSV data
-}
-
-FILE_TYPE_DEFAULT_RBAC = {
-    "Email": "internal_only",
-    "Data": "public",    # Default Kaggle CSVs to public
-}
 
 def sanitize_text(text: str) -> str:
     if not text: return ""
     return re.sub('[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', text)
-
-def parse_filename(filename: str) -> dict:
-    """Parse Domain_Type_Version_Access.ext or provide defaults for CSVs."""
-    name, ext = os.path.splitext(filename)
-    parts = name.split("_")
-
-    # Fallback for simple CSV names (e.g., "patient_data.csv")
-    if len(parts) < 4:
-        return {
-            "domain": "general",
-            "source": "dataset" if ext.lower() == ".csv" else "document",
-            "version": "1.0",
-            "access_level": "public",
-            "document_id": name,
-            "title": name.replace("_", " "),
-        }
-
-    # Standard VERA naming logic
-    return {
-        "domain": parts[0].lower(),
-        "source": FILE_TYPE_TO_SOURCE.get(parts[1], "document"),
-        "version": parts[2].lstrip("v"),
-        "access_level": parts[3].lower() if len(parts) > 3 else "public",
-        "document_id": name,
-        "title": name.replace("_", " "),
-    }
 
 def load_domain_documents() -> list[dict]:
     all_docs = []
@@ -69,50 +29,50 @@ def load_domain_documents() -> list[dict]:
         domain_path = os.path.join(SOURCE_DOCUMENTS_DIR, domain_dir)
         if not os.path.isdir(domain_path) or domain_dir.startswith(("_", ".")): continue
 
-        print(f"\n  📂 Domain: {domain_dir}/")
+        actual_domain = domain_dir.lower() 
+        print(f"\n 📂 Processing Domain: {actual_domain}")
         
-        # Support for .txt, .pdf, and now .csv
-        patterns = ["*.txt", "*.pdf", "*.csv"]
+        # Ingest CSV, PDF, TXT
+        patterns = ["*.csv", "*.pdf", "*.txt"]
         all_filepaths = []
         for p in patterns:
             all_filepaths.extend(glob.glob(os.path.join(domain_path, p)))
         
         for filepath in sorted(all_filepaths):
             filename = os.path.basename(filepath)
-            ext = os.path.splitext(filename)[1].lower()
-            parsed = parse_filename(filename)
+            if ":Zone.Identifier" in filename: continue
 
             try:
-                if ext == ".csv":
-                    # Convert CSV rows to a readable string for the LLM
-                    df = pd.read_csv(filepath).head(50) 
+                if filename.endswith(".csv"):
+                    df = pd.read_csv(filepath).head(100)
                     content = sanitize_text(df.to_string(index=False))
-                elif ext == ".pdf":
-                    loader = PyPDFLoader(filepath)
-                    content = sanitize_text("\n".join([d.page_content for d in loader.load()]))
                 else:
                     with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
                         content = sanitize_text(f.read())
                 
                 if content:
-                    parsed["domain"] = domain_dir
-                    all_docs.append({"content": content, "metadata": parsed})
-                    print(f"    ✅ {filename} ingested")
+                    # FORCE correct domain metadata
+                    metadata = {"domain": actual_domain, "source": filename}
+                    all_docs.append({"content": content, "metadata": metadata})
+                    print(f"    ✅ {filename} tagged as: {actual_domain}")
             except Exception as e:
                 print(f"    ❌ Error: {filename} -> {e}")
-
     return all_docs
 
-# --- PIPELINE WRAPPERS ---
-def ingest_all() -> Chroma:
+def ingest_all():
     raw_docs = load_domain_documents()
     docs = [Document(page_content=d["content"], metadata=d["metadata"]) for d in raw_docs]
-    
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=600, chunk_overlap=100)
     chunks = splitter.split_documents(docs)
     
-    print(f"[INFO] Vector store created with {len(chunks)} chunks.")
-    return Chroma.from_documents(documents=chunks, embedding=get_embeddings(), collection_name=COLLECTION_NAME)
+    print(f"\n[INFO] Saving {len(chunks)} chunks to {CHROMA_PATH}...")
+    # CRITICAL: persist_directory ensures data stays on disk
+    return Chroma.from_documents(
+        documents=chunks, 
+        embedding=get_embeddings(), 
+        collection_name=COLLECTION_NAME,
+        persist_directory=CHROMA_PATH
+    )
 
 if __name__ == "__main__":
     ingest_all()
