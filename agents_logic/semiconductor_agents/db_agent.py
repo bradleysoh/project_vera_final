@@ -218,7 +218,7 @@ def run(state: GraphState) -> dict:
 
     # --- Guard Clause: Fast-fail if intent doesn't need DB ---
     intent = state.get("intent", "")
-    if intent not in ("db_query", "cross_reference", ""):
+    if intent not in ("db_query", "cross_reference", "spec_retrieval", ""):
         print(f"[DB Agent] ⏭️ Fast-fail: intent='{intent}' is not DB-related")
         return {}
 

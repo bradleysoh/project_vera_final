@@ -59,13 +59,16 @@ def _source_priority(source_type: str) -> int:
 def _build_fact_index(
     facts: list[dict],
     target_entity: str,
+    target_attribute: str = "GENERAL",
 ) -> dict[str, list[ExtractedFact]]:
     """
     Group facts by attribute, filtering to the target entity.
-    Returns: {"attribute_name": [ExtractedFact, ...]}
+    Includes 'soft matching' for attributes to handle naming mismatches
+    (e.g. 'voltage' vs 'voltage_max').
     """
     index: dict[str, list[ExtractedFact]] = {}
     target_lower = target_entity.lower() if target_entity != "GENERAL" else ""
+    attr_target_lower = target_attribute.lower().strip() if target_attribute != "GENERAL" else ""
 
     for fd in facts:
         try:
@@ -77,12 +80,26 @@ def _build_fact_index(
         if target_lower and target_lower not in fact.entity.lower():
             continue
 
-        attr_key = fact.attribute.lower().strip()
-        if attr_key not in index:
-            index[attr_key] = []
-        index[attr_key].append(fact)
+        attr_raw = fact.attribute.lower().strip()
+        
+        # Soft-matching logic:
+        # 1. If attr matches target_attribute exactly or as a prefix/suffix
+        # 2. If attr is 'general_info' or 'db_result', it might be a catch-all
+        # 3. Canonicalize to target_attribute if it's a strong match
+        
+        final_key = attr_raw
+        if attr_target_lower:
+            if attr_target_lower in attr_raw or attr_raw in attr_target_lower:
+                final_key = attr_target_lower
+        elif attr_raw in ("general_info", "db_result", "database_record"):
+            final_key = "general_info"
+
+        if final_key not in index:
+            index[final_key] = []
+        index[final_key].append(fact)
 
     return index
+
 
 
 def _resolve_conflicts(
@@ -228,9 +245,9 @@ def run(state: GraphState) -> dict:
           f"db={len(db_facts)}")
 
     # Build indexes by attribute (entity-filtered)
-    official_idx = _build_fact_index(official_facts, target_entity)
-    informal_idx = _build_fact_index(informal_facts, target_entity)
-    db_idx = _build_fact_index(db_facts, target_entity)
+    official_idx = _build_fact_index(official_facts, target_entity, state.get("target_attribute", "GENERAL"))
+    informal_idx = _build_fact_index(informal_facts, target_entity, state.get("target_attribute", "GENERAL"))
+    db_idx = _build_fact_index(db_facts, target_entity, state.get("target_attribute", "GENERAL"))
 
     # Gather all attribute keys across all sources
     all_attributes = set(official_idx.keys()) | set(informal_idx.keys()) | set(db_idx.keys())

@@ -147,7 +147,7 @@ def get_llm(backend: str = ""):
             model=model_name,
             base_url=OLLAMA_BASE_URL,
             temperature=0.1,
-            timeout=120,
+            timeout=60,
         )
 
     elif backend == "groq":
@@ -348,11 +348,20 @@ def retrieve_with_rbac(
     else:
         filter_conditions = {"$and": conditions}
 
+    # Diagnostic logging for filters
+    print(f"[RBAC] Final filter: {filter_conditions}")
+    metadata_log += f"[RBAC] Final search filter: {filter_conditions}\n"
+
     # --- Execute retrieval ---
-    if filter_conditions:
-        results = vector_store.similarity_search(query, k=k, filter=filter_conditions)
+    vs = get_vector_store()
+    if vs:
+        if filter_conditions:
+            results = vs.similarity_search(query, k=k, filter=filter_conditions)
+        else:
+            results = vs.similarity_search(query, k=k)
     else:
-        results = vector_store.similarity_search(query, k=k)
+        results = []
+        metadata_log += "[RBAC] ❌ Vector store not initialized. Results will be empty.\n"
 
     metadata_log += f"[RBAC] Retrieved {len(results)} documents\n"
 
@@ -519,6 +528,34 @@ def rerank_documents(
 
 llm = get_llm()
 
-# Vector store: In-memory ChromaDB populated at startup via ingestion pipeline
-from ingestion import ingest_all  # noqa: E402
-vector_store = ingest_all()
+# Vector store singleton (lazy initialization)
+_vector_store = None
+
+def get_vector_store():
+    """Lazy loader for vector store."""
+    global _vector_store
+    if _vector_store is None:
+        from shared.config import get_embeddings
+        # Hardcoded paths consistent with ingestion.py
+        p_root = os.path.dirname(os.path.dirname(__file__))
+        c_path = os.path.join(p_root, "chroma_db")
+        
+        if os.path.exists(c_path):
+            _vector_store = Chroma(
+                persist_directory=c_path,
+                embedding_function=get_embeddings(),
+                collection_name="vera_documents"
+            )
+        else:
+            # Fallback for systems that haven't run ingestion yet
+            # but don't auto-run it here because of circular imports
+            print("[CONFIG] ⚠️ Vector store not found on disk. Run 'python3 ingestion.py' first.")
+            # return a dummy or empty Chroma if needed, or raise
+            return None
+    return _vector_store
+
+# Alias for backward compatibility (lazy)
+@property
+def vector_store():
+    return get_vector_store()
+

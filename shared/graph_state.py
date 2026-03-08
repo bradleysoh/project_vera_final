@@ -67,7 +67,8 @@ class GraphState(TypedDict):
 
     # --- Discrepancy & Response ---
     discrepancy_verdict: dict  # Serialized DiscrepancyVerdict
-    discrepancy_report: str    # Legacy text report
+    discrepancy_report: str    # Legacy text report (Discrepancy Agent)
+    discrepancy_report_summary: str  # Summarized report (Response Agent)
     retrieval_confidence: str  # HIGH / MEDIUM / LOW
 
     # --- Agent Infrastructure (Accumulated via Reducers) ---

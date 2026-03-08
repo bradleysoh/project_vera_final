@@ -605,6 +605,7 @@ def process_query(question: str, role: str, domain: str, max_refinements: int = 
         "db_result": "",
         "db_data": "",
         "discrepancy_report": "",
+        "discrepancy_report_summary": "",
         "next_agent": "",
         "thought_process": [],
         "refinement_count": 0,
@@ -758,6 +759,7 @@ def process_query(question: str, role: str, domain: str, max_refinements: int = 
         "flagged": flagged,
         "route": route,
         "discrepancy_report": discrepancy_report,
+        "discrepancy_report_summary": final_state.get("discrepancy_report_summary", ""),
         "has_discrepancy": has_discrepancy,
         "agent_trace": agent_trace,
         "thought_process": final_state.get("thought_process", []),
@@ -817,7 +819,13 @@ if prompt := st.chat_input("Ask VERA a question..."):
             else:
                 st.info("✅ **AUDIT COMPLETE — NO CONFLICTS FOUND**")
             
-            with st.expander("📋 View Discrepancy Report", expanded=has_real_conflict):
+            # Render Audit Summary directly below response if it exists
+            if result.get("discrepancy_report_summary"):
+                st.markdown("---")
+                st.markdown("### 🔍 Audit Summary")
+                st.info(sanitize_text(result["discrepancy_report_summary"]))
+
+            with st.expander("📋 View Detailed Findings", expanded=has_real_conflict):
                 st.markdown(sanitize_text(result["discrepancy_report"]))
                 
                 if has_real_conflict:

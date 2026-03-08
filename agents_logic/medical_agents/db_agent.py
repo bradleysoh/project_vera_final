@@ -1,8 +1,8 @@
 """
 ================================================================================
-Database Agent — Domain-Generic NL-to-SQL Retrieval (Precision Mode)
+Medical DB Agent — Domain-Generic NL-to-SQL Retrieval (Precision Mode)
 ================================================================================
-DOMAIN: semiconductor (also reusable for any domain with .db files)
+DOMAIN: medical (also reusable for any domain with .db files)
 RESPONSIBILITY: Auto-discover SQLite databases, convert NL to PRECISION SQL,
                 and provide authoritative structured results.
 
@@ -55,42 +55,17 @@ def _is_schema_query(question: str) -> bool:
 
 _SQL_PROMPT = ChatPromptTemplate.from_messages([
     ("human", (
-        "You are a SQL expert. Convert the user's question into a PRECISION "
-        "SQL query for a SQLite database.\n\n"
-        "DATABASE SCHEMA (ONLY use tables and columns from this schema):\n"
-        "{schema}\n\n"
-        "--- ABSTRACT EXAMPLES (do NOT use these table/column names literally) ---\n\n"
-        "Example 1 — Entity lookup:\n"
-        "Q: Tell me about entity ENTITY_X\n"
-        "REASONING: ENTITY_X appears to be a [type]. Table '[table_from_schema]' "
-        "has column '[col_from_schema]' that stores [type] identifiers.\n"
-        "SQL: SELECT * FROM [table_from_schema] WHERE [col_from_schema] "
-        "LIKE '%ENTITY_X%';\n\n"
-        "Example 2 — Aggregation:\n"
-        "Q: What is the average VALUE_Y across all records?\n"
-        "REASONING: VALUE_Y maps to column '[numeric_col]' in table '[table_from_schema]'.\n"
-        "SQL: SELECT AVG([numeric_col]) AS avg_value FROM [table_from_schema];\n\n"
-        "Example 3 — Cross-table join:\n"
-        "Q: Show details for entity ENTITY_Z from related data\n"
-        "REASONING: ENTITY_Z appears in '[table_a]'.'[col_a]'. Related "
-        "data is in '[table_b]' joined on '[join_col]'.\n"
-        "SQL: SELECT a.*, b.* FROM [table_a] a "
-        "JOIN [table_b] b ON a.[join_col] = b.[join_col] "
-        "WHERE a.[col_a] LIKE '%ENTITY_Z%';\n\n"
-        "--- END ABSTRACT EXAMPLES ---\n\n"
-        "ENTITY TYPE HINT: {entity_type_hint}\n\n"
-        "USER QUESTION: {question}\n\n"
+        "You are a SQL expert for SQLite. Convert the user's question into a SELECT query.\n\n"
+        "DATABASE SCHEMA:\n{schema}\n\n"
         "STRICT RULES:\n"
         "1. {entity_instruction}\n"
-        "2. SCHEMA BINDING: Before writing SQL, verify that every table and "
-        "column you reference EXISTS in the DATABASE SCHEMA above. "
-        "If a table or column does not exist in the schema, do NOT use it.\n"
-        "3. Return ONLY the SQL statement, no explanation.\n"
-        "4. Use only SELECT statements.\n"
-        "5. Use LIKE for flexible matching if the identifier is not exact.\n"
-        "6. If no table in the schema logically matches the entity type or "
-        "question, return: SELECT 'NO_RELEVANT_TABLE' AS result;\n"
-        "7. NEVER invent table or column names not present in the schema.\n"
+        "2. Use ONLY table and column names from the schema above.\n"
+        "3. NEVER prefix table names with the database filename (no 'db.table').\n"
+        "4. Return ONLY the SQL statement, no explanation.\n"
+        "5. SAMPLING RULE: If the user asks for 'first X rows' or a 'sample' (even if they ask for an average of them), return RAW DATA (SELECT *) with LIMIT X. Do NOT attempt to aggregate in SQL for small samples.\n"
+        "6. If no specific entity is mentioned, DO NOT include a WHERE clause for the category name.\n"
+        "7. NEVER use placeholder names like 'ENTITY_X' or '[table_name]'. Use real names.\n\n"
+        "USER QUESTION: {question}\n"
     ))
 ])
 
@@ -100,7 +75,7 @@ _SQL_FIX_PROMPT = ChatPromptTemplate.from_messages([
         "DATABASE SCHEMA:\n{schema}\n\n"
         "ORIGINAL SQL:\n{sql}\n\n"
         "ERROR MESSAGE:\n{error}\n\n"
-        "STRICT RULE: Do NOT prefix table names with database file names.\n"
+        "STRICT RULE: Do NOT prefix table names with database file names (e.g. no 'medical.db.table').\n"
         "Return ONLY the corrected SQL statement, no explanation.\n"
         "Use only columns and tables that exist in the schema above."
     ))
@@ -112,12 +87,15 @@ _MAX_SQL_RETRIES = 3
 def _sanitize_sql(sql: str) -> str:
     """
     Remove database filename prefixes from SQL (e.g. 'products.db.table_name' -> 'table_name').
-    LLMs like Gemini often add these despite instructions.
+    Handles quoted identifiers like "medical_auto.db"."table".
     """
-    # Matches patterns like words followed by .db. or .sqlite.
-    sql = re.sub(r'\b[\w-]+\.(?:db|sqlite|sqlite3)\.', '', sql, flags=re.IGNORECASE)
-    # Also catch double prefixes like 'products.db."table"'
-    sql = re.sub(r'\b[\w-]+\.(?:db|sqlite|sqlite3)\."', '"', sql, flags=re.IGNORECASE)
+    # 1. Remove prefixes with .db. (e.g., medical.db.table or "medical.db".table)
+    sql = re.sub(r'(?:["\'`]?[\w-]+\.(?:db|sqlite|sqlite3)["\'`]?)\.', '', sql, flags=re.IGNORECASE)
+    
+    # 2. Convert all backticks/single quotes around identifiers to double quotes for SQLite standard
+    # But be careful not to break actual string literals (very basic check)
+    sql = sql.replace('`', '"')
+    
     return sql.strip()
 
 
@@ -164,7 +142,7 @@ def _self_correct_sql(
                     f"SQL error (attempt {attempt + 1}): {last_error[:80]}... retrying"
                 )
                 print(
-                    f"[DB Agent] ⚠️ SQL error (attempt {attempt + 1}/{_MAX_SQL_RETRIES}): "
+                    f"[Medical DB Agent] ⚠️ SQL error (attempt {attempt + 1}/{_MAX_SQL_RETRIES}): "
                     f"{last_error[:100]}"
                 )
                 metadata_log += f"[DB] SQL error (attempt {attempt + 1}): {last_error}\n"
@@ -184,7 +162,7 @@ def _self_correct_sql(
                     raw_sql = sql_match.group(1).strip() if sql_match else raw_fix.strip()
                     current_sql = _sanitize_sql(raw_sql)
                     metadata_log += f"[DB] Corrected SQL: {current_sql}\n"
-                    print(f"[DB Agent] 🔧 Corrected SQL: {current_sql[:100]}")
+                    print(f"[Medical DB Agent] 🔧 Corrected SQL: {current_sql[:100]}")
                 except Exception as fix_err:
                     thinking_steps.append(f"SQL fix failed: {fix_err}")
                     break
@@ -198,7 +176,7 @@ def _self_correct_sql(
     return [], [], metadata_log, last_error
 
 
-@vera_agent("Semiconductor DB Agent")
+@vera_agent("Medical DB Agent")
 def run(state: GraphState) -> dict:
     """
     DB AGENT: Precision NL-to-SQL retrieval with self-correction.
@@ -212,14 +190,14 @@ def run(state: GraphState) -> dict:
     """
     question = state["question"]
     user_role = state["user_role"]
-    user_domain = state.get("user_domain", "semiconductor")
+    user_domain = state.get("user_domain", "medical")
     target_entity = state.get("target_entity", "GENERAL")
     entity_type = state.get("entity_type", "GENERAL")
 
     # --- Guard Clause: Fast-fail if intent doesn't need DB ---
     intent = state.get("intent", "")
-    if intent not in ("db_query", "cross_reference", ""):
-        print(f"[DB Agent] ⏭️ Fast-fail: intent='{intent}' is not DB-related")
+    if intent not in ("db_query", "cross_reference", "spec_retrieval", ""):
+        print(f"[Medical DB Agent] ⏭️ Fast-fail: intent='{intent}' is not DB-related")
         return {}
 
     thinking_steps = []
@@ -231,7 +209,7 @@ def run(state: GraphState) -> dict:
     if not db_paths:
         msg = f"No databases found for domain '{user_domain}'."
         thinking_steps.append(f"Inspecting source_documents/{user_domain}/... {msg}")
-        print(f"[DB Agent] ⚠️ {msg}")
+        print(f"[Medical DB Agent] ⚠️ {msg}")
         return {
             "documents": state.get("documents", []),
             "metadata_log": metadata_log + f"[DB] {msg}\n",
@@ -244,7 +222,7 @@ def run(state: GraphState) -> dict:
         f"Inspecting source_documents/{user_domain}/... "
         f"found databases: {db_names}"
     )
-    print(f"[DB Agent] Found {len(db_paths)} database(s) for '{user_domain}': {db_names}")
+    print(f"[Medical DB Agent] Found {len(db_paths)} database(s) for '{user_domain}': {db_names}")
 
     # --- Step 2: Get schemas for all databases ---
     all_schemas = get_all_schemas(user_domain)
@@ -276,7 +254,7 @@ def run(state: GraphState) -> dict:
     thinking_steps.append(
         f"Analyzing query context... Target Entity: {entity} (type: {entity_type})"
     )
-    print(f"[DB Agent] 🎯 Target Entity: {entity} (type: {entity_type})")
+    print(f"[Medical DB Agent] 🎯 Target Entity: {entity} (type: {entity_type})")
 
     # Build entity type hint for schema-table mapping
     if entity_type and entity_type.upper() != "GENERAL":
@@ -289,13 +267,18 @@ def run(state: GraphState) -> dict:
         entity_type_hint = "No specific entity type detected."
 
     # Construct specific instructions based on entity presence
-    entity_instruction = ""
-    if not is_general:
+    # CATEGORY RECOGNITION: If the entity looks like a broad category, don't force WHERE.
+    CATEGORIES = {"metrics", "records", "data", "list", "all", "general", "clinical metrics", "medical records", "all items"}
+    if not is_general and entity.lower() not in CATEGORIES:
         entity_instruction = (
-            f"IMPORTANT: The user is asking specifically about '{entity}'.\n"
-            f"Your SQL MUST include a WHERE clause to filter for '{entity}'.\n"
-            f"Use columns from the SCHEMA ABOVE that could match this entity.\n"
-            f"DO NOT return data for other entities.\n"
+            f"Filter specifically for '{entity}' using a WHERE clause. "
+            "Do NOT include other entities."
+        )
+    else:
+        entity_instruction = (
+            "The user is asking for general information or a category. "
+            "DO NOT use a WHERE filter for the category name itself. "
+            "Provide a sample of data using LIMIT if appropriate."
         )
 
     thinking_steps.append(f"Generating SQL for: '{question[:60]}'...")
@@ -324,7 +307,7 @@ def run(state: GraphState) -> dict:
                         sql_queries.append((db_path, db_name, sql))
                 conn.close()
             except Exception as e:
-                print(f"[DB Agent] Schema scan error for {db_name}: {e}")
+                print(f"[Medical DB Agent] Schema scan error for {db_name}: {e}")
 
         # Execute deterministic queries
         all_results = []
@@ -336,9 +319,9 @@ def run(state: GraphState) -> dict:
                 if rows:
                     result_text = format_results(columns, rows)
                     all_results.append(f"[{db_name}] {result_text}")
-                    print(f"[DB Agent] ✅ {db_name}: {len(rows)} rows (deterministic)")
+                    print(f"[Medical DB Agent] ✅ {db_name}: {len(rows)} rows (deterministic)")
             except Exception as e:
-                print(f"[DB Agent] ❌ {db_name}: {e}")
+                print(f"[Medical DB Agent] ❌ {db_name}: {e}")
 
         if all_results:
             combined = "\n\n".join(all_results)
@@ -369,7 +352,7 @@ def run(state: GraphState) -> dict:
 
     thinking_steps.append(f"Executing SQL: {sql[:100]}...")
     metadata_log += f"[DB] SQL: {sql}\n"
-    print(f"[DB Agent] Generated SQL: {sql}")
+    print(f"[Medical DB Agent] Generated SQL: {sql}")
 
     # --- Step 4: Execute against all databases with self-correction ---
     all_results = []
@@ -388,7 +371,7 @@ def run(state: GraphState) -> dict:
 
         # Table doesn't exist in this DB — skip silently to next
         if last_err and "no such table" in last_err.lower():
-            print(f"[DB Agent] ⏭️ {db_name}: table not found, trying next DB")
+            print(f"[Medical DB Agent] ⏭️ {db_name}: table not found, trying next DB")
             continue
 
         if rows:
@@ -396,7 +379,7 @@ def run(state: GraphState) -> dict:
             all_results.append(f"[{db_name}]\n{result_text}")
             total_rows += len(rows)
             metadata_log += f"[DB] {db_name}: {len(rows)} rows returned\n"
-            print(f"[DB Agent] ✅ {db_name}: {len(rows)} rows")
+            print(f"[Medical DB Agent] ✅ {db_name}: {len(rows)} rows")
         elif not columns and not rows:
             # _self_correct_sql exhausted retries — already logged
             pass

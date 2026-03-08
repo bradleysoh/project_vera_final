@@ -30,10 +30,10 @@ import importlib
 # Agent modules matching these roles are wired into the graph as nodes.
 # Each domain folder should have at least these agent types:
 EXPECTED_AGENT_ROLES = {
-    "tech_spec_agent": "retrieve_specs",       # node name suffix
-    "compliance_agent": "retrieve_compliance",  # node name suffix
-    "discrepancy_agent": "check_discrepancy",   # node name suffix
-    "db_agent": "query_database",              # node name suffix
+    "official_docs_agent": "retrieve_official",
+    "informal_docs_agent": "retrieve_informal",
+    "discrepancy_agent": "check_discrepancy",
+    "db_agent": "query_database",
 }
 
 
