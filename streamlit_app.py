@@ -31,6 +31,7 @@ from shared.config import (
 from shared.graph_state import GraphState
 from shared.dynamic_loader import get_available_domains
 from shared.email_utils import send_alert_email, is_email_configured
+from shared.system_logging import log_vera_step
 
 # ============================================================================
 # PAGE CONFIG
@@ -660,6 +661,9 @@ def process_query(question: str, role: str, domain: str, max_refinements: int = 
                 final_state.update(updates)
         
         status.update(label="✅ Complete", state="complete", expanded=False)
+                
+    # --- Centralized Logging ---
+    log_vera_step(final_state, domain)
                 
 
 

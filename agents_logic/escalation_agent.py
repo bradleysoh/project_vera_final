@@ -39,19 +39,26 @@ def run(state: GraphState) -> dict:
     print(f"[Escalation Agent] ⚠️  Escalation triggered!")
 
     # Determine escalation reason from router metadata
-    is_out_of_domain = "OUT-OF-DOMAIN" in router_log
+    # Check for keywords instead of exact string match to be more flexible
+    is_out_of_domain = "DOMAIN" in router_log.upper() and "UNRESOLVED" in router_log.upper()
+    is_security = "SECURITY" in router_log.upper() or "RESTRICTED" in router_log.upper()
 
     if is_out_of_domain:
         reason_context = (
             f"This is an OUT-OF-DOMAIN escalation.\n"
             f"User's assigned domain: {user_domain}\n"
-            f"The query appears to target a different domain.\n"
+            f"The query appears to target a domain that the system cannot resolve or authorize.\n"
         )
-    else:
+    elif is_security:
         reason_context = (
             f"This is a SECURITY escalation.\n"
             f"The user with role '{user_role}' attempted to access "
-            f"restricted information.\n"
+            f"information that is restricted for their access level.\n"
+        )
+    else:
+        reason_context = (
+            f"This is a GENERAL escalation.\n"
+            f"The system has flagged this query for manual review due to ambiguity or low confidence.\n"
         )
 
     # Generate a detailed escalation summary using LLM
