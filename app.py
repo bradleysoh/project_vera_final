@@ -6,7 +6,7 @@ Virtual Engineering Review Agent
 
 This is the CENTRAL app.py that dynamically discovers and imports agent modules
 from domain subfolders under agents_logic/ (e.g., semiconductor_agents/,
-medical_agents/) and connects them using LangGraph's StateGraph.
+public_health_agents/) and connects them using LangGraph's StateGraph.
 
 Architecture Overview:
   START -> route_query -> (conditional)
@@ -355,7 +355,7 @@ def main():
       3. Junior intern — unauthorized access attempt (ESCALATION)
       4. Senior engineer — compliance query (SOPs + emails)
       5. Senior engineer — DB info + document version discrepancy
-      6. Senior engineer — OUT-OF-DOMAIN (semiconductor user, medical query)
+      6. Senior engineer — OUT-OF-DOMAIN (semiconductor user, public health query)
     """
     print("=" * 70)
     print("PROJECT VERA - Virtual Engineering Review Agent")
@@ -435,10 +435,10 @@ def main():
     print("\n⏳ Waiting 15s between tests (rate limit protection)...")
     time.sleep(15)
 
-    # TEST 6: Senior — OUT-OF-DOMAIN (semiconductor user, medical question)
+    # TEST 6: Senior — OUT-OF-DOMAIN (semiconductor user, public health question)
     run_test_query(
         graph=graph,
-        question="What are the FDA clinical trial requirements for our device?",
+        question="What are the CDC guidelines for preventing the spread of infectious diseases?",
         user_role="senior",
         user_domain="semiconductor",
         test_number=6,
