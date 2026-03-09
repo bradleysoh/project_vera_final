@@ -55,7 +55,7 @@ def run(state: GraphState) -> dict:
             "generation": message,
             "documents": [],
             "_thinking": (
-                f"Scope guard: uploaded contract analysis requested in non-legal domain "
+                f"Scope guard: contract analysis requested in non-legal domain "
                 f"('{user_domain}'). Prompted user to switch to legal."
             ),
         }

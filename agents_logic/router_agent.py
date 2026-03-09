@@ -490,13 +490,14 @@ def run(state: GraphState) -> dict:
 
     next_agent = detected_domain
 
-    # Scope guard: contract-analysis queries with uploaded contract are only
-    # supported in the legal domain.
-    if input_contract_text and _is_contract_scope_query(question) and detected_domain != "legal":
+    # Scope guard: contract-analysis queries are only supported in legal domain.
+    # Trigger regardless of whether a contract file is uploaded to avoid
+    # expensive, irrelevant retrieval in non-legal pipelines.
+    if _is_contract_scope_query(question) and detected_domain != "legal":
         flagged = True
         metadata_log += (
-            "[ROUTER] ⚠️ LEGAL_DOMAIN_REQUIRED: Contract analysis requested with uploaded "
-            f"contract while active domain is '{detected_domain}'. Prompt user to switch to legal.\n"
+            "[ROUTER] ⚠️ LEGAL_DOMAIN_REQUIRED: Contract analysis requested while "
+            f"active domain is '{detected_domain}'. Prompt user to switch to legal.\n"
         )
         print("[Router Agent] ⚠️ Scope guard triggered: legal domain required for contract analysis")
 

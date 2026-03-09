@@ -52,6 +52,11 @@ _GENERIC_ENTITY_PHRASES = {
     "all clauses", "everything", "any", "contract", "the contract", "key aspects",
 }
 
+_CONTRACT_UPLOAD_REQUIRED_MSG = (
+    "⚠️ To analyze a specific contract, please upload the contract file "
+    "(.txt/.pdf/.png) first."
+)
+
 
 def _is_generic_entity(entity: str) -> bool:
     if not entity:
@@ -70,6 +75,123 @@ def _is_generic_entity(entity: str) -> bool:
         "aspect", "entities", "entity", "everything", "general", "the", "this",
     }
     return bool(tokens) and all(t in generic_tokens for t in tokens)
+
+
+def _needs_uploaded_contract(question: str) -> bool:
+    """
+    Detect when user is asking to analyze a specific contract (not CUAD/general).
+    """
+    q = (question or "").strip().lower()
+    if not q:
+        return False
+
+    explicit_contract_requests = [
+        "this contract",
+        "the contract",
+        "my contract",
+        "uploaded contract",
+        "review this contract",
+        "analyze this contract",
+        "key aspects of this contract",
+        "agreement date",
+        "signed date",
+    ]
+    if any(p in q for p in explicit_contract_requests):
+        return True
+
+    if "contract" not in q and "agreement" not in q:
+        return False
+
+    # CUAD/dataset/baseline questions can be answered from retrieval context.
+    dataset_intents = [
+        "cuad",
+        "benchmark",
+        "prevalence",
+        "reference contract",
+        "reference contracts",
+        "standard clause",
+        "common clause",
+        "all contracts",
+        "dataset",
+    ]
+    if any(p in q for p in dataset_intents):
+        return False
+
+    return True
+
+
+def _is_contract_quality_query(question: str) -> bool:
+    q = (question or "").strip().lower()
+    if not q:
+        return False
+    quality_markers = [
+        "is the contract okay",
+        "is this contract okay",
+        "is this a contract",
+        "is this valid",
+        "is this document a contract",
+        "is the agreement okay",
+        "good contract",
+        "contract quality",
+        "falls short",
+    ]
+    return any(m in q for m in quality_markers)
+
+
+def _format_discrepancy_first_response(state: GraphState) -> dict:
+    """
+    Build a deterministic discrepancy-focused legal response from verdict data.
+    """
+    verdict_dict = state.get("discrepancy_verdict", {}) or {}
+    report = (state.get("discrepancy_report", "") or "").strip()
+    summary = (verdict_dict.get("audit_summary") or state.get("discrepancy_report_summary") or "").strip()
+    raw_status = str(verdict_dict.get("overall_status", "")).split(".")[-1].upper()
+    conflicts = verdict_dict.get("conflicts", []) or []
+    discrepancy_items = [
+        c for c in conflicts
+        if str(c.get("status", "")).split(".")[-1].upper() == "DISCREPANCY"
+    ]
+
+    if raw_status == "DISCREPANCY" or discrepancy_items:
+        lines = [
+            "⚠️ **Conclusion: The uploaded document falls short of a regular contract.** [CUAD_REFERENCE]"
+        ]
+        if summary:
+            lines.append(f"- {summary}")
+        if discrepancy_items:
+            lines.append("- Discrepancies identified against CUAD contract baseline:")
+            for c in discrepancy_items[:8]:
+                attr = (c.get("attribute") or "unknown").strip()
+                reason = ""
+                cvals = c.get("conflicting_values", []) or []
+                if cvals:
+                    reason = (cvals[0].get("reason") or "").strip()
+                if reason:
+                    lines.append(f"  - {attr}: {reason}")
+                else:
+                    lines.append(f"  - {attr}")
+    elif raw_status == "ALIGNED":
+        lines = ["✅ **Conclusion: The uploaded document is broadly aligned with CUAD contract patterns.** [CUAD_REFERENCE]"]
+        if summary:
+            lines.append(f"- {summary}")
+    else:
+        lines = ["⚠️ **Conclusion: Insufficient contract evidence found for a reliable benchmark.** [CUAD_REFERENCE]"]
+        if summary:
+            lines.append(f"- {summary}")
+
+    if report:
+        lines.append("")
+        lines.append("### Discrepancy Report")
+        lines.append(report[:3000])
+
+    generation = "\n".join(lines)
+    return {
+        "generation": generation,
+        "discrepancy_report_summary": summary,
+        "thought_process": ["Discrepancy-first legal response generated deterministically."],
+        "critique": state.get("critique", ""),
+        "_thinking": "Returned discrepancy-first legal response (database text suppressed).",
+    }
 
 def _get_vera_capabilities(domain: str) -> str:
     """Generate domain-specific capabilities guide."""
@@ -167,6 +289,17 @@ def run(state: GraphState) -> dict:
             "_thinking": "Scope guard fallback triggered in Response Agent.",
         }
 
+    # --- Legal guard: uploaded contract required for specific contract analysis ---
+    # Prevents fabricated/ambiguous answers from CUAD/reference docs when the user
+    # is asking about a particular contract but has not provided one.
+    if user_domain == "legal" and not input_contract_text and _needs_uploaded_contract(question):
+        return {
+            "generation": _CONTRACT_UPLOAD_REQUIRED_MSG,
+            "documents": [],
+            "critique": "",
+            "_thinking": "Legal contract-analysis request without uploaded contract text.",
+        }
+
     # --- Deterministic legal field answers from uploaded contract ---
     # For direct field lookups (e.g., "agreement date"), prefer extracted
     # uploaded-contract facts over CUAD/reference retrieval context.
@@ -195,6 +328,67 @@ def run(state: GraphState) -> dict:
                         "critique": critique,
                         "_thinking": "Deterministic legal field answer returned before LLM synthesis.",
                     }
+
+    # --- Deterministic legal contract quality answer from discrepancy verdict ---
+    # For "is this contract okay?" style questions, avoid generic RAG synthesis
+    # and return direct benchmark findings from uploaded-doc vs CUAD baseline.
+    if user_domain == "legal" and input_contract_text and _is_contract_quality_query(question):
+        verdict_dict = state.get("discrepancy_verdict", {}) or {}
+        conflicts = verdict_dict.get("conflicts", []) or []
+        discrepancy_items = [
+            c for c in conflicts
+            if str(c.get("status", "")).split(".")[-1].upper() == "DISCREPANCY"
+        ]
+
+        structure_conflict = next(
+            (c for c in discrepancy_items if (c.get("attribute") or "").lower() == "contract_structure_assessment"),
+            None,
+        )
+        detail_reason = ""
+        if structure_conflict:
+            conflicting_values = structure_conflict.get("conflicting_values", []) or []
+            if conflicting_values:
+                detail_reason = conflicting_values[0].get("reason", "")
+
+        top_gaps = []
+        for c in discrepancy_items:
+            attr = (c.get("attribute") or "").strip()
+            if attr and attr != "contract_structure_assessment":
+                top_gaps.append(attr)
+            if len(top_gaps) >= 5:
+                break
+
+        summary = (verdict_dict.get("audit_summary") or "").strip()
+        if detail_reason:
+            summary = f"{summary} {detail_reason}".strip()
+
+        if discrepancy_items:
+            lines = [
+                "⚠️ **Conclusion: The uploaded document falls short of a regular contract.** [CUAD_REFERENCE]",
+            ]
+            if summary:
+                lines.append(f"- {summary}")
+            if top_gaps:
+                lines.append("- Key missing/common contract elements compared to CUAD baseline:")
+                for g in top_gaps:
+                    lines.append(f"  - {g}")
+            return {
+                "generation": "\n".join(lines),
+                "discrepancy_report_summary": summary,
+                "thought_process": [
+                    f"Deterministic legal quality answer from discrepancy verdict with {len(discrepancy_items)} discrepancy findings."
+                ],
+                "critique": critique,
+                "_thinking": "Returned deterministic legal quality assessment from uploaded-doc benchmark.",
+            }
+
+    # --- Legal discrepancy-first response for contract-analysis queries ---
+    # When user provided an uploaded legal document and asked a contract-analysis
+    # question, prioritize discrepancy verdict/report instead of db_data context.
+    if user_domain == "legal" and input_contract_text and _needs_uploaded_contract(question):
+        verdict_dict = state.get("discrepancy_verdict", {}) or {}
+        if verdict_dict:
+            return _format_discrepancy_first_response(state)
 
     # --- Gather structured facts ---
     official_facts = state.get("official_facts") or []
