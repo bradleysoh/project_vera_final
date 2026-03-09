@@ -47,6 +47,30 @@ _META_PATTERNS = [
     "what is this", "how can you help", "what services",
 ]
 
+_GENERIC_ENTITY_PHRASES = {
+    "general", "all", "all items", "all records", "all data", "all contracts",
+    "all clauses", "everything", "any", "contract", "the contract", "key aspects",
+}
+
+
+def _is_generic_entity(entity: str) -> bool:
+    if not entity:
+        return True
+    e = entity.strip().lower()
+    if not e:
+        return True
+    if e in ("general", "general_query"):
+        return True
+    if e in _GENERIC_ENTITY_PHRASES:
+        return True
+    tokens = re.findall(r"[a-z0-9]+", e)
+    generic_tokens = {
+        "all", "any", "items", "item", "records", "record", "data", "contracts",
+        "contract", "clauses", "clause", "labels", "label", "terms", "aspects",
+        "aspect", "entities", "entity", "everything", "general", "the", "this",
+    }
+    return bool(tokens) and all(t in generic_tokens for t in tokens)
+
 def _get_vera_capabilities(domain: str) -> str:
     """Generate domain-specific capabilities guide."""
     examples = {
@@ -109,6 +133,8 @@ def run(state: GraphState) -> dict:
     Does NOT reason beyond the provided context.
     """
     question = state["question"]
+    user_domain = (state.get("user_domain", "") or "").strip().lower()
+    input_contract_text = (state.get("input_contract_text", "") or "").strip()
     documents = state.get("documents", [])
     critique = state.get("critique", "")
     retrieval_confidence = state.get("retrieval_confidence", "MEDIUM")
@@ -124,6 +150,51 @@ def run(state: GraphState) -> dict:
             "critique": "",
             "_thinking": "Meta-query detected — returned dynamic VERA capabilities response.",
         }
+
+    # --- Scope guard fallback ---
+    # If a contract-analysis query is asked with uploaded contract text outside
+    # legal domain, do not generate a domain answer.
+    q_lower_scope = question.lower()
+    contract_scope_keywords = ("contract", "clause", "agreement", "cuad", "key aspects")
+    if input_contract_text and user_domain != "legal" and any(k in q_lower_scope for k in contract_scope_keywords):
+        return {
+            "generation": (
+                "⚠️ Contract analysis is only supported in the `legal` domain. "
+                "Please switch User Domain to `legal` and ask again."
+            ),
+            "documents": [],
+            "critique": "",
+            "_thinking": "Scope guard fallback triggered in Response Agent.",
+        }
+
+    # --- Deterministic legal field answers from uploaded contract ---
+    # For direct field lookups (e.g., "agreement date"), prefer extracted
+    # uploaded-contract facts over CUAD/reference retrieval context.
+    if user_domain == "legal" and input_contract_text:
+        q_lower = question.lower()
+        field_aliases = {
+            "agreement_date": ["agreement date", "date of the agreement", "contract date", "signed date"],
+        }
+        requested_field = ""
+        for field, aliases in field_aliases.items():
+            if any(a in q_lower for a in aliases):
+                requested_field = field
+                break
+
+        if requested_field:
+            for fact in state.get("db_facts", []) or []:
+                if (fact.get("attribute") or "").lower() == requested_field and (fact.get("value") or "").strip():
+                    value = (fact.get("value") or "").strip()
+                    return {
+                        "generation": (
+                            f"The **{requested_field.replace('_', ' ')}** in `{state.get('input_contract_name', 'input_contract')}` "
+                            f"is: **{value}**. [DATABASE]"
+                        ),
+                        "discrepancy_report_summary": "",
+                        "thought_process": [f"Deterministic legal field answer from uploaded contract: {requested_field}={value}"],
+                        "critique": critique,
+                        "_thinking": "Deterministic legal field answer returned before LLM synthesis.",
+                    }
 
     # --- Gather structured facts ---
     official_facts = state.get("official_facts") or []
@@ -168,7 +239,7 @@ def run(state: GraphState) -> dict:
     )
     
     # If a specific entity was requested, it MUST appear in the facts OR raw data.
-    if target_entity != "GENERAL" and target_entity != "GENERAL_QUERY":
+    if not _is_generic_entity(target_entity):
         entity_found = False
         target_lower = target_entity.lower()
         

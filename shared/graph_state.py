@@ -39,6 +39,8 @@ class GraphState(TypedDict):
     generation: str
     user_role: str
     user_domain: str
+    input_contract_text: str
+    input_contract_name: str
 
     # --- Query Understanding (set by Router Agent) ---
     target_entity: str
@@ -77,4 +79,3 @@ class GraphState(TypedDict):
     refinement_count: int
     max_refinements: int
     critique: str
-

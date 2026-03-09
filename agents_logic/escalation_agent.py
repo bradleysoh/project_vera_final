@@ -42,6 +42,23 @@ def run(state: GraphState) -> dict:
     # Check for keywords instead of exact string match to be more flexible
     is_out_of_domain = "DOMAIN" in router_log.upper() and "UNRESOLVED" in router_log.upper()
     is_security = "SECURITY" in router_log.upper() or "RESTRICTED" in router_log.upper()
+    is_legal_scope = "LEGAL_DOMAIN_REQUIRED" in router_log.upper()
+
+    if is_legal_scope:
+        message = (
+            "⚠️ This request is out of scope for the current domain.\n\n"
+            "Contract review and CUAD-based clause analysis are only available in the "
+            "`legal` domain.\n\n"
+            "Please switch your **User Domain** to `legal` and run the query again."
+        )
+        return {
+            "generation": message,
+            "documents": [],
+            "_thinking": (
+                f"Scope guard: uploaded contract analysis requested in non-legal domain "
+                f"('{user_domain}'). Prompted user to switch to legal."
+            ),
+        }
 
     if is_out_of_domain:
         reason_context = (

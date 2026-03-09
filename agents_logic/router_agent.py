@@ -77,6 +77,67 @@ _INTENT_KEYWORDS = {
     ],
 }
 
+_GENERIC_ENTITY_PHRASES = {
+    "general", "all", "all items", "all records", "all data", "all contracts",
+    "all clauses", "all labels", "all terms", "everything", "any", "any items",
+    "all entities", "all aspects", "key aspects", "contract", "the contract",
+}
+
+_LEGAL_GUARD_KEYWORDS = {
+    "contract", "agreement", "clause", "cuad", "governing law",
+    "indemnity", "termination", "renewal", "assignment", "confidentiality",
+    "legal",
+}
+
+_CONTRACT_SCOPE_KEYWORDS = {
+    "contract", "agreement", "clause", "legal", "cuad", "key aspects",
+    "review this contract", "aspects of this contract",
+}
+
+
+def _normalize_target_entity(entity: str) -> str:
+    """
+    Normalize broad non-entity phrases to GENERAL so downstream information-lock
+    does not block category-level questions.
+    """
+    if not entity:
+        return "GENERAL"
+
+    normalized = entity.strip().lower()
+    if not normalized:
+        return "GENERAL"
+
+    if normalized in _GENERIC_ENTITY_PHRASES:
+        return "GENERAL"
+
+    # Generic pattern: short phrase made only of generic terms
+    generic_tokens = {
+        "all", "any", "items", "item", "records", "record", "data", "contracts",
+        "contract", "clauses", "clause", "labels", "label", "terms", "aspects",
+        "aspect", "entities", "entity", "everything", "general", "the", "this",
+    }
+    tokens = [t for t in re.findall(r"[a-z0-9]+", normalized) if t]
+    if tokens and all(t in generic_tokens for t in tokens):
+        return "GENERAL"
+
+    return entity
+
+
+def _should_force_legal_pipeline(question: str, selected_domain: str) -> bool:
+    """
+    Guardrail: contract-analysis queries in legal domain must not route as
+    general_chat, even if intent classifier is noisy.
+    """
+    if selected_domain != "legal":
+        return False
+    q = question.lower()
+    return any(kw in q for kw in _LEGAL_GUARD_KEYWORDS)
+
+
+def _is_contract_scope_query(question: str) -> bool:
+    q = question.lower()
+    return any(kw in q for kw in _CONTRACT_SCOPE_KEYWORDS)
+
 
 def _classify_intent(question: str, route: str) -> str:
     """
@@ -286,9 +347,12 @@ def run(state: GraphState) -> dict:
     question = state["question"]
     user_role = state["user_role"]
     user_domain = state.get("user_domain", "")
+    selected_domain_for_guard = user_domain.lower().strip() if user_domain else ""
+    input_contract_text = (state.get("input_contract_text", "") or "").strip()
 
     # --- Step 1: Query Understanding — extract entity, attribute, time ---
     intent = _extract_query_intent(question)
+    intent.target_entity = _normalize_target_entity(intent.target_entity)
     print(f"[Router Agent] Query Intent: entity='{intent.target_entity}', "
           f"type='{intent.entity_type}', attr='{intent.target_attribute}', "
           f"time='{intent.time_context}'")
@@ -313,6 +377,15 @@ def run(state: GraphState) -> dict:
 
     # --- Step 2b: Fine-grained intent classification ---
     fine_intent = _classify_intent(question, route)
+
+    # Legal guard: never allow contract/CUAD queries to bypass domain agents.
+    if _should_force_legal_pipeline(question, selected_domain_for_guard):
+        if fine_intent == INTENT_CHAT:
+            fine_intent = INTENT_SPECS
+            metadata_log += (
+                "[ROUTER] Legal guard activated: upgraded general_chat to "
+                "spec_retrieval for contract-analysis query.\n"
+            )
     print(f"[Router Agent] Fine-grained intent: {fine_intent}")
 
     # --- Step 3: Determine query domain ---
@@ -416,6 +489,16 @@ def run(state: GraphState) -> dict:
             print("[Router Agent] ⚠️ SECURITY FLAG: Junior user attempting restricted data")
 
     next_agent = detected_domain
+
+    # Scope guard: contract-analysis queries with uploaded contract are only
+    # supported in the legal domain.
+    if input_contract_text and _is_contract_scope_query(question) and detected_domain != "legal":
+        flagged = True
+        metadata_log += (
+            "[ROUTER] ⚠️ LEGAL_DOMAIN_REQUIRED: Contract analysis requested with uploaded "
+            f"contract while active domain is '{detected_domain}'. Prompt user to switch to legal.\n"
+        )
+        print("[Router Agent] ⚠️ Scope guard triggered: legal domain required for contract analysis")
 
     thinking = (
         f"User role='{user_role}', domain='{user_domain}'. "

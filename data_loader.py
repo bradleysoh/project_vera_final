@@ -4,7 +4,7 @@ import os
 PROJECT_SOURCE_DIR = "/home/faridadatascientist/ntu-work/project_vera_main/source_documents" 
 
 def load_all_industries():
-    required_domains = ["medical", "aerospace", "energy", "finance"]
+    required_domains = ["medical", "aerospace", "energy", "finance", "legal"]
     found = []
     
     # Debug print to see what the script sees
