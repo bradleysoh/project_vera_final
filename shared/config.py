@@ -34,7 +34,8 @@ load_dotenv()
 # ==============================================================================
 
 # --- Backend selection ---
-LLM_BACKEND = os.getenv("LLM_BACKEND", "gemini").strip().lower()
+# Default to Ollama for local inference (matches .env.example)
+LLM_BACKEND = os.getenv("LLM_BACKEND", "ollama").strip().lower()
 
 # --- API Keys ---
 # GOOGLE_API_KEY is the canonical name; GEMINI_API_KEY is a legacy alias
