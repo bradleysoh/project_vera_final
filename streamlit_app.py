@@ -307,9 +307,7 @@ with st.sidebar:
     st.markdown("### 🏢 User Domain")
     available_domains = get_available_domains()
     if not available_domains:
-        available_domains = ["semiconductor"        git add shared/config.py
-        git commit -m "Describe what changed in config.py"        git add shared/config.py
-        git commit -m "Describe what changed in config.py"]  # fallback
+        available_domains = ["semiconductor"]
     user_domain = st.radio(
         "Select your domain:",
         options=available_domains,
