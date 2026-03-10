@@ -12,8 +12,10 @@ Launch:
 import os
 import sys
 import time
+import io
 import streamlit as st
 from dotenv import load_dotenv
+from pypdf import PdfReader
 
 # ---------------------------------------------------------------------------
 # Ensure project modules are importable
@@ -185,6 +187,24 @@ def sanitize_text(text) -> str:
     return _INVALID_XML_CHARS.sub('', text)
 
 
+def extract_text_from_pdf_bytes(file_bytes: bytes) -> str:
+    """
+    Best-effort PDF text extraction for uploaded legal contracts.
+    """
+    if not file_bytes:
+        return ""
+    try:
+        reader = PdfReader(io.BytesIO(file_bytes))
+        pages = []
+        for page in reader.pages:
+            page_text = page.extract_text() or ""
+            if page_text.strip():
+                pages.append(page_text)
+        return "\n\n".join(pages).strip()
+    except Exception:
+        return ""
+
+
 # ============================================================================
 # SIDEBAR
 # ============================================================================
@@ -221,6 +241,37 @@ with st.sidebar:
         index=0,
         help="Your assigned domain. Out-of-domain queries will be escalated.",
     )
+
+    st.markdown("### 📄 Input Contract (Legal)")
+    uploaded_contract = st.file_uploader(
+        "Upload a contract file (.txt/.md/.pdf)",
+        type=["txt", "md", "pdf"],
+        help="Used by the Legal domain for key-aspect extraction and CUAD discrepancy analysis.",
+    )
+    contract_text_input = st.text_area(
+        "Or paste contract text",
+        height=140,
+        placeholder="Paste legal contract text here if you are not uploading a file.",
+    )
+
+    input_contract_text = ""
+    input_contract_name = "input_contract"
+    if uploaded_contract is not None:
+        try:
+            file_bytes = uploaded_contract.getvalue()
+            input_contract_name = uploaded_contract.name or "uploaded_contract"
+            lower_name = input_contract_name.lower()
+            if lower_name.endswith(".pdf"):
+                input_contract_text = extract_text_from_pdf_bytes(file_bytes)
+                if not input_contract_text:
+                    st.warning("Could not extract text from the uploaded PDF. Try a text-based PDF or paste contract text.")
+            else:
+                input_contract_text = file_bytes.decode("utf-8", errors="ignore")
+        except Exception:
+            input_contract_text = ""
+    elif contract_text_input.strip():
+        input_contract_text = contract_text_input.strip()
+        input_contract_name = "pasted_contract_text"
 
     # --- Discussion toggle ---
     st.markdown("### 💬 Agent Discussion")
@@ -589,13 +640,22 @@ for idx, msg in enumerate(st.session_state.messages):
 # CHAT INPUT HANDLER
 # ============================================================================
 
-def process_query(question: str, role: str, domain: str, max_refinements: int = 1):
+def process_query(
+    question: str,
+    role: str,
+    domain: str,
+    max_refinements: int = 1,
+    input_contract_text: str = "",
+    input_contract_name: str = "input_contract",
+):
     """Run a query through the VERA graph and return structured results."""
     initial_state = {
         "question": question,
         "generation": "",
         "user_role": role,
         "user_domain": domain,
+        "input_contract_text": input_contract_text,
+        "input_contract_name": input_contract_name,
         "documents": [],
         "route": "",
         "intent": "",
@@ -605,6 +665,7 @@ def process_query(question: str, role: str, domain: str, max_refinements: int = 
         "db_result": "",
         "db_data": "",
         "discrepancy_report": "",
+        "discrepancy_report_summary": "",
         "next_agent": "",
         "thought_process": [],
         "refinement_count": 0,
@@ -758,6 +819,7 @@ def process_query(question: str, role: str, domain: str, max_refinements: int = 
         "flagged": flagged,
         "route": route,
         "discrepancy_report": discrepancy_report,
+        "discrepancy_report_summary": final_state.get("discrepancy_report_summary", ""),
         "has_discrepancy": has_discrepancy,
         "agent_trace": agent_trace,
         "thought_process": final_state.get("thought_process", []),
@@ -773,7 +835,14 @@ if "pending_query" in st.session_state:
     # Process
     if graph:
         # Spinner removed; process_query uses st.status
-        result = process_query(pending, user_role, user_domain, max_refinements)
+        result = process_query(
+            pending,
+            user_role,
+            user_domain,
+            max_refinements,
+            input_contract_text=input_contract_text,
+            input_contract_name=input_contract_name,
+        )
         result["role"] = "assistant"
         st.session_state.messages.append(result)
     else:
@@ -802,7 +871,14 @@ if prompt := st.chat_input("Ask VERA a question..."):
     with st.chat_message("assistant", avatar="🤖"):
         # Spinner removed; process_query uses st.status
         start_time = time.time()
-        result = process_query(prompt, user_role, user_domain, max_refinements)
+        result = process_query(
+            prompt,
+            user_role,
+            user_domain,
+            max_refinements,
+            input_contract_text=input_contract_text,
+            input_contract_name=input_contract_name,
+        )
         elapsed = time.time() - start_time
 
         st.markdown(sanitize_text(result["content"]))
@@ -817,7 +893,13 @@ if prompt := st.chat_input("Ask VERA a question..."):
             else:
                 st.info("✅ **AUDIT COMPLETE — NO CONFLICTS FOUND**")
             
-            with st.expander("📋 View Discrepancy Report", expanded=has_real_conflict):
+            # Render Audit Summary directly below response if it exists
+            if result.get("discrepancy_report_summary"):
+                st.markdown("---")
+                st.markdown("### 🔍 Audit Summary")
+                st.info(sanitize_text(result["discrepancy_report_summary"]))
+
+            with st.expander("📋 View Detailed Findings", expanded=has_real_conflict):
                 st.markdown(sanitize_text(result["discrepancy_report"]))
                 
                 if has_real_conflict:
@@ -874,4 +956,3 @@ if prompt := st.chat_input("Ask VERA a question..."):
     result["role"] = "assistant"
     st.session_state.messages.append(result)
     st.rerun()
-

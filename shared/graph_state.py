@@ -39,6 +39,8 @@ class GraphState(TypedDict):
     generation: str
     user_role: str
     user_domain: str
+    input_contract_text: str
+    input_contract_name: str
 
     # --- Query Understanding (set by Router Agent) ---
     target_entity: str
@@ -67,7 +69,8 @@ class GraphState(TypedDict):
 
     # --- Discrepancy & Response ---
     discrepancy_verdict: dict  # Serialized DiscrepancyVerdict
-    discrepancy_report: str    # Legacy text report
+    discrepancy_report: str    # Legacy text report (Discrepancy Agent)
+    discrepancy_report_summary: str  # Summarized report (Response Agent)
     retrieval_confidence: str  # HIGH / MEDIUM / LOW
 
     # --- Agent Infrastructure (Accumulated via Reducers) ---
@@ -76,4 +79,3 @@ class GraphState(TypedDict):
     refinement_count: int
     max_refinements: int
     critique: str
-

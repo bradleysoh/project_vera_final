@@ -1,1 +1,0 @@
-Please delete this or reject the commit. I am using this to learn the branch, commit, push, and pull workflow. 

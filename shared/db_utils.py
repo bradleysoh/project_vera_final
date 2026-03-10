@@ -32,14 +32,79 @@ _SOURCE_DIR = os.path.join(_PROJECT_ROOT, "source_documents")
 # DATABASE DISCOVERY
 # ===========================================================================
 
+def _csv_to_sqlite(domain: str) -> list[str]:
+    """
+    Auto-convert any .csv files in source_documents/{domain}/ into
+    SQLite databases with a '_auto.db' suffix.
+
+    Skips conversion if the corresponding _auto.db already exists and
+    is newer than the CSV.
+
+    Returns:
+        List of paths to newly created or existing auto-generated .db files.
+    """
+    import pandas as pd
+
+    domain_dir = os.path.join(_SOURCE_DIR, domain)
+    if not os.path.isdir(domain_dir):
+        return []
+
+    csv_files = glob.glob(os.path.join(domain_dir, "*.csv"))
+    created = []
+
+    for csv_path in csv_files:
+        base_name = os.path.splitext(os.path.basename(csv_path))[0]
+        db_path = os.path.join(domain_dir, f"{base_name}_auto.db")
+
+        # Skip if DB already exists and is newer than the CSV
+        if os.path.exists(db_path):
+            csv_mtime = os.path.getmtime(csv_path)
+            db_mtime = os.path.getmtime(db_path)
+            if db_mtime >= csv_mtime:
+                created.append(db_path)
+                continue
+
+        try:
+            df = pd.read_csv(csv_path)
+            # Deduplicate column names case-insensitively (SQLite is case-insensitive)
+            cols = list(df.columns)
+            seen: dict[str, int] = {}
+            new_cols = []
+            for c in cols:
+                key = c.lower()
+                if key in seen:
+                    seen[key] += 1
+                    new_cols.append(f"{c}_{seen[key]}")
+                else:
+                    seen[key] = 1
+                    new_cols.append(c)
+            df.columns = new_cols
+            # Sanitize table name: replace spaces/dashes with underscores
+            table_name = base_name.replace("-", "_").replace(" ", "_").lower()
+            conn = sqlite3.connect(db_path)
+            df.to_sql(table_name, conn, if_exists="replace", index=False)
+            conn.close()
+            print(f"[DB Utils] 📦 Auto-converted CSV → SQLite: {csv_path} → {db_path} ({len(df)} rows)")
+            created.append(db_path)
+        except Exception as e:
+            print(f"[DB Utils] ❌ CSV conversion failed for {csv_path}: {e}")
+
+    return created
+
+
 def discover_databases(domain: str) -> list[str]:
     """
     Find all .db / .sqlite / .sqlite3 files inside
     source_documents/{domain}/.
 
+    Auto-converts any .csv files to SQLite first.
+
     Returns:
         Sorted list of absolute paths to database files.
     """
+    # Auto-convert CSVs to SQLite before discovery
+    _csv_to_sqlite(domain)
+
     domain_dir = os.path.join(_SOURCE_DIR, domain)
     if not os.path.isdir(domain_dir):
         return []
@@ -98,7 +163,7 @@ def get_schema(db_path: str, include_samples: bool = True) -> str:
             samples = cursor.fetchall()
             for row in samples:
                 row_str = ", ".join(f"{col_names[i]}={row[i]}" for i in range(len(row)))
-                parts.append(f"    Sample: {row_str}")
+                parts.append(f"    [SCHEMA SAMPLE - DO NOT USE AS FILTER]: {row_str}")
 
     conn.close()
     return "\n".join(parts)

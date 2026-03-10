@@ -1,77 +1,96 @@
 import os
-from typing import List, TypedDict
-from langchain_chroma import Chroma
-from langchain_community.llms import Ollama
-# FIX: Using langchain_core to avoid the ModuleNotFoundError
-from langchain_core.prompts import PromptTemplate 
+from typing import List, Dict
 from langgraph.graph import StateGraph, END
 
-# --- CONFIGURATION ---
-from shared.config import get_embeddings
-CHROMA_PATH = os.path.join(os.path.dirname(__file__), "chroma_db")
+# --- VERA Shared Infrastructure ---
+from shared.graph_state import GraphState
+from shared.dynamic_loader import (
+    get_available_domains,
+    discover_domain_agents,
+    register_domain_nodes,
+    get_agent_node_name,
+)
+import agents_logic.router_agent as router_agent
+import agents_logic.escalation_agent as escalation_agent
 
-class GraphState(TypedDict):
-    question: str
-    user_role: str
-    user_domain: str
-    documents: List
-    generation: str
-
-# ============================================================================
-# NODES
-# ============================================================================
-
-def retrieve_docs(state: GraphState):
-    """Retrieves documents filtered by the selected domain."""
-    domain = state.get("user_domain", "general").lower()
-    
-    vectorstore = Chroma(
-        persist_directory=CHROMA_PATH,
-        embedding_function=get_embeddings(),
-        collection_name="vera_documents"
-    )
-
-    # Filtering by domain to ensure industry-specific accuracy
-    search_results = vectorstore.similarity_search(
-        state["question"], 
-        k=4, 
-        filter={"domain": domain} 
-    )
-    return {"documents": search_results}
-
-def generate_answer(state: GraphState):
-    """Feeds retrieved text into the LLM for a real answer (No more placeholders)."""
-    docs = state["documents"]
-    if not docs:
-        return {"generation": "I couldn't find any relevant data in the files."}
-
-    # Combine file content into context
-    context = "\n\n".join([f"Source: {d.metadata.get('source')}\nContent: {d.page_content}" for d in docs])
-
-    template = """You are VERA. Use the context below to answer the question.
-    Context: {context}
-    Question: {question}
-    Answer:"""
-
-    prompt = PromptTemplate.from_template(template)
-    # Ensure this model name matches your 'ollama list' output
-    llm = Ollama(model="hf.co/bartowski/Llama-3.2-1B-Instruct-GGUF:latest")
-    
-    chain = prompt | llm
-    generation = chain.invoke({"context": context, "question": state["question"]})
-
-    return {"generation": generation}
+# --- Response Agent (Final Synthesis) ---
+import agents_logic.response_agent as response_agent
 
 # ============================================================================
-# GRAPH CONSTRUCTION (Fixes the ImportError)
+# GRAPH CONSTRUCTION
 # ============================================================================
 
 def build_graph():
-    """Compiles the workflow for Streamlit."""
+    """
+    Constructs a deterministic, hybrid multi-agent graph.
+    Bypasses deep retrieval for general chat, but enforces a strict
+    DB -> Specs -> Audit pipeline for technical and cross-reference queries.
+    """
     workflow = StateGraph(GraphState)
-    workflow.add_node("retrieve", retrieve_docs)
-    workflow.add_node("generate", generate_answer)
-    workflow.set_entry_point("retrieve")
-    workflow.add_edge("retrieve", "generate")
-    workflow.add_edge("generate", END)
+
+    # 1. CORE NODES
+    workflow.add_node("router", router_agent.run)
+    workflow.add_node("escalate", escalation_agent.run)
+    workflow.add_node("generate_response", response_agent.run)
+
+    # 2. DYNAMIC DOMAIN NODES
+    # Automatically discovery and add all agents from agents_logic/*_agents/
+    domain_agents = discover_domain_agents()
+    domain_node_map = register_domain_nodes(workflow, domain_agents)
+    domains = list(domain_node_map.keys())
+
+    # 3. ENTRY POINT
+    workflow.set_entry_point("router")
+
+    # 4. CONDITIONAL ROUTING (The Switchboard)
+    # The router returns "general_chat", "escalate", or "domain__intent"
+    all_intents = [router_agent.INTENT_DB, router_agent.INTENT_SPECS, router_agent.INTENT_CROSS]
+    
+    # Generate the mapping for conditional edges
+    routing_map = {
+        router_agent.INTENT_CHAT: "generate_response",
+        "escalate": "escalate"
+    }
+
+    # Map every domain+intent combination to the appropriate starting node
+    for domain in domains:
+        for intent in all_intents:
+            route_key = f"{domain}__{intent}"
+            
+            # ALL intents start with DB query — the DB agent's guard clause
+            # handles irrelevant intents gracefully by returning {}.
+            # This ensures CSV/SQLite data is always checked first.
+            start_node = f"{domain}_query_database"
+            
+            # Fallback: if domain has no DB agent, use official docs
+            if start_node not in domain_node_map.get(domain, []):
+                start_node = f"{domain}_retrieve_official"
+            
+            routing_map[route_key] = start_node
+
+    workflow.add_conditional_edges(
+        "router",
+        router_agent.decide_route,
+        routing_map
+    )
+
+    # 5. DETERMINISTIC DOMAIN PIPELINES
+    # For each domain, wire the segments together into a rigid audit chain
+    for domain in domains:
+        # DB -> Official Docs (Hierarchical dependency)
+        if f"{domain}_query_database" in domain_node_map[domain] and f"{domain}_retrieve_official" in domain_node_map[domain]:
+            workflow.add_edge(f"{domain}_query_database", f"{domain}_retrieve_official")
+        
+        # Official Docs -> Discrepancy Audit
+        if f"{domain}_retrieve_official" in domain_node_map[domain] and f"{domain}_check_discrepancy" in domain_node_map[domain]:
+            workflow.add_edge(f"{domain}_retrieve_official", f"{domain}_check_discrepancy")
+            
+        # Discrepancy Audit -> Final Response
+        if f"{domain}_check_discrepancy" in domain_node_map[domain]:
+            workflow.add_edge(f"{domain}_check_discrepancy", "generate_response")
+
+    # 6. SHARED ESCALATION / COMPLETION
+    workflow.add_edge("escalate", "generate_response")
+    workflow.add_edge("generate_response", END)
+
     return workflow.compile()

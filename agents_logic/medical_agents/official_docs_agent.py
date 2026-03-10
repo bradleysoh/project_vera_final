@@ -15,12 +15,12 @@ from shared.agent_base import vera_agent
 from shared.advanced_rag import query_understand_and_retrieve, extract_facts_from_documents
 
 # Import the domain's metadata schema for query understanding
-from agents_logic.semiconductor_agents.domain_config import DOMAIN_CONFIG
+from agents_logic.medical_agents.domain_config import DOMAIN_CONFIG
 
 _METADATA_SCHEMA = DOMAIN_CONFIG.get("metadata_schema", {})
 
 
-@vera_agent("Official Docs Agent")
+@vera_agent("Medical Official Docs Agent")
 def run(state: GraphState) -> dict:
     """
     OFFICIAL DOCS AGENT: Retrieve → Extract → Return Structured Facts.
@@ -31,14 +31,14 @@ def run(state: GraphState) -> dict:
     """
     question = state["question"]
     user_role = state["user_role"]
-    user_domain = state.get("user_domain", "semiconductor")
+    user_domain = state.get("user_domain", "medical")
     target_entity = state.get("target_entity", "GENERAL")
     target_attribute = state.get("target_attribute", "GENERAL")
 
     # --- Guard Clause: Fast-fail if intent doesn't need specs ---
     intent = state.get("intent", "")
     if intent not in ("spec_retrieval", "cross_reference", ""):
-        print(f"[Official Docs Agent] ⏭️ Fast-fail: intent='{intent}' is not spec-related")
+        print(f"[Medical Official Docs Agent] ⏭️ Fast-fail: intent='{intent}' is not spec-related")
         return {}
 
     # --- Stage 1: Precision Retrieval ---
@@ -46,7 +46,7 @@ def run(state: GraphState) -> dict:
         query=question,
         user_role=user_role,
         user_domain=user_domain,
-        source_filter=["datasheet", "sop", "spec", "document"],
+        source_filter=["datasheet", "sop", "spec", "document", "dataset", "db_info"],
         metadata_schema=_METADATA_SCHEMA,
         k=10,
         target_entity=target_entity,
@@ -60,7 +60,7 @@ def run(state: GraphState) -> dict:
         source_type_override="",  # preserve original source types
     )
 
-    print(f"[Official Docs Agent] {len(result.documents)} docs → {len(facts)} structured facts")
+    print(f"[Medical Official Docs Agent] {len(result.documents)} docs → {len(facts)} structured facts")
 
     # Per-step return: ONLY the tokens we added (reducers handle the merge)
     return {

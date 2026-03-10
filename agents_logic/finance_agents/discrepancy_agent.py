@@ -1,9 +1,9 @@
 """
 ================================================================================
-Semiconductor Discrepancy Agent — Deterministic Logic Gate (Zero LLM Calls)
+Finance Discrepancy Agent — Deterministic Logic Gate (Zero LLM Calls)
 ================================================================================
 OWNER: (Assign team member)
-DOMAIN: semiconductor
+DOMAIN: finance
 RESPONSIBILITY: Compare structured facts from Official Docs, Informal Docs,
                 and Database using a DETERMINISTIC hierarchy of authority.
 
@@ -56,16 +56,10 @@ def _source_priority(source_type: str) -> int:
     return 0
 
 
-def _build_fact_index(
-    facts: list[dict],
-    target_entity: str,
-) -> dict[str, list[ExtractedFact]]:
-    """
-    Group facts by attribute, filtering to the target entity.
-    Returns: {"attribute_name": [ExtractedFact, ...]}
-    """
+def _build_fact_index(facts: list[dict], target_entity: str, target_attribute: str = "GENERAL") -> dict[str, list[ExtractedFact]]:
     index: dict[str, list[ExtractedFact]] = {}
     target_lower = target_entity.lower() if target_entity != "GENERAL" else ""
+    attr_target_lower = target_attribute.lower().strip() if target_attribute != "GENERAL" else ""
 
     for fd in facts:
         try:
@@ -73,14 +67,20 @@ def _build_fact_index(
         except Exception:
             continue
 
-        # Entity isolation
         if target_lower and target_lower not in fact.entity.lower():
             continue
 
-        attr_key = fact.attribute.lower().strip()
-        if attr_key not in index:
-            index[attr_key] = []
-        index[attr_key].append(fact)
+        attr_raw = fact.attribute.lower().strip()
+        final_key = attr_raw
+        if attr_target_lower:
+            if attr_target_lower in attr_raw or attr_raw in attr_target_lower:
+                final_key = attr_target_lower
+        elif attr_raw in ("general_info", "db_result", "database_record"):
+            final_key = "general_info"
+
+        if final_key not in index:
+            index[final_key] = []
+        index[final_key].append(fact)
 
     return index
 
@@ -141,7 +141,7 @@ def _resolve_conflicts(
         ]
         if newer_informal:
             authoritative = newer_informal[0]
-            print(f"[DISCREPANCY] Informal override for '{attribute}' — "
+            print(f"[Finance Discrepancy Agent] Informal override for '{attribute}' — "
                   f"newer date: {authoritative['date']}")
 
     # Compare all values to the authoritative one
@@ -176,7 +176,7 @@ def _resolve_conflicts(
     )
 
 
-@vera_agent("Semiconductor Discrepancy Agent")
+@vera_agent("Finance Discrepancy Agent")
 def run(state: GraphState) -> dict:
     """
     DETERMINISTIC DISCREPANCY AGENT: Pure Python logic on structured facts.
@@ -222,15 +222,15 @@ def run(state: GraphState) -> dict:
                 "confidence": "HIGH",
             }]
 
-    print(f"[Semiconductor Discrepancy Agent] Facts: "
+    print(f"[Finance Discrepancy Agent] Facts: "
           f"official={len(official_facts)}, "
           f"informal={len(informal_facts)}, "
           f"db={len(db_facts)}")
 
     # Build indexes by attribute (entity-filtered)
-    official_idx = _build_fact_index(official_facts, target_entity)
-    informal_idx = _build_fact_index(informal_facts, target_entity)
-    db_idx = _build_fact_index(db_facts, target_entity)
+    official_idx = _build_fact_index(official_facts, target_entity, state.get("target_attribute", "GENERAL"))
+    informal_idx = _build_fact_index(informal_facts, target_entity, state.get("target_attribute", "GENERAL"))
+    db_idx = _build_fact_index(db_facts, target_entity, state.get("target_attribute", "GENERAL"))
 
     # Gather all attribute keys across all sources
     all_attributes = set(official_idx.keys()) | set(informal_idx.keys()) | set(db_idx.keys())
@@ -295,7 +295,7 @@ def run(state: GraphState) -> dict:
     if has_discrepancy and retrieval_confidence == "HIGH":
         critique = report
 
-    print(f"[Semiconductor Discrepancy Agent] Verdict: {overall.value} "
+    print(f"[Finance Discrepancy Agent] Verdict: {overall.value} "
           f"({disc_count} discrepancies, {aligned_count} aligned)")
 
     return {

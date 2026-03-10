@@ -187,23 +187,24 @@ def _post_filter_by_entity(
 ) -> List[Document]:
     """
     Post-retrieval filter: REMOVE documents that don't mention the target
-    entity.  If NO docs match, keep the top 2 as fallback context.
+    entity.  If NO docs match, keep the top 1 as fallback to avoid empty state.
     """
     if not entity or entity.upper() == "GENERAL":
         return docs
 
     entity_lower = entity.lower()
     matched = []
-    unmatched = []
     for doc in docs:
         if entity_lower in doc.page_content.lower():
             matched.append(doc)
-        else:
-            unmatched.append(doc)
 
     # If entity matched docs exist, return ONLY those
-    # Otherwise, return an empty list to prevent irrelevant context leakage
-    return matched
+    if matched:
+        return matched
+    
+    # Information Lock: If no direct mention of specific entity, return empty list
+    # (Previously fell back to docs[:1] which caused hallucinations)
+    return []
 
 
 def _compute_confidence(
@@ -404,24 +405,29 @@ def extract_facts_from_documents(
         print(f"[FACT EXTRACT] Fast mode — extracting {len(documents)} facts from metadata only")
         facts = []
         entity_lower = target_entity.lower() if target_entity and target_entity != "GENERAL" else ""
+        attr_name = target_attribute if target_attribute != "GENERAL" else "general_info"
+        
         for doc in documents:
             src = doc.metadata.get("source", source_type_override or "unknown")
             doc_id = doc.metadata.get("document_id", "unknown")
             date = doc.metadata.get("date", doc.metadata.get("version", "unknown"))
             content_lower = doc.page_content.lower()
 
-            # Entity-aware labeling: only assign target_entity if content mentions it
-            if entity_lower and entity_lower in content_lower:
-                fact_entity = target_entity
-            elif entity_lower:
-                fact_entity = doc.metadata.get("title", "unrelated_doc")[:50]
+            # Entity-aware labeling (Information Lock)
+            if entity_lower:
+                if entity_lower in content_lower:
+                    fact_entity = target_entity
+                else:
+                    # Specific entity requested but not found in this document
+                    continue 
             else:
-                fact_entity = "unknown"
+                # Try to extract entity from metadata for GENERAL queries
+                fact_entity = doc.metadata.get("title", target_entity)[:50]
 
             fact = ExtractedFact(
                 entity=fact_entity,
-                attribute=target_attribute if target_attribute != "GENERAL" else "general_info",
-                value=doc.page_content[:100],
+                attribute=attr_name,
+                value=doc.page_content[:250].strip().replace("\n", " "), # More content for better audit
                 source_type=src,
                 source_doc=str(doc_id),
                 date=str(date),

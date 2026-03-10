@@ -15,12 +15,12 @@ from shared.agent_base import vera_agent
 from shared.advanced_rag import query_understand_and_retrieve, extract_facts_from_documents
 
 # Import the domain's metadata schema for query understanding
-from agents_logic.semiconductor_agents.domain_config import DOMAIN_CONFIG
+from agents_logic.aerospace_agents.domain_config import DOMAIN_CONFIG
 
 _METADATA_SCHEMA = DOMAIN_CONFIG.get("metadata_schema", {})
 
 
-@vera_agent("Informal Docs Agent")
+@vera_agent("Aerospace Informal Docs Agent")
 def run(state: GraphState) -> dict:
     """
     INFORMAL DOCS AGENT: Retrieve → Extract → Return Structured Facts.
@@ -31,14 +31,14 @@ def run(state: GraphState) -> dict:
     """
     question = state["question"]
     user_role = state["user_role"]
-    user_domain = state.get("user_domain", "semiconductor")
+    user_domain = state.get("user_domain", "aerospace")
     target_entity = state.get("target_entity", "GENERAL")
     target_attribute = state.get("target_attribute", "GENERAL")
 
     # --- Guard Clause: Fast-fail if intent doesn't need informal docs ---
     intent = state.get("intent", "")
     if intent not in ("cross_reference", ""):
-        print(f"[Informal Docs Agent] ⏭️ Fast-fail: intent='{intent}' is not cross-reference")
+        print(f"[Aerospace Informal Docs Agent] ⏭️ Fast-fail: intent='{intent}' is not cross-reference")
         return {}
 
     # --- Stage 1: Precision Retrieval ---

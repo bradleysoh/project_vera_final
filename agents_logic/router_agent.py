@@ -32,8 +32,14 @@ from shared.dynamic_loader import (
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import json
+import re
 
 
+# --- INTENT CONSTANTS ---
+INTENT_DB = "db_query"
+INTENT_SPECS = "spec_retrieval"
+INTENT_CROSS = "cross_reference"
+INTENT_CHAT = "general_chat"
 # ---------------------------------------------------------------------------
 # Module-level dynamic loading — zero hardcoded values
 # ---------------------------------------------------------------------------
@@ -62,13 +68,75 @@ _INTENT_KEYWORDS = {
         "email changes", "recent changes", "version difference",
         "any changes communicated", "tell me about", "what is",
         "info", "details", "everything about", "search all",
+        "summary", "summarize", "overview", "list files", "available files",
     ],
     "general_chat": [
         "what is vera", "what does vera", "who are you",
-        "what can you do", "help me", "hello", "hi",
+        "what can you do", "help me", "hello",
         "how do you work", "what are you",
     ],
 }
+
+_GENERIC_ENTITY_PHRASES = {
+    "general", "all", "all items", "all records", "all data", "all contracts",
+    "all clauses", "all labels", "all terms", "everything", "any", "any items",
+    "all entities", "all aspects", "key aspects", "contract", "the contract",
+}
+
+_LEGAL_GUARD_KEYWORDS = {
+    "contract", "agreement", "clause", "cuad", "governing law",
+    "indemnity", "termination", "renewal", "assignment", "confidentiality",
+    "legal",
+}
+
+_CONTRACT_SCOPE_KEYWORDS = {
+    "contract", "agreement", "clause", "legal", "cuad", "key aspects",
+    "review this contract", "aspects of this contract",
+}
+
+
+def _normalize_target_entity(entity: str) -> str:
+    """
+    Normalize broad non-entity phrases to GENERAL so downstream information-lock
+    does not block category-level questions.
+    """
+    if not entity:
+        return "GENERAL"
+
+    normalized = entity.strip().lower()
+    if not normalized:
+        return "GENERAL"
+
+    if normalized in _GENERIC_ENTITY_PHRASES:
+        return "GENERAL"
+
+    # Generic pattern: short phrase made only of generic terms
+    generic_tokens = {
+        "all", "any", "items", "item", "records", "record", "data", "contracts",
+        "contract", "clauses", "clause", "labels", "label", "terms", "aspects",
+        "aspect", "entities", "entity", "everything", "general", "the", "this",
+    }
+    tokens = [t for t in re.findall(r"[a-z0-9]+", normalized) if t]
+    if tokens and all(t in generic_tokens for t in tokens):
+        return "GENERAL"
+
+    return entity
+
+
+def _should_force_legal_pipeline(question: str, selected_domain: str) -> bool:
+    """
+    Guardrail: contract-analysis queries in legal domain must not route as
+    general_chat, even if intent classifier is noisy.
+    """
+    if selected_domain != "legal":
+        return False
+    q = question.lower()
+    return any(kw in q for kw in _LEGAL_GUARD_KEYWORDS)
+
+
+def _is_contract_scope_query(question: str) -> bool:
+    q = question.lower()
+    return any(kw in q for kw in _CONTRACT_SCOPE_KEYWORDS)
 
 
 def _classify_intent(question: str, route: str) -> str:
@@ -124,44 +192,35 @@ def _classify_intent(question: str, route: str) -> str:
 
 _NER_PROMPT = ChatPromptTemplate.from_messages([
     ("human", (
-        "You are a Named Entity Recognition (NER) engine.  "
-        "Extract structured metadata from the user's question.\n\n"
         "USER QUESTION: {question}\n\n"
         "Instructions:\n"
-        "1. target_entity: The primary entity name mentioned "
-        "   (e.g. 'SuperGPU', 'WAF_003_A', 'Patient-7712').  "
-        "   Use 'GENERAL' ONLY if no entity is mentioned at all.\n"
-        "2. entity_type: The categorical TYPE of that entity "
-        "   (e.g. 'customer', 'product', 'wafer', 'lot', 'patient', "
-        "   'component', 'supplier').  Use 'GENERAL' if unclear.\n"
-        "3. target_attribute: The specific attribute being asked about "
-        "   (e.g. 'max_voltage', 'dosage', 'yield', 'status').  "
-        "   Use 'GENERAL' if no specific attribute is mentioned.\n"
-        "4. time_context: Any temporal qualifier "
-        "   (e.g. 'latest', '2024-Q3', '2025-01-15').  "
-        "   Leave empty if none mentioned.\n"
+        "1. target_entity: The specific individual entity name (e.g. 'ENTITY_ID', 'DEVICE_CODE').\n"
+        "   - Use 'GENERAL' if the question refers to categories or all data (e.g. 'all items', 'metrics', 'records', 'data').\n"
+        "2. entity_type: The categorical TYPE (e.g. 'patient', 'lot', 'product').\n"
+        "3. target_attribute: The specific attribute or action (e.g. 'average age', 'max voltage', 'status').\n"
+        "4. time_context: Temporal qualifiers (e.g. 'latest', 'Jan 2024').\n"
+        "5. Respond with ONLY raw JSON: "
+        '{{"target_entity": "...", "entity_type": "...", '
+        '"target_attribute": "...", "time_context": "..."}}'
     ))
 ])
 
 
 def _extract_query_intent_regex(question: str) -> QueryIntent:
     """
-    Broad regex fallback for entity extraction — used only when 
-    LLM-based extraction fails.  Unlike the previous version, this
-    does NOT rely on hardcoded ID formats.  It captures:
-      1. Classic IDs  (WAF_001_C, RTX-9000)
-      2. Quoted terms  ("SuperGPU", 'Customer ABC')
-      3. Capitalized proper nouns  (SuperGPU, MegaChip)
+    Broad regex fallback for entity extraction — used when LLM fails or is too slow.
     """
     import re
 
     entity = "GENERAL"
+    attribute = "GENERAL"
 
     # --- Priority 1: Classic code-style IDs ---
     id_patterns = [
         r'\b([A-Z]{2,}[-_]\d{2,}[-_][A-Z0-9]+)\b',
         r'\b([A-Z]{2,}[-_]\d{3,})\b',
         r'\b([A-Z]{2,}\d{3,})\b',
+        r'\b([A-Z]{2,}[-_]\d+)\b', # Added more flexible patient IDs
     ]
     for pattern in id_patterns:
         match = re.search(pattern, question)
@@ -171,22 +230,29 @@ def _extract_query_intent_regex(question: str) -> QueryIntent:
 
     # --- Priority 2: Quoted strings ---
     if entity == "GENERAL":
-        quoted = re.search(r'["\']([^"\']+ )', question)
+        quoted = re.search(r'["\']([^"\']+)["\']', question)
         if quoted:
             entity = quoted.group(1).strip()
 
     # --- Priority 3: Capitalized proper nouns (2+ uppercase letters) ---
     if entity == "GENERAL":
-        # Match words like SuperGPU, MegaChip — skip common English words
         skip = {"What", "How", "Tell", "Show", "Find", "Get", "Are", "Is",
                 "The", "About", "From", "Which", "Where", "When", "Does",
                 "Can", "Could", "Would", "Should", "Have", "Has", "Was",
-                "Were", "Will", "Do", "Did", "Any", "All", "Some", "VERA"}
+                "Were", "Will", "Do", "Did", "Any", "All", "Some", "VERA",
+                "Based", "Please", "List", "Report", "Summary", "Show", "Tell"}
         words = re.findall(r'\b([A-Z][a-zA-Z0-9]{2,})\b', question)
         for w in words:
             if w not in skip:
                 entity = w
                 break
+
+    # --- Attribute extraction ---
+    attr_hints = ["voltage", "thermal", "status", "yield", "lot", "wafer", "burn-in", "config", "data", "summary"]
+    for hint in attr_hints:
+        if hint in question.lower():
+            attribute = hint
+            break
 
     # --- Entity type hinting from question context ---
     entity_type = "GENERAL"
@@ -202,38 +268,70 @@ def _extract_query_intent_regex(question: str) -> QueryIntent:
             entity_type = etype
             break
 
-    return QueryIntent(target_entity=entity, entity_type=entity_type)
+    return QueryIntent(
+        target_entity=entity,
+        entity_type=entity_type,
+        target_attribute=attribute,
+        time_context=""
+    )
 
 
 def _extract_query_intent_llm(question: str) -> QueryIntent:
     """
-    LLM-based NER using .with_structured_output(QueryIntent).
-    Guarantees type-safe output with entity_name, entity_type,
-    target_attribute, and time_context.
+    LLM-based NER using manual JSON extraction.
+    Much more robust than with_structured_output for small local models.
     """
     try:
-        # with_structured_output returns a QueryIntent directly — no parsing
-        structured_llm = config.llm.with_structured_output(QueryIntent)
-        chain = _NER_PROMPT | structured_llm
-        intent = llm_invoke_with_retry(chain, {"question": question})
-        return intent
+        # Standard chain with JSON output
+        chain = _NER_PROMPT | config.llm | StrOutputParser()
+        raw_output = llm_invoke_with_retry(chain, {"question": question})
+
+        # Find all JSON-like blocks
+        candidates = re.findall(r'\{[^{}]*\}', raw_output.replace('\n', ' '))
+        
+        for cand in candidates:
+            try:
+                data = json.loads(cand)
+                return QueryIntent(
+                    target_entity=data.get("target_entity", "GENERAL"),
+                    entity_type=data.get("entity_type", "GENERAL"),
+                    target_attribute=data.get("target_attribute", "GENERAL"),
+                    time_context=data.get("time_context", "")
+                )
+            except:
+                continue
+                
+        # Fallback to the largest boundary search if simple matches fail
+        start = raw_output.find('{')
+        end = raw_output.rfind('}')
+        if start != -1 and end != -1:
+            try:
+                data = json.loads(raw_output[start:end+1])
+                return QueryIntent(
+                    target_entity=data.get("target_entity", "GENERAL"),
+                    entity_type=data.get("entity_type", "GENERAL"),
+                    target_attribute=data.get("target_attribute", "GENERAL"),
+                    time_context=data.get("time_context", "")
+                )
+            except: pass
+
+        raise ValueError(f"No valid JSON found in: {raw_output[:50]}...")
     except Exception as e:
-        print(f"[Router Agent] ⚠️ LLM NER failed ({e}), falling back to regex")
+        print(f"[Router Agent] ⚠️ LLM NER failed/timed out ({e}), using regex fallback")
         return _extract_query_intent_regex(question)
 
 
 def _extract_query_intent(question: str) -> QueryIntent:
     """
     Route to LLM-based NER (preferred) or regex fallback.
-    Fast mode still attempts LLM if available; regex is last resort.
+    In 'fast' mode, we favor speed + robustness.
     """
     from shared.config import RETRIEVAL_MODE
-    if RETRIEVAL_MODE == "fast":
-        # In fast mode, try LLM first but fall back to regex on failure
-        try:
-            return _extract_query_intent_llm(question)
-        except Exception:
-            return _extract_query_intent_regex(question)
+    
+    # If the question is very short or just an ID, use regex immediately 
+    if len(question.split()) < 4:
+        return _extract_query_intent_regex(question)
+
     return _extract_query_intent_llm(question)
 
 
@@ -242,17 +340,19 @@ def run(state: GraphState) -> dict:
     """
     ROUTER NODE: Classifies intent, detects domain, performs security checks,
     and extracts query understanding (target_entity, target_attribute).
-
-    All keyword lists and domain aliases are loaded dynamically from each
-    domain's ``domain_config.py``.  This agent makes ZERO assumptions about
-    which domains exist or what their terminology is.
     """
+    print(f"[Router Agent] DEBUG: Incoming state keys: {list(state.keys())}")
+    print(f"[Router Agent] DEBUG: user_domain in state: '{state.get('user_domain')}' (type: {type(state.get('user_domain'))})")
+
     question = state["question"]
     user_role = state["user_role"]
     user_domain = state.get("user_domain", "")
+    selected_domain_for_guard = user_domain.lower().strip() if user_domain else ""
+    input_contract_text = (state.get("input_contract_text", "") or "").strip()
 
     # --- Step 1: Query Understanding — extract entity, attribute, time ---
     intent = _extract_query_intent(question)
+    intent.target_entity = _normalize_target_entity(intent.target_entity)
     print(f"[Router Agent] Query Intent: entity='{intent.target_entity}', "
           f"type='{intent.entity_type}', attr='{intent.target_attribute}', "
           f"time='{intent.time_context}'")
@@ -277,21 +377,36 @@ def run(state: GraphState) -> dict:
 
     # --- Step 2b: Fine-grained intent classification ---
     fine_intent = _classify_intent(question, route)
+
+    # Legal guard: never allow contract/CUAD queries to bypass domain agents.
+    if _should_force_legal_pipeline(question, selected_domain_for_guard):
+        if fine_intent == INTENT_CHAT:
+            fine_intent = INTENT_SPECS
+            metadata_log += (
+                "[ROUTER] Legal guard activated: upgraded general_chat to "
+                "spec_retrieval for contract-analysis query.\n"
+            )
     print(f"[Router Agent] Fine-grained intent: {fine_intent}")
 
     # --- Step 3: Determine query domain ---
     available_domains = get_available_domains()
-
+    
+    # Normalize user_domain for case-insensitive matching
+    user_domain_clean = user_domain.lower().strip() if user_domain else ""
+    
     flagged = False
     metadata_log = ""
+    detected_domain = ""
 
-    if user_domain and user_domain in available_domains:
-        # ABSOLUTE DOMAIN ISOLATION: Use the user's selected domain strictly.
-        # No keyword-based overrides allowed.
-        detected_domain = user_domain
+    # ABSOLUTE DOMAIN ISOLATION: If user selected a domain, use it strictly.
+    if user_domain_clean and user_domain_clean in available_domains:
+        detected_domain = user_domain_clean
         print(f"[Router Agent] Strict Domain Isolation: Using user-selected domain '{detected_domain}'")
-
     else:
+        # Fallback to LLM detection only if no valid domain was provided by user
+        if user_domain_clean:
+             print(f"[Router Agent] ⚠️ User domain '{user_domain}' not in {available_domains}. Falling back to LLM.")
+        
         domain_keywords_str = ""
         for domain, cfg in _DOMAIN_CONFIGS.items():
             if domain in available_domains:
@@ -333,7 +448,7 @@ def run(state: GraphState) -> dict:
                     break
             if not matched:
                 flagged = True
-                detected_domain = user_domain or (available_domains[0] if available_domains else "unknown")
+                detected_domain = user_domain_clean or (available_domains[0] if available_domains else "unknown")
                 metadata_log += (
                     f"[ROUTER] ⚠️ UNRESOLVED DOMAIN: LLM returned "
                     f"'{detected_domain}' which does not match any "
@@ -375,6 +490,16 @@ def run(state: GraphState) -> dict:
 
     next_agent = detected_domain
 
+    # Scope guard: contract-analysis queries with uploaded contract are only
+    # supported in the legal domain.
+    if input_contract_text and _is_contract_scope_query(question) and detected_domain != "legal":
+        flagged = True
+        metadata_log += (
+            "[ROUTER] ⚠️ LEGAL_DOMAIN_REQUIRED: Contract analysis requested with uploaded "
+            f"contract while active domain is '{detected_domain}'. Prompt user to switch to legal.\n"
+        )
+        print("[Router Agent] ⚠️ Scope guard triggered: legal domain required for contract analysis")
+
     thinking = (
         f"User role='{user_role}', domain='{user_domain}'. "
         f"Intent: '{route}' ({score_str}). "
@@ -409,17 +534,17 @@ def decide_route(state: GraphState) -> str:
         print("[ROUTING] -> Escalation (security flag or unresolved domain)")
         return "escalate"
 
-    domain = state.get("next_agent", "")
+    domain = state.get("user_domain", "") or state.get("next_agent", "")
     if not domain:
         print("[ROUTING] -> Escalation (no domain detected)")
         return "escalate"
 
-    intent = state.get("intent", "spec_retrieval")
+    intent = state.get("intent", INTENT_SPECS)
 
     # General chat bypasses all domain agents entirely
-    if intent == "general_chat":
+    if intent == INTENT_CHAT:
         print("[ROUTING] -> generate_response (general_chat — skipping all retrieval)")
-        return "general_chat"
+        return INTENT_CHAT
 
     # Build compound key for domain-specific intent routing
     route_key = f"{domain}__{intent}"

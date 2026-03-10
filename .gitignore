@@ -22,7 +22,8 @@ env/
 chroma_db/
 *.sqlite3
 data/
-
+tests/
+*.db
 # ---------- IDE ----------
 .vscode/
 .idea/

@@ -2,7 +2,7 @@
 ================================================================================
 Database Agent — Domain-Generic NL-to-SQL Retrieval (Precision Mode)
 ================================================================================
-DOMAIN: semiconductor (also reusable for any domain with .db files)
+DOMAIN: energy (also reusable for any domain with .db files)
 RESPONSIBILITY: Auto-discover SQLite databases, convert NL to PRECISION SQL,
                 and provide authoritative structured results.
 
@@ -164,7 +164,7 @@ def _self_correct_sql(
                     f"SQL error (attempt {attempt + 1}): {last_error[:80]}... retrying"
                 )
                 print(
-                    f"[DB Agent] ⚠️ SQL error (attempt {attempt + 1}/{_MAX_SQL_RETRIES}): "
+                    f"[Energy DB Agent] ⚠️ SQL error (attempt {attempt + 1}/{_MAX_SQL_RETRIES}): "
                     f"{last_error[:100]}"
                 )
                 metadata_log += f"[DB] SQL error (attempt {attempt + 1}): {last_error}\n"
@@ -184,7 +184,7 @@ def _self_correct_sql(
                     raw_sql = sql_match.group(1).strip() if sql_match else raw_fix.strip()
                     current_sql = _sanitize_sql(raw_sql)
                     metadata_log += f"[DB] Corrected SQL: {current_sql}\n"
-                    print(f"[DB Agent] 🔧 Corrected SQL: {current_sql[:100]}")
+                    print(f"[Energy DB Agent] 🔧 Corrected SQL: {current_sql[:100]}")
                 except Exception as fix_err:
                     thinking_steps.append(f"SQL fix failed: {fix_err}")
                     break
@@ -198,7 +198,7 @@ def _self_correct_sql(
     return [], [], metadata_log, last_error
 
 
-@vera_agent("Semiconductor DB Agent")
+@vera_agent("Energy DB Agent")
 def run(state: GraphState) -> dict:
     """
     DB AGENT: Precision NL-to-SQL retrieval with self-correction.
@@ -212,14 +212,14 @@ def run(state: GraphState) -> dict:
     """
     question = state["question"]
     user_role = state["user_role"]
-    user_domain = state.get("user_domain", "semiconductor")
+    user_domain = state.get("user_domain", "energy")
     target_entity = state.get("target_entity", "GENERAL")
     entity_type = state.get("entity_type", "GENERAL")
 
     # --- Guard Clause: Fast-fail if intent doesn't need DB ---
     intent = state.get("intent", "")
-    if intent not in ("db_query", "cross_reference", ""):
-        print(f"[DB Agent] ⏭️ Fast-fail: intent='{intent}' is not DB-related")
+    if intent not in ("db_query", "cross_reference", "spec_retrieval", ""):
+        print(f"[Energy DB Agent] ⏭️ Fast-fail: intent='{intent}' is not DB-related")
         return {}
 
     thinking_steps = []
@@ -231,7 +231,7 @@ def run(state: GraphState) -> dict:
     if not db_paths:
         msg = f"No databases found for domain '{user_domain}'."
         thinking_steps.append(f"Inspecting source_documents/{user_domain}/... {msg}")
-        print(f"[DB Agent] ⚠️ {msg}")
+        print(f"[Energy DB Agent] ⚠️ {msg}")
         return {
             "documents": state.get("documents", []),
             "metadata_log": metadata_log + f"[DB] {msg}\n",
@@ -244,7 +244,7 @@ def run(state: GraphState) -> dict:
         f"Inspecting source_documents/{user_domain}/... "
         f"found databases: {db_names}"
     )
-    print(f"[DB Agent] Found {len(db_paths)} database(s) for '{user_domain}': {db_names}")
+    print(f"[Energy DB Agent] Found {len(db_paths)} database(s) for '{user_domain}': {db_names}")
 
     # --- Step 2: Get schemas for all databases ---
     all_schemas = get_all_schemas(user_domain)
@@ -276,7 +276,7 @@ def run(state: GraphState) -> dict:
     thinking_steps.append(
         f"Analyzing query context... Target Entity: {entity} (type: {entity_type})"
     )
-    print(f"[DB Agent] 🎯 Target Entity: {entity} (type: {entity_type})")
+    print(f"[Energy DB Agent] 🎯 Target Entity: {entity} (type: {entity_type})")
 
     # Build entity type hint for schema-table mapping
     if entity_type and entity_type.upper() != "GENERAL":
@@ -324,7 +324,7 @@ def run(state: GraphState) -> dict:
                         sql_queries.append((db_path, db_name, sql))
                 conn.close()
             except Exception as e:
-                print(f"[DB Agent] Schema scan error for {db_name}: {e}")
+                print(f"[Energy DB Agent] Schema scan error for {db_name}: {e}")
 
         # Execute deterministic queries
         all_results = []
@@ -336,9 +336,9 @@ def run(state: GraphState) -> dict:
                 if rows:
                     result_text = format_results(columns, rows)
                     all_results.append(f"[{db_name}] {result_text}")
-                    print(f"[DB Agent] ✅ {db_name}: {len(rows)} rows (deterministic)")
+                    print(f"[Energy DB Agent] ✅ {db_name}: {len(rows)} rows (deterministic)")
             except Exception as e:
-                print(f"[DB Agent] ❌ {db_name}: {e}")
+                print(f"[Energy DB Agent] ❌ {db_name}: {e}")
 
         if all_results:
             combined = "\n\n".join(all_results)
@@ -369,7 +369,7 @@ def run(state: GraphState) -> dict:
 
     thinking_steps.append(f"Executing SQL: {sql[:100]}...")
     metadata_log += f"[DB] SQL: {sql}\n"
-    print(f"[DB Agent] Generated SQL: {sql}")
+    print(f"[Energy DB Agent] Generated SQL: {sql}")
 
     # --- Step 4: Execute against all databases with self-correction ---
     all_results = []
@@ -388,7 +388,7 @@ def run(state: GraphState) -> dict:
 
         # Table doesn't exist in this DB — skip silently to next
         if last_err and "no such table" in last_err.lower():
-            print(f"[DB Agent] ⏭️ {db_name}: table not found, trying next DB")
+            print(f"[Energy DB Agent] ⏭️ {db_name}: table not found, trying next DB")
             continue
 
         if rows:
@@ -396,7 +396,7 @@ def run(state: GraphState) -> dict:
             all_results.append(f"[{db_name}]\n{result_text}")
             total_rows += len(rows)
             metadata_log += f"[DB] {db_name}: {len(rows)} rows returned\n"
-            print(f"[DB Agent] ✅ {db_name}: {len(rows)} rows")
+            print(f"[Energy DB Agent] ✅ {db_name}: {len(rows)} rows")
         elif not columns and not rows:
             # _self_correct_sql exhausted retries — already logged
             pass

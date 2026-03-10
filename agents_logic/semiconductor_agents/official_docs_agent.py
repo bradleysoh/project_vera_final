@@ -46,7 +46,7 @@ def run(state: GraphState) -> dict:
         query=question,
         user_role=user_role,
         user_domain=user_domain,
-        source_filter=["datasheet", "sop", "spec", "document"],
+        source_filter=["datasheet", "sop", "spec", "document", "dataset", "db_info"],
         metadata_schema=_METADATA_SCHEMA,
         k=10,
         target_entity=target_entity,
