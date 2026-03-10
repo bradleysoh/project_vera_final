@@ -7,7 +7,7 @@ Compares uploaded input contract against CUAD prevalence benchmarks.
 from shared.graph_state import GraphState
 from shared.agent_base import vera_agent
 from shared.schemas import AttributeConflict, ConflictStatus, DiscrepancyVerdict
-from agents_logic.legal_agents._cuad_utils import benchmark_discrepancies
+from agents_logic.legal_agents._cuad_utils import benchmark_discrepancies, load_cuad_statistics
 
 
 @vera_agent("Legal Discrepancy Agent")
@@ -35,6 +35,8 @@ def run(state: GraphState) -> dict:
     missing_common = benchmark["missing_common_labels"]
     uncommon_present = benchmark["uncommon_present_labels"]
     total_cuad = benchmark["total_cuad_contracts"]
+    stats = load_cuad_statistics()
+    total_common_labels = sum(1 for p in stats.get("prevalence", {}).values() if p >= 0.6)
 
     conflicts: list[AttributeConflict] = []
 
@@ -81,10 +83,49 @@ def run(state: GraphState) -> dict:
     else:
         overall = ConflictStatus.INSUFFICIENT_DATA
 
-    summary = (
-        f"CUAD benchmark over {total_cuad} contracts: detected {len(detected)} clause types in "
-        f"'{input_contract_name}', flagged {len(missing_common)} common-clause gaps."
-    )
+    common_coverage = 0.0
+    if total_common_labels > 0:
+        common_coverage = max(0.0, (total_common_labels - len(missing_common)) / total_common_labels)
+
+    # Deterministic quality gate: uploaded text is likely not a standard contract
+    # when very few contract-like clauses are detected and common-clause coverage
+    # is low vs CUAD baseline.
+    non_contract_like = len(detected) < 3 or common_coverage < 0.25
+    if non_contract_like:
+        overall = ConflictStatus.DISCREPANCY
+        conflicts.insert(
+            0,
+            AttributeConflict(
+                entity=input_contract_name,
+                attribute="contract_structure_assessment",
+                status=ConflictStatus.DISCREPANCY,
+                authoritative_value="Expected clause profile of a regular CUAD contract",
+                authoritative_source="CUAD_REFERENCE",
+                authoritative_date="dataset_baseline",
+                conflicting_values=[{
+                    "value": "Uploaded document has low contract-clause coverage",
+                    "source": "uploaded_input_contract",
+                    "date": "unknown",
+                    "reason": (
+                        f"Detected {len(detected)} clause types, "
+                        f"common-clause coverage {common_coverage:.1%}"
+                    ),
+                }],
+            )
+        )
+
+    if non_contract_like:
+        summary = (
+            f"CUAD benchmark over {total_cuad} contracts indicates '{input_contract_name}' "
+            f"falls short of a regular contract structure: detected {len(detected)} clause types "
+            f"with {len(missing_common)} common-clause gaps "
+            f"(common-clause coverage {common_coverage:.1%})."
+        )
+    else:
+        summary = (
+            f"CUAD benchmark over {total_cuad} contracts: detected {len(detected)} clause types in "
+            f"'{input_contract_name}', flagged {len(missing_common)} common-clause gaps."
+        )
 
     verdict = DiscrepancyVerdict(
         target_entity=input_contract_name,

@@ -13,7 +13,10 @@ import os
 import sys
 import time
 import io
+import mimetypes
+import traceback
 import streamlit as st
+import requests
 from dotenv import load_dotenv
 from pypdf import PdfReader
 
@@ -21,6 +24,14 @@ from pypdf import PdfReader
 # Ensure project modules are importable
 # ---------------------------------------------------------------------------
 load_dotenv()
+REDUCTO_API_KEY = (
+    os.getenv("REDUCTO_API_KEY")
+    or os.getenv("REDUCTO_SECRET_KEY")
+    or os.getenv("REDUCTO_KEY")
+    or ""
+).strip()
+REDUCTO_PARSE_URL = os.getenv("REDUCTO_PARSE_URL", "https://platform.reducto.ai/api/v1/parse").strip()
+REDUCTO_ENABLED = bool(REDUCTO_API_KEY and REDUCTO_PARSE_URL)
 
 # ---------------------------------------------------------------------------
 # Import VERA core from app.py
@@ -168,6 +179,10 @@ if "graph" not in st.session_state:
     st.session_state.graph = None
 if "graph_ready" not in st.session_state:
     st.session_state.graph_ready = False
+if "graph_compile_error" not in st.session_state:
+    st.session_state.graph_compile_error = ""
+if "graph_compile_traceback" not in st.session_state:
+    st.session_state.graph_compile_traceback = ""
 
 
 import re
@@ -203,6 +218,64 @@ def extract_text_from_pdf_bytes(file_bytes: bytes) -> str:
         return "\n\n".join(pages).strip()
     except Exception:
         return ""
+
+
+def extract_text_from_reducto_bytes(file_bytes: bytes, filename: str) -> str:
+    """
+    Parse uploaded file bytes with Reducto.
+    """
+    if not REDUCTO_ENABLED or not file_bytes:
+        return ""
+    mime_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+    try:
+        response = requests.post(
+            REDUCTO_PARSE_URL,
+            headers={"Authorization": f"Bearer {REDUCTO_API_KEY}"},
+            files={"file": (filename, io.BytesIO(file_bytes), mime_type)},
+            timeout=60,
+        )
+        response.raise_for_status()
+        payload = response.json()
+    except Exception:
+        return ""
+
+    if isinstance(payload, dict):
+        for key in ("text", "content", "markdown", "md"):
+            value = payload.get(key)
+            if isinstance(value, str) and value.strip():
+                return sanitize_text(value).strip()
+        for list_key in ("chunks", "pages"):
+            items = payload.get(list_key)
+            if isinstance(items, list):
+                parts = []
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    for key in ("text", "content", "markdown", "md"):
+                        value = item.get(key)
+                        if isinstance(value, str) and value.strip():
+                            parts.append(value.strip())
+                            break
+                if parts:
+                    return sanitize_text("\n\n".join(parts)).strip()
+    return ""
+
+
+# ============================================================================
+# BUILD GRAPH (cached in session state)
+# ============================================================================
+if st.session_state.graph is None:
+    with st.spinner("🔧 Compiling VERA agent graph..."):
+        try:
+            st.session_state.graph = build_graph()
+            st.session_state.graph_ready = True
+            st.session_state.graph_compile_error = ""
+            st.session_state.graph_compile_traceback = ""
+        except Exception as e:
+            st.session_state.graph_ready = False
+            st.session_state.graph_compile_error = str(e)
+            st.session_state.graph_compile_traceback = traceback.format_exc()
+            st.error(f"Failed to compile graph: {e}")
 
 
 # ============================================================================
@@ -246,14 +319,9 @@ with st.sidebar:
 
     st.markdown("### 📄 Input Contract (Legal)")
     uploaded_contract = st.file_uploader(
-        "Upload a contract file (.txt/.md/.pdf)",
-        type=["txt", "md", "pdf"],
+        "Upload a contract file (.txt/.pdf/.png)",
+        type=["txt", "pdf", "png"],
         help="Used by the Legal domain for key-aspect extraction and CUAD discrepancy analysis.",
-    )
-    contract_text_input = st.text_area(
-        "Or paste contract text",
-        height=140,
-        placeholder="Paste legal contract text here if you are not uploading a file.",
     )
 
     input_contract_text = ""
@@ -263,17 +331,27 @@ with st.sidebar:
             file_bytes = uploaded_contract.getvalue()
             input_contract_name = uploaded_contract.name or "uploaded_contract"
             lower_name = input_contract_name.lower()
-            if lower_name.endswith(".pdf"):
+            if lower_name.endswith(".png"):
+                if not REDUCTO_ENABLED:
+                    st.warning("PNG contract parsing requires Reducto. Add REDUCTO_API_KEY to continue.")
+                    input_contract_text = ""
+                else:
+                    input_contract_text = extract_text_from_reducto_bytes(file_bytes, input_contract_name)
+                    if not input_contract_text:
+                        st.warning("Could not parse the uploaded PNG with Reducto. Check API key/connectivity and retry.")
+            elif lower_name.endswith(".txt"):
+                if REDUCTO_ENABLED:
+                    input_contract_text = extract_text_from_reducto_bytes(file_bytes, input_contract_name)
+                if not input_contract_text:
+                    input_contract_text = file_bytes.decode("utf-8", errors="ignore")
+            elif lower_name.endswith(".pdf"):
                 input_contract_text = extract_text_from_pdf_bytes(file_bytes)
                 if not input_contract_text:
-                    st.warning("Could not extract text from the uploaded PDF. Try a text-based PDF or paste contract text.")
+                    st.warning("Could not extract text from the uploaded PDF. Try a text-based PDF.")
             else:
                 input_contract_text = file_bytes.decode("utf-8", errors="ignore")
         except Exception:
             input_contract_text = ""
-    elif contract_text_input.strip():
-        input_contract_text = contract_text_input.strip()
-        input_contract_name = "pasted_contract_text"
 
     # --- Discussion toggle ---
     st.markdown("### 💬 Agent Discussion")
@@ -339,6 +417,10 @@ with st.sidebar:
         st.success("✅ VERA agents ready")
     else:
         st.warning("⏳ Graph not compiled yet")
+        if st.session_state.graph_compile_error:
+            st.error(f"Last compile error: {st.session_state.graph_compile_error}")
+            with st.expander("Show compile traceback", expanded=False):
+                st.code(st.session_state.graph_compile_traceback or "(no traceback)")
 
     # --- Example queries ---
     st.markdown("### 💡 Example Queries")
@@ -374,19 +456,10 @@ with st.sidebar:
     if st.button("🔄 Re-compile Graph", use_container_width=True):
         st.session_state.graph = None
         st.session_state.graph_ready = False
+        st.session_state.graph_compile_error = ""
+        st.session_state.graph_compile_traceback = ""
         st.rerun()
 
-
-# ============================================================================
-# BUILD GRAPH (cached in session state)
-# ============================================================================
-if st.session_state.graph is None:
-    with st.spinner("🔧 Compiling VERA agent graph..."):
-        try:
-            st.session_state.graph = build_graph()
-            st.session_state.graph_ready = True
-        except Exception as e:
-            st.error(f"Failed to compile graph: {e}")
 
 graph = st.session_state.graph
 

@@ -268,6 +268,15 @@ LLM_BACKEND=gemini
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
+**Optional — Reducto (legal document parsing):**
+```env
+REDUCTO_API_KEY=your_reducto_api_key_here
+# Optional override:
+REDUCTO_PARSE_URL=https://platform.reducto.ai/api/v1/parse
+```
+With Reducto configured, legal-domain `.pdf/.doc/.docx` files are parsed via
+Reducto during ingestion.
+
 **Option B — Ollama (local, no API key needed):**
 ```bash
 # Install Ollama models first
@@ -291,6 +300,7 @@ python ingestion.py
 
 This will:
 - Create mock documents or load existing `.txt`/`.pdf` files from `source_documents/`.
+- For legal-domain `.pdf/.doc/.docx`, use Reducto parsing when configured.
 - Split them into chunks with `RecursiveCharacterTextSplitter`.
 - Generate embeddings using the selected backend (Gemini or Ollama).
 - Persist to ChromaDB at `./chroma_db`.
