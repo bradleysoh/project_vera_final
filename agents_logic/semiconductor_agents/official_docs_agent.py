@@ -20,7 +20,7 @@ from agents_logic.semiconductor_agents.domain_config import DOMAIN_CONFIG
 _METADATA_SCHEMA = DOMAIN_CONFIG.get("metadata_schema", {})
 
 
-@vera_agent("Official Docs Agent")
+@vera_agent("Semiconductor Official Docs Agent")
 def run(state: GraphState) -> dict:
     """
     OFFICIAL DOCS AGENT: Retrieve → Extract → Return Structured Facts.
@@ -37,8 +37,15 @@ def run(state: GraphState) -> dict:
 
     # --- Guard Clause: Fast-fail if intent doesn't need specs ---
     intent = state.get("intent", "")
-    if intent not in ("spec_retrieval", "cross_reference", ""):
-        print(f"[Official Docs Agent] ⏭️ Fast-fail: intent='{intent}' is not spec-related")
+    is_generic = state.get("is_generic_query", False)
+    
+    # Allow if intent is spec_retrieval/cross_reference OR if it's a generic query
+    # AUDIT GUARD: Also allow if the question directly asks for discrepancy/conflict
+    audit_keywords = {"discrepancy", "conflict", "mismatch", "audit", "compare", "contradiction"}
+    is_audit_query = any(k in question.lower() for k in audit_keywords)
+    
+    if intent not in ("spec_retrieval", "cross_reference", "") and not is_generic and not is_audit_query:
+        print(f"[{vera_agent.label}] ⏭️ Fast-fail: intent='{intent}' is not spec-related and not generic (audit check passed)")
         return {}
 
     # --- Stage 1: Precision Retrieval ---
@@ -46,7 +53,7 @@ def run(state: GraphState) -> dict:
         query=question,
         user_role=user_role,
         user_domain=user_domain,
-        source_filter=["datasheet", "sop", "spec", "document", "dataset", "db_info"],
+        source_filter=None,
         metadata_schema=_METADATA_SCHEMA,
         k=10,
         target_entity=target_entity,
@@ -58,9 +65,10 @@ def run(state: GraphState) -> dict:
         target_entity=target_entity,
         target_attribute=target_attribute,
         source_type_override="",  # preserve original source types
+        is_generic=is_generic,
     )
 
-    print(f"[Official Docs Agent] {len(result.documents)} docs → {len(facts)} structured facts")
+    print(f"[Semiconductor Official Docs Agent] {len(result.documents)} docs → {len(facts)} structured facts")
 
     # Per-step return: ONLY the tokens we added (reducers handle the merge)
     return {

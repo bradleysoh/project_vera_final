@@ -71,10 +71,26 @@ def run(state: GraphState) -> dict:
         f"{preview}"
     )
 
+    # ====== 新增：智能早退判定 (Satisfaction Scoring) ======
+    satisfaction_score = 0.0
+    if len(extracted_fields) > 5:
+        satisfaction_score = 1.0
+    elif len(extracted_fields) > 0:
+        satisfaction_score = 0.8
+    elif len(key_aspects) > 0:
+        satisfaction_score = 0.5
+    
+    should_short_circuit = False
+    if intent == "db_query" and satisfaction_score >= 0.8:
+        should_short_circuit = True
+        print(f"[Legal DB Agent] 🛑 高满意度 ({satisfaction_score})，触发早退信号。")
+
     return {
         "db_data": db_data,
         "db_result": db_data,
         "db_facts": db_facts,
+        "is_resolved": should_short_circuit,
+        "satisfaction_score": satisfaction_score,
         "metadata_log": (
             f"[LEGAL DB] Extracted {len(extracted_fields)} deterministic contract fields and "
             f"{len(key_aspects)} key clause labels from uploaded contract "

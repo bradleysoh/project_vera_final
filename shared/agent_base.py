@@ -75,6 +75,9 @@ def vera_agent(name: str):
         return wrapper
 
     return decorator
+
+# Attach a static label to the decorator factory itself for logging convenience
+vera_agent.label = "VERA"
 """
 ================================================================================
 Example usage in an agent file:

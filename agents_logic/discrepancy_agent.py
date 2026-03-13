@@ -47,16 +47,16 @@ def _source_priority(source_type: str) -> int:
     s = source_type.lower()
     if s in ("db", "database", "db_info", "sql", "records"):
         return 3
-    elif s in ("datasheet", "sop", "spec", "document", "manual", "policy", "regulations", "clinical_trials"):
+    elif s in ("datasheet", "sop", "spec", "document", "manual", "policy", "regulations", "guideline", "standard", "clinical_trials"):
         return 2
     elif s in ("email", "memo", "dm", "informal", "communication", "chat"):
         return 1
     return 0
 
-
 def _build_fact_index(
     facts: list[dict],
     target_entity: str,
+    is_generic_query: bool = False,
 ) -> dict[str, list[ExtractedFact]]:
     """
     Group facts by attribute, filtering to the target entity.
@@ -71,14 +71,45 @@ def _build_fact_index(
         except Exception:
             continue
 
-        # Entity isolation
-        if target_lower and target_lower not in fact.entity.lower():
-            continue
+        # Entity isolation (Soften matching)
+        fact_entity_lower = fact.entity.lower()
+        if target_lower and not is_generic_query:
+            variations = {target_lower, target_lower.replace("-", " "), target_lower.replace(" ", "-"), target_lower.replace(" ", "")}
+            entity_match = any(v in fact_entity_lower for v in variations if len(v) > 1) or target_lower in fact_entity_lower or fact_entity_lower in target_lower
+            
+            # ALLOW facts from high-authority sources even if label doesn't match perfectly,
+            # as long as they were retrieved for this context.
+            is_authoritative = _source_priority(fact.source_type) >= 2
+            if not entity_match and not is_authoritative:
+                continue
 
-        attr_key = fact.attribute.lower().strip()
+        attr_raw = fact.attribute.lower().replace("-", "_").strip()
+        
+        # KEY FIX: Group catch-all attributes together
+        if attr_raw in ("general_info", "db_result", "database_record", "summary", "db_data", "fact"):
+            attr_key = "general_info"
+        else:
+            attr_key = attr_raw
+
         if attr_key not in index:
             index[attr_key] = []
         index[attr_key].append(fact)
+
+    # Global Fallback: If no facts were found for the specific entity, 
+    # and it's a generic query OR we have official documents, allow them.
+    if not index and (is_generic_query or target_lower):
+        for fd in facts:
+            try:
+                fact = ExtractedFact(**fd)
+                is_official = _source_priority(fact.source_type) >= 2
+                if is_official or fact.entity.upper() == "GENERAL":
+                    attr_raw = fact.attribute.lower().replace("-", "_").strip()
+                    final_key = "general_info" if attr_raw in ("general_info", "summary", "fact") else attr_raw
+                    if final_key not in index:
+                        index[final_key] = []
+                    index[final_key].append(fact)
+            except Exception:
+                continue
 
     return index
 
@@ -89,59 +120,37 @@ def _resolve_conflicts(
     db: list[ExtractedFact],
     attribute: str,
 ) -> AttributeConflict:
-    """
-    Apply the deterministic hierarchy for one (entity, attribute) group.
-
-    Priority: DB > Official > Informal (only if newer date)
-    """
-    # Collect all values with their authority metadata
+    
+    # 1. 收集所有维度的值 (原有代码保留)
     all_values: list[dict] = []
 
     for f in db:
-        all_values.append({
-            "value": f.value, "source": f.source_type,
-            "date": f.date, "priority": 3, "fact": f,
-        })
+        all_values.append({"value": f.value, "source": f.source_type, "date": f.date, "priority": 3, "fact": f})
     for f in official:
-        all_values.append({
-            "value": f.value, "source": f.source_type,
-            "date": f.date, "priority": 2, "fact": f,
-        })
+        all_values.append({"value": f.value, "source": f.source_type, "date": f.date, "priority": 2, "fact": f})
     for f in informal:
-        all_values.append({
-            "value": f.value, "source": f.source_type,
-            "date": f.date, "priority": 1, "fact": f,
-        })
+        all_values.append({"value": f.value, "source": f.source_type, "date": f.date, "priority": 1, "fact": f})
 
     if not all_values:
-        # Should not happen if indexer works correctly
-        return AttributeConflict(
-            entity="unknown",
-            attribute=attribute,
-            status=ConflictStatus.INSUFFICIENT_DATA,
-        )
+        return AttributeConflict(entity="unknown", attribute=attribute, status=ConflictStatus.INSUFFICIENT_DATA)
 
-    # Determine the authoritative fact
-    # Sort: highest priority first, then newest date first
-    all_values.sort(
-        key=lambda v: (v["priority"], _parse_date(v["date"])),
-        reverse=True,
-    )
-
+    # 2. 权威度排序 (原有代码保留)
+    all_values.sort(key=lambda v: (v["priority"], _parse_date(v["date"])), reverse=True)
     authoritative = all_values[0]
 
-    # Check for informal override: if an informal fact has a newer date
-    # than the official authoritative fact AND there is no DB fact
+    # Determine current priorities for logging/metadata
+    present_priorities = set(v["priority"] for v in all_values)
+
+    # 3. 后续的跨层级冲突对比 (如果又存在DB，又存在Docs，才执行这部分逻辑)
+    # Check for informal override: if an informal fact has a newer date...
     if authoritative["priority"] == 2:  # official is top
         newer_informal = [
             v for v in all_values
-            if v["priority"] == 1
-            and _parse_date(v["date"]) > _parse_date(authoritative["date"])
+            if v["priority"] == 1 and _parse_date(v["date"]) > _parse_date(authoritative["date"])
         ]
         if newer_informal:
             authoritative = newer_informal[0]
 
-    # Compare all values to the authoritative one
     conflicting = []
     auth_value_normalized = authoritative["value"].strip().lower()
 
@@ -154,16 +163,16 @@ def _resolve_conflicts(
                 "source": v["source"],
                 "date": v["date"],
                 "reason": (
-                    f"Lower authority ({v['source']}) vs "
-                    f"authoritative ({authoritative['source']})"
-                ),
+                    f"Conflict with authoritative value ({authoritative['source']})"
+                    if v["priority"] == authoritative["priority"]
+                    else f"Lower authority ({v['source']}) vs authoritative ({authoritative['source']})"
+                )
             })
 
     status = ConflictStatus.DISCREPANCY if conflicting else ConflictStatus.ALIGNED
-    entity_name = authoritative["fact"].entity
 
     return AttributeConflict(
-        entity=entity_name,
+        entity=authoritative["fact"].entity,
         attribute=attribute,
         status=status,
         authoritative_value=authoritative["value"],
@@ -201,9 +210,10 @@ def run(state: GraphState) -> dict:
     db_facts = state.get("db_facts") or []
 
     # Build indexes by attribute (entity-filtered)
-    official_idx = _build_fact_index(official_facts, target_entity)
-    informal_idx = _build_fact_index(informal_facts, target_entity)
-    db_idx = _build_fact_index(db_facts, target_entity)
+    is_generic = state.get("is_generic_query", False)
+    official_idx = _build_fact_index(official_facts, target_entity, is_generic)
+    informal_idx = _build_fact_index(informal_facts, target_entity, is_generic)
+    db_idx = _build_fact_index(db_facts, target_entity, is_generic)
 
     # Gather all attribute keys across all sources
     all_attributes = set(official_idx.keys()) | set(informal_idx.keys()) | set(db_idx.keys())

@@ -47,16 +47,21 @@ def _source_priority(source_type: str) -> int:
     Higher = more authoritative.
     """
     s = source_type.lower()
-    if s in ("db", "database", "db_info"):
+    if s in ("db", "database", "db_info", "sql", "records"):
         return 3
-    elif s in ("datasheet", "sop", "spec", "document"):
+    elif s in ("datasheet", "sop", "spec", "document", "manual", "policy", "regulations", "guideline", "standard"):
         return 2
-    elif s in ("email", "memo", "dm"):
+    elif s in ("email", "memo", "dm", "informal", "communication", "chat"):
         return 1
     return 0
 
 
-def _build_fact_index(facts: list[dict], target_entity: str, target_attribute: str = "GENERAL") -> dict[str, list[ExtractedFact]]:
+def _build_fact_index(
+    facts: list[dict],
+    target_entity: str,
+    target_attribute: str = "GENERAL",
+    is_generic_query: bool = False,
+) -> dict[str, list[ExtractedFact]]:
     index: dict[str, list[ExtractedFact]] = {}
     target_lower = target_entity.lower() if target_entity != "GENERAL" else ""
     attr_target_lower = target_attribute.lower().strip() if target_attribute != "GENERAL" else ""
@@ -67,20 +72,45 @@ def _build_fact_index(facts: list[dict], target_entity: str, target_attribute: s
         except Exception:
             continue
 
-        if target_lower and target_lower not in fact.entity.lower():
-            continue
+        # Entity isolation (Soften matching)
+        fact_entity_lower = fact.entity.lower()
+        if target_lower and not is_generic_query:
+            variations = {target_lower, target_lower.replace("-", " "), target_lower.replace(" ", "-"), target_lower.replace(" ", "")}
+            if not any(v in fact_entity_lower for v in variations if len(v) > 1):
+                continue
 
-        attr_raw = fact.attribute.lower().strip()
+        attr_raw = fact.attribute.lower().replace("-", "_").strip()
         final_key = attr_raw
+        
         if attr_target_lower:
-            if attr_target_lower in attr_raw or attr_raw in attr_target_lower:
+            t_norm = attr_target_lower.replace("_", "").replace(" ", "")
+            a_norm = attr_raw.replace("_", "").replace(" ", "")
+            if (t_norm in a_norm or a_norm in t_norm):
                 final_key = attr_target_lower
-        elif attr_raw in ("general_info", "db_result", "database_record"):
+                
+        # KEY FIX: Group catch-all attributes together
+        if attr_raw in ("general_info", "db_result", "database_record", "summary", "db_data"):
             final_key = "general_info"
 
         if final_key not in index:
             index[final_key] = []
         index[final_key].append(fact)
+
+    # Global Fallback: If no facts were found for the specific entity, 
+    # and it's a generic query OR we have official documents, allow them.
+    if not index and (is_generic_query or target_lower):
+        for fd in facts:
+            try:
+                fact = ExtractedFact(**fd)
+                is_official = _source_priority(fact.source_type) >= 2
+                if is_official or fact.entity.upper() == "GENERAL":
+                    attr_raw = fact.attribute.lower().replace("-", "_").strip()
+                    final_key = "general_info" if attr_raw in ("general_info", "summary", "fact") else attr_raw
+                    if final_key not in index:
+                        index[final_key] = []
+                    index[final_key].append(fact)
+            except Exception:
+                continue
 
     return index
 
@@ -228,9 +258,10 @@ def run(state: GraphState) -> dict:
           f"db={len(db_facts)}")
 
     # Build indexes by attribute (entity-filtered)
-    official_idx = _build_fact_index(official_facts, target_entity, state.get("target_attribute", "GENERAL"))
-    informal_idx = _build_fact_index(informal_facts, target_entity, state.get("target_attribute", "GENERAL"))
-    db_idx = _build_fact_index(db_facts, target_entity, state.get("target_attribute", "GENERAL"))
+    is_generic = state.get("is_generic_query", False)
+    official_idx = _build_fact_index(official_facts, target_entity, state.get("target_attribute", "GENERAL"), is_generic)
+    informal_idx = _build_fact_index(informal_facts, target_entity, state.get("target_attribute", "GENERAL"), is_generic)
+    db_idx = _build_fact_index(db_facts, target_entity, state.get("target_attribute", "GENERAL"), is_generic)
 
     # Gather all attribute keys across all sources
     all_attributes = set(official_idx.keys()) | set(informal_idx.keys()) | set(db_idx.keys())

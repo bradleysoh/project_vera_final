@@ -36,7 +36,7 @@ _MONTHS = (
     "october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec"
 )
 _DATE_EXPR = (
-    rf"((?:{_MONTHS})\s+\d{{1,2}},?\s+\d{{4}}|"
+    rf"((?:{_MONTHS})\s+\d{{1,2}}(?:st|nd|rd|th)?\s*,?\s+\d{{4}}|"
     rf"\d{{1,2}}(?:st|nd|rd|th)?\s+day\s+of\s+(?:{_MONTHS}),?\s+\d{{4}}|"
     r"\d{1,2}[/-]\d{1,2}[/-]\d{2,4})"
 )
@@ -59,8 +59,8 @@ def extract_agreement_date(contract_text: str) -> str:
 
     contextual_patterns = [
         rf"(?:agreement\s+date|date\s+of\s+this\s+agreement|dated\s+as\s+of)\s*[:\-]?\s*{_DATE_EXPR}",
-        rf"(?:made\s+and\s+entered\s+into\s+as\s+of|effective\s+as\s+of)\s*[:\-]?\s*{_DATE_EXPR}",
-        rf"this\s+agreement.*?\b(?:dated|date)\b.*?{_DATE_EXPR}",
+        rf"(?:made\s+and\s+entered\s+into\s+as\s+of|effective\s+as\s+of|made\s+on)\s*[:\-]?\s*{_DATE_EXPR}",
+        rf"this\s+agreement.*?\b(?:dated|date|on)\b.*?{_DATE_EXPR}",
     ]
 
     for pat in contextual_patterns:

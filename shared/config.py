@@ -293,6 +293,10 @@ def get_available_roles() -> list[str]:
 # RBAC-AWARE RETRIEVER
 # ==============================================================================
 
+# ==============================================================================
+# RBAC-AWARE RETRIEVER
+# ==============================================================================
+
 def retrieve_with_rbac(
     query: str,
     user_role: str,
@@ -301,165 +305,41 @@ def retrieve_with_rbac(
     k: int = 4,
 ) -> tuple[List[Document], str]:
     """
-    Retrieve documents from ChromaDB with Role-Based Access Control (RBAC)
+    Retrieves documents from the vector store while enforcing strict RBAC
     and domain isolation.
-
-    Double filter:
-      - Domain filter: restricts results to the user's assigned domain
-      - Access filter: restricts by role-based access level
-
-    Args:
-        query: The search query string.
-        user_role: The user's role ("senior" or "junior").
-        user_domain: The user's domain ("semiconductor", "medical", etc.).
-        source_filter: Optional list of source types to filter by.
-        k: Number of results to return (default: 4).
-
-    Returns:
-        tuple: (list of retrieved Documents, metadata log string)
     """
     metadata_log = f"[RBAC] User role: {user_role} | Domain: {user_domain} | Query: '{query}'\n"
 
-    # --- Build access level filter based on role ---
+    # --- 1. Build RBAC filter ---
     allowed_levels = ROLE_ACCESS_MAP.get(user_role, ["public"])
-    metadata_log += f"[RBAC] Allowed access levels: {allowed_levels}\n"
-
-    # --- Build composite filter ---
     conditions = []
-
-    # Access level filter (always applied)
+    
     if len(allowed_levels) == 1:
         conditions.append({"access_level": allowed_levels[0]})
     else:
         conditions.append({"access_level": {"$in": allowed_levels}})
 
-    # Domain filter (applied when user_domain is specified)
+    # --- 2. Build Domain Isolation filter ---
     if user_domain:
         conditions.append({"domain": user_domain})
-        metadata_log += f"[RBAC] Domain filter: {user_domain}\n"
-
-    # Source type filter (applied when specified by the agent)
+        
+    # --- 3. Build Source filter (optional) ---
     if source_filter:
         conditions.append({"source": {"$in": source_filter}})
-        metadata_log += f"[RBAC] Source filter: {source_filter}\n"
 
-    # Combine conditions
-    if len(conditions) == 1:
-        filter_conditions = conditions[0]
-    else:
-        filter_conditions = {"$and": conditions}
-
-    # Diagnostic logging for filters
-    print(f"[RBAC] Final filter: {filter_conditions}")
+    filter_conditions = conditions[0] if len(conditions) == 1 else {"$and": conditions}
     metadata_log += f"[RBAC] Final search filter: {filter_conditions}\n"
 
-    # --- Execute retrieval ---
+    # --- 4. Execute retrieval ---
     vs = get_vector_store()
     if vs:
-        if filter_conditions:
-            results = vs.similarity_search(query, k=k, filter=filter_conditions)
-        else:
-            results = vs.similarity_search(query, k=k)
+        results = vs.similarity_search(query, k=k, filter=filter_conditions)
     else:
         results = []
         metadata_log += "[RBAC] ❌ Vector store not initialized. Results will be empty.\n"
 
     metadata_log += f"[RBAC] Retrieved {len(results)} documents\n"
-
-    for i, doc in enumerate(results):
-        metadata_log += (
-            f"  Doc {i+1}: source={doc.metadata.get('source')}, "
-            f"access={doc.metadata.get('access_level')}, "
-            f"domain={doc.metadata.get('domain')}, "
-            f"id={doc.metadata.get('document_id')}\n"
-        )
-
     return results, metadata_log
-
-
-# ==============================================================================
-# MULTI-QUERY RETRIEVER  (Ensemble / Query-Rewriting Strategy)
-# ==============================================================================
-
-def multi_query_retrieve(
-    query: str,
-    user_role: str,
-    user_domain: str = "",
-    source_filter: Optional[list[str]] = None,
-    k: int = 4,
-    n_variations: int = 3,
-) -> tuple[List[Document], str]:
-    """
-    Generate *n_variations* rewrites of *query* via the LLM, run
-    ``retrieve_with_rbac`` for each, and merge/deduplicate the results.
-
-    This ensures no relevant chunks are missed because of embedding-similarity
-    bias toward a single phrasing.
-
-    Returns:
-        tuple: (deduplicated Document list, combined metadata log)
-    """
-    from langchain_core.prompts import ChatPromptTemplate
-    from langchain_core.output_parsers import StrOutputParser
-    import re as _re
-
-    # --- Step 1: Generate query variations ---
-    variation_prompt = ChatPromptTemplate.from_messages([
-        ("human", (
-            "Generate {n} different phrasings of this question. "
-            "Each phrasing should emphasise different keywords or angles "
-            "so that a vector search finds ALL relevant documents.\n\n"
-            "Original question: {question}\n\n"
-            "Return ONLY the numbered list (1. … 2. … 3. …), no commentary."
-        ))
-    ])
-
-    chain = variation_prompt | llm | StrOutputParser()
-    try:
-        raw = llm_invoke_with_retry(chain, {
-            "n": str(n_variations),
-            "question": query,
-        })
-        # Parse numbered lines
-        variations = _re.findall(r"\d+\.\s*(.+)", raw)
-        if not variations:
-            variations = [query]
-    except Exception as e:
-        print(f"[MULTI-QUERY] ⚠️ Variation generation failed ({e}), using original query.")
-        variations = [query]
-
-    # Always include the original query
-    all_queries = [query] + [v.strip() for v in variations if v.strip() != query]
-    all_queries = all_queries[: n_variations + 1]  # cap total
-
-    metadata_log = f"[MULTI-QUERY] Generated {len(all_queries)} query variations:\n"
-    for i, q in enumerate(all_queries):
-        metadata_log += f"  Q{i+1}: {q}\n"
-
-    # --- Step 2: Retrieve for each variation ---
-    seen_contents: set[str] = set()
-    merged_docs: List[Document] = []
-    combined_log = metadata_log
-
-    for q in all_queries:
-        docs, log = retrieve_with_rbac(
-            query=q,
-            user_role=user_role,
-            user_domain=user_domain,
-            source_filter=source_filter,
-            k=k,
-        )
-        combined_log += log
-        for doc in docs:
-            key = doc.page_content[:120]
-            if key not in seen_contents:
-                seen_contents.add(key)
-                merged_docs.append(doc)
-
-    combined_log += f"[MULTI-QUERY] Total unique docs after merge: {len(merged_docs)}\n"
-    print(f"[MULTI-QUERY] {len(all_queries)} queries → {len(merged_docs)} unique docs")
-
-    return merged_docs, combined_log
 
 
 # ==============================================================================

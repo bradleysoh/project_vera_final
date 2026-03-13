@@ -47,6 +47,14 @@ from shared.config import llm_invoke_with_retry, retrieve_with_rbac, RETRIEVAL_M
 
 
 # ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+# Standardized marker for "No matching data" results to distinguish from factual content
+NO_DATA_MARKER = "__NO_DATA_FOUND__"
+
+
+# ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
 
@@ -186,25 +194,9 @@ def _post_filter_by_entity(
     entity: str,
 ) -> List[Document]:
     """
-    Post-retrieval filter: REMOVE documents that don't mention the target
-    entity.  If NO docs match, keep the top 1 as fallback to avoid empty state.
+    [MVP 紧急修改] 废除脆弱的字符串硬匹配，防止误杀合法文档。
     """
-    if not entity or entity.upper() == "GENERAL":
-        return docs
-
-    entity_lower = entity.lower()
-    matched = []
-    for doc in docs:
-        if entity_lower in doc.page_content.lower():
-            matched.append(doc)
-
-    # If entity matched docs exist, return ONLY those
-    if matched:
-        return matched
-    
-    # Information Lock: If no direct mention of specific entity, return empty list
-    # (Previously fell back to docs[:1] which caused hallucinations)
-    return []
+    return docs  # <--- 直接把后面的 for 循环全删掉或注释掉，强行返回原文档
 
 
 def _compute_confidence(
@@ -368,32 +360,55 @@ def _build_doc_text_batch(documents: list, start: int, end: int) -> str:
     return "\n---\n".join(doc_texts)
 
 
-def extract_facts_from_documents(
+def _is_garbage_text(text: str) -> bool:
+    """Heuristic to detect binary leaks, PDF streams, or random character blobs."""
+    if not text: return True
+    binary_patterns = [
+        "%PDF", "obj <<", ".indd", " R/Fit", " R/XYZ", " R/FitH", "/Prev", "/Encrypt",
+        "/F1", "/F2", "/F3", ">> stream", "endstream", " 0 R", " 0 obj",
+        "xmpMM:", "adobe:docid", "stRef:", "xmlns:", "rdf:Description",
+        "rdf:li", "xmpG:", "swatchName", "CMYK", "PROCESS", "colorAnt",
+        "PGF", "xmp:", "xmpTPg:", "xmpBJ:", "tiff:", "exif:"
+    ]
+    if any(p in text for p in binary_patterns): return True
+    
+    # Check for raw binary markers or extreme character densities
+    if text.count("\\x") > 10 or text.count("&#x") > 10: return True
+
+    # Character distribution check
+    # Many PDF leaks contain lots of symbols and few letters/numbers
+    # Or very long strings without spaces/punctuation
+    sample = text[:1000]
+    total = len(sample)
+    if total < 5: return False
+    
+    # Space density: Real text usually has spaces every 3-15 chars
+    spaces = sample.count(" ") + sample.count("\n")
+    if total > 50 and spaces / total < 0.05: # Less than 5% spaces
+        return True
+
+    # Word length: Binary leaks often have huge "words"
+    words = sample.split()
+    if words and max(len(w) for w in words) > 60:
+        return True
+    
+    alnum = sum(1 for char in sample if char.isalnum() or char.isspace())
+    if alnum / total < 0.25: # Even more lenient for tabular scientific data
+        return True
+
+    return False
+
+
+def perform_llm_fact_extraction(
     documents: list,
     target_entity: str = "GENERAL",
     target_attribute: str = "GENERAL",
     source_type_override: str = "",
+    is_generic: bool = False,
 ) -> list[dict]:
     """
-    Extract-then-Evaluate: Distill raw document chunks into structured facts.
-
-    In 'fast' mode (Ollama): metadata-only extraction (zero LLM calls).
-    In 'deep' mode (Gemini/Groq): uses ``with_structured_output(FactCollection)``
-    with document batching to minimize API calls.
-
-    Batching Strategy:
-        Instead of 1 LLM call per document, groups up to ``_BATCH_SIZE`` (4)
-        documents into a single prompt.  For 10 documents this means ~3 calls
-        instead of ~10, reducing RPM by ~3-4×.
-
-    Args:
-        documents: List of LangChain Document objects.
-        target_entity: Entity to focus extraction on (from QueryIntent).
-        target_attribute: Attribute to focus on (from QueryIntent).
-        source_type_override: Override source_type for all facts (e.g. "email").
-
-    Returns:
-        List of ExtractedFact dicts (serialized via .model_dump()).
+    Core LLM Extraction: Distill raw document chunks into structured facts.
+    Used ONLY during the ingestion phase (Shift-Left).
     """
     if not documents:
         return []
@@ -413,21 +428,43 @@ def extract_facts_from_documents(
             date = doc.metadata.get("date", doc.metadata.get("version", "unknown"))
             content_lower = doc.page_content.lower()
 
-            # Entity-aware labeling (Information Lock)
+            # Increase snippet size from 250 to 1500 to prevent context poisoning for long documents
+            snippet = doc.page_content[:1500].strip().replace("\n", " ")
+            
+            # Entity-aware labeling
             if entity_lower:
-                if entity_lower in content_lower:
+                # If target entity is specifically mentioned, use it.
+                # Otherwise, if it's from an authoritative source, optimistically label it.
+                is_authoritative = any(s in src.lower() for s in ("db", "spec", "datasheet", "manual", "sop", "policy", "regulations"))
+                if entity_lower in content_lower or is_authoritative:
                     fact_entity = target_entity
                 else:
-                    # Specific entity requested but not found in this document
-                    continue 
+                    fact_entity = doc.metadata.get("title", "unknown")[:50]
             else:
-                # Try to extract entity from metadata for GENERAL queries
                 fact_entity = doc.metadata.get("title", target_entity)[:50]
+
+            # Attribute Diversification: If target_attribute is GENERAL, 
+            # and it's a generic query, use the document title as the attribute 
+            # to prevent collisions in the discrepancy engine.
+            # If it's a SPECIFIC query, keep 'general_info' to allow comparison.
+            fact_attribute = attr_name
+            if attr_name == "general_info" and is_generic:
+                fact_attribute = doc.metadata.get("title", "general_info")[:30].lower().replace(" ", "_")
+
+            # Binary & Garbage Filter: Discard individual facts eventually, 
+            # but don't skip the whole doc snippet here as it might contain valid text too.
+            # if _is_garbage_text(snippet):
+            #     print(f"[FACT EXTRACT] ⏭️ Skipping garbage/binary content in '{doc_id}'")
+            #     continue
+
+            # Filter out very short or purely decorative snippets (e.g. copyright footers)
+            if len(snippet) < 30 and not entity_lower:
+                continue
 
             fact = ExtractedFact(
                 entity=fact_entity,
-                attribute=attr_name,
-                value=doc.page_content[:250].strip().replace("\n", " "), # More content for better audit
+                attribute=fact_attribute,
+                value=snippet,
                 source_type=src,
                 source_doc=str(doc_id),
                 date=str(date),
@@ -443,14 +480,12 @@ def extract_facts_from_documents(
     all_facts: list[dict] = []
     n_docs = len(documents)
     n_batches = (n_docs + _BATCH_SIZE - 1) // _BATCH_SIZE
-    print(f"[FACT EXTRACT] Deep mode — {n_docs} docs in {n_batches} batch(es)")
-
+    
     for batch_idx in range(n_batches):
         start = batch_idx * _BATCH_SIZE
         end = min(start + _BATCH_SIZE, n_docs)
         documents_text = _build_doc_text_batch(documents, start, end)
 
-        # ── Primary: with_structured_output (Pydantic-enforced) ────────
         try:
             structured_llm = config.llm.with_structured_output(FactCollection)
             chain = _FACT_EXTRACTION_PROMPT | structured_llm
@@ -463,69 +498,74 @@ def extract_facts_from_documents(
                 if source_type_override:
                     fact.source_type = source_type_override
                 all_facts.append(fact.model_dump())
-            print(
-                f"[FACT EXTRACT] Batch {batch_idx + 1}/{n_batches}: "
-                f"{len(result.facts)} facts (structured output)"
-            )
         except Exception as e:
             print(f"[FACT EXTRACT] Structured output failed ({e}), falling back to text parsing")
-
-            # ── Fallback: text + regex JSON parsing ────────────────────
-            try:
-                chain = _FACT_EXTRACTION_PROMPT | config.llm | StrOutputParser()
-                raw = llm_invoke_with_retry(chain, {
-                    "target_entity": target_entity,
-                    "target_attribute": target_attribute,
-                    "documents": documents_text,
+            # Minimal metadata fallback
+            for doc in documents[start:end]:
+                all_facts.append({
+                    "entity": target_entity,
+                    "attribute": target_attribute,
+                    "value": doc.page_content[:200],
+                    "source_type": doc.metadata.get("source", "unknown"),
+                    "source_doc": str(doc.metadata.get("document_id", "unknown")),
+                    "date": "unknown",
+                    "confidence": "LOW",
                 })
-                import json as _json
-                raw_clean = raw.strip()
-                if "```" in raw_clean:
-                    match = re.search(r"```(?:json)?\s*([\s\S]*?)```", raw_clean)
-                    if match:
-                        raw_clean = match.group(1).strip()
 
-                parsed = _json.loads(raw_clean)
-                if isinstance(parsed, list):
-                    for item in parsed:
-                        if isinstance(item, dict):
-                            try:
-                                fact = ExtractedFact(**item)
-                                if source_type_override:
-                                    fact.source_type = source_type_override
-                                all_facts.append(fact.model_dump())
-                            except Exception:
-                                continue
-                    print(
-                        f"[FACT EXTRACT] Batch {batch_idx + 1}/{n_batches}: "
-                        f"text fallback OK"
-                    )
-            except Exception as e2:
-                print(f"[FACT EXTRACT] Text fallback also failed ({e2})")
-
-        # ── Inter-batch throttle to respect RPM limits ─────────────────
         if batch_idx < n_batches - 1:
             _time.sleep(BATCH_DELAY)
 
-    # ── Last-resort: metadata-only fallback if everything failed ───────
-    if not all_facts:
-        print("[FACT EXTRACT] ⚠️ All extraction methods failed, using metadata-only fallback")
-        for doc in documents:
-            src = doc.metadata.get("source", source_type_override or "unknown")
-            doc_id = doc.metadata.get("document_id", "unknown")
-            date = doc.metadata.get("date", doc.metadata.get("version", "unknown"))
-            fact = ExtractedFact(
-                entity=target_entity if target_entity != "GENERAL" else "unknown",
-                attribute=target_attribute if target_attribute != "GENERAL" else "general_info",
-                value=doc.page_content[:200],
-                source_type=src,
-                source_doc=str(doc_id),
-                date=str(date),
-                confidence="LOW",
-            )
-            all_facts.append(fact.model_dump())
+    return all_facts
 
-    print(f"[FACT EXTRACT] Total: {len(all_facts)} facts extracted")
+
+def extract_facts_from_documents(
+    documents: list,
+    target_entity: str = "GENERAL",
+    target_attribute: str = "GENERAL",
+    source_type_override: str = "",
+    is_generic: bool = False,
+) -> list[dict]:
+    """
+    Shift-Left Retrieval: Directly retrieve pre-extracted facts from SQLite.
+    Eliminates LLM latency during the inference phase.
+    """
+    if not documents:
+        return []
+
+    from shared.fact_store import store
+    
+    all_facts: list[dict] = []
+    entity_lower = target_entity.lower() if target_entity and target_entity != "GENERAL" else ""
+    
+    print(f"[FACT RETRIEVAL] Fetching pre-extracted facts for {len(documents)} docs...")
+    
+    for doc in documents:
+        doc_id = doc.metadata.get("document_id")
+        if not doc_id:
+            continue
+            
+        facts = store.get_facts_by_doc_id(doc_id)
+        for f in facts:
+            # Binary & Garbage Filter: Discard facts that look like PDF garbage or raw bytes
+            if _is_garbage_text(f.value):
+                continue
+                
+            # Filter out generic high-level facts that don't satisfy precision
+            if f.attribute == "general_info" and len(f.value) < 100:
+                continue
+            # Conditional Re-labeling for Generic Queries (Topic-based)
+            if is_generic and f.attribute == "general_info":
+                f.attribute = f.source_doc.lower().replace(" ", "_").replace(".", "_")
+
+            all_facts.append(f.model_dump())
+
+    # Fallback if no facts were found in DB (e.g. document not yet processed by new ingestion)
+    if not all_facts:
+        print("[FACT RETRIEVAL] ⚠️ No pre-extracted facts found. Attempting real-time extraction (fallback).")
+        real_time_facts = perform_llm_fact_extraction(documents, target_entity, target_attribute, source_type_override, is_generic)
+        return real_time_facts
+
+    print(f"[FACT RETRIEVAL] Retrieved {len(all_facts)} facts from store.")
     return all_facts
 
 

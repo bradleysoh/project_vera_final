@@ -25,6 +25,7 @@ from shared.db_utils import (
     execute_read_only,
     format_results,
 )
+from shared.advanced_rag import NO_DATA_MARKER
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -65,7 +66,12 @@ _SQL_PROMPT = ChatPromptTemplate.from_messages([
         "5. SAMPLING RULE: If the user asks for 'first X rows' or a 'sample' (even if they ask for an average of them), return RAW DATA (SELECT *) with LIMIT X. Do NOT attempt to aggregate in SQL for small samples.\n"
         "6. If no specific entity is mentioned, DO NOT include a WHERE clause for the category name.\n"
         "7. NEVER use placeholder names like 'ENTITY_X' or '[table_name]'. Use real names.\n\n"
+        "8. ESCAPE HATCH: If the user's question is about procedures, manuals, text documents, or concepts that DO NOT exist in the provided schema, YOU MUST NOT generate SQL. Output EXACTLY the word: NOT_APPLICABLE"
         "USER QUESTION: {question}\n"
+        "CRITICAL SQL RULES FOR SMALL MODELS:\n"
+        "1. 'FIRST N ROWS': If the user asks for the 'first', 'top', or 'sample' rows, YOU MUST ONLY USE 'LIMIT N'. NEVER use 'WHERE id = 1 AND id = 2...'.\n"
+        "2. MULTIPLE VALUES: NEVER use 'AND' for the same column (e.g., WRONG: id=1 AND id=2). If you must match multiple IDs, use 'IN' (e.g., CORRECT: id IN (1, 2, 3)). \n"
+        "3. NO HALLUCINATED COLUMNS: Only use columns that explicitly exist in the provided schema.\n"
     ))
 ])
 
@@ -350,6 +356,30 @@ def run(state: GraphState) -> dict:
     sql_match = re.search(r"(SELECT\s.+?)(?:;|$)", raw_sql, re.IGNORECASE | re.DOTALL)
     sql = sql_match.group(1).strip() if sql_match else raw_sql.strip()
 
+    # ====== 物理防线：SQL 实体一致性校验与幻觉拦截 ======
+    if "NOT_APPLICABLE" in sql.upper():
+        print("[Medical DB Agent] ⏭️ 逃生舱触发：问题不属于数据库查询范畴。")
+        return {"db_data": "", "db_facts": [], "documents": state.get("documents", []), "is_resolved": False}
+    
+    # 如果明确指定了实体，但生成的 SQL 中完全没有包含该实体的任何核心词汇，说明大模型在胡编乱造列名或条件
+    if not is_general:
+        # 提取实体的核心词（比如 "TB cluster" -> ["tb", "cluster"]）
+        entity_words = [w.lower() for w in entity.split() if len(w) > 2] 
+        sql_lower = sql.lower()
+        # 只要有一个核心词在 SQL 中出现（表名、列名、或 WHERE 条件里），就算通过
+        has_entity_in_sql = any(w in sql_lower for w in entity_words) if entity_words else True
+        
+        if not has_entity_in_sql:
+            print(f"[Medical DB Agent] 🛑 幻觉拦截：生成的 SQL ({sql}) 中完全不包含目标实体 ({entity})。强制熔断当前 DB 查询。")
+            return {
+                "db_data": "",
+                "db_facts": [],
+                "documents": state.get("documents", []),
+                "is_resolved": False,
+                "metadata_log": metadata_log + "[DB] 拦截到幻觉 SQL，跳过数据库查询。\n",
+                "_thinking": " | ".join(thinking_steps) + " | Blocked hallucinated SQL."
+            }
+    # ===================================================
     thinking_steps.append(f"Executing SQL: {sql[:100]}...")
     metadata_log += f"[DB] SQL: {sql}\n"
     print(f"[Medical DB Agent] Generated SQL: {sql}")
@@ -386,21 +416,16 @@ def run(state: GraphState) -> dict:
         else:
             metadata_log += f"[DB] {db_name}: No matching rows\n"
 
-    # --- Step 5: Format for State Update ---
-    combined_result = "\n\n".join(all_results) if all_results else "No matching data found in database."
+# --- Step 5: Format for State Update ---
+    combined_result = "\n\n".join(all_results) if all_results else NO_DATA_MARKER
     thinking_steps.append(f"Retrieved {total_rows} rows from database.")
 
     # Convert DB results to structured facts for the Auditor
     db_facts = []
     if all_results and total_rows > 0:
-        # Optimization: If we have 1 row, extract individual columns as facts
-        # This allows the Auditor to compare 'voltage_max' (DB) vs 'voltage_max' (Doc)
-        # instead of comparing a big 'database_record' blob.
         for db_path in db_paths:
             db_name = os.path.basename(db_path)
             try:
-                # Re-query specifically for fact extraction if needed, or use cached rows
-                # For simplicity here, we re-parse the last successful result if total_rows is small
                 columns, rows = execute_read_only(db_path, sql)
                 if len(rows) == 1:
                     row = rows[0]
@@ -417,7 +442,6 @@ def run(state: GraphState) -> dict:
                                 "confidence": "HIGH",
                             })
                 else:
-                    # Multi-row fallback: traditional blob
                     db_facts.append({
                         "entity": target_entity,
                         "attribute": "database_record",
@@ -438,13 +462,31 @@ def run(state: GraphState) -> dict:
             metadata={"source": "database", "domain": user_domain, "type": "db_record"}
         )]
 
+    # ====== 新增：智能早退判定 (Satisfaction Scoring) ======
+    # 评分逻辑：
+    # 1.0 -> 精确命中 (1行数据) 且意图匹配
+    # 0.8 -> 模糊命中 (多行数据)
+    # 0.5 -> 仅有元数据匹配
+    # 0.0 -> 无结果
+    satisfaction_score = 0.0
+    if total_rows == 1:
+        satisfaction_score = 1.0
+    elif total_rows > 1:
+        satisfaction_score = 0.8
+    
+    should_short_circuit = False
+    if state.get("intent") == "db_query" and satisfaction_score >= 0.8:
+        should_short_circuit = True
+        print(f"[Medical DB Agent] 🛑 高满意度 ({satisfaction_score})，触发早退信号。")
+
     # Per-step return: ONLY the tokens we added (reducers handle the merge)
     return {
-        "documents": new_docs,
+        "documents": state.get("documents", []) + new_docs,
         "db_facts": db_facts,
         "db_data": combined_result,
+        "is_resolved": should_short_circuit,
+        "satisfaction_score": satisfaction_score,
         "metadata_log": metadata_log.replace(state.get("metadata_log", ""), "").strip(),
         "thought_process": thinking_steps,
         "_thinking": " | ".join(thinking_steps),
     }
-

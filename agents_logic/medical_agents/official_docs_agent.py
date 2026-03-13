@@ -37,8 +37,15 @@ def run(state: GraphState) -> dict:
 
     # --- Guard Clause: Fast-fail if intent doesn't need specs ---
     intent = state.get("intent", "")
-    if intent not in ("spec_retrieval", "cross_reference", ""):
-        print(f"[Medical Official Docs Agent] ⏭️ Fast-fail: intent='{intent}' is not spec-related")
+    is_generic = state.get("is_generic_query", False)
+    
+    # Allow if intent is spec_retrieval/cross_reference OR if it's a generic query
+    # AUDIT GUARD: Also allow if the question directly asks for discrepancy/conflict
+    audit_keywords = {"discrepancy", "conflict", "mismatch", "audit", "compare", "contradiction"}
+    is_audit_query = any(k in question.lower() for k in audit_keywords)
+
+    if intent not in ("spec_retrieval", "cross_reference", "") and not is_generic and not is_audit_query:
+        print(f"[{vera_agent.label}] ⏭️ Fast-fail: intent='{intent}' is not spec-related and not generic (audit check passed)")
         return {}
 
     # --- Stage 1: Precision Retrieval ---
@@ -58,6 +65,7 @@ def run(state: GraphState) -> dict:
         target_entity=target_entity,
         target_attribute=target_attribute,
         source_type_override="",  # preserve original source types
+        is_generic=state.get("is_generic_query", False),
     )
 
     print(f"[Medical Official Docs Agent] {len(result.documents)} docs → {len(facts)} structured facts")

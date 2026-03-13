@@ -25,6 +25,7 @@ from shared.db_utils import (
     execute_read_only,
     format_results,
 )
+from shared.advanced_rag import NO_DATA_MARKER
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -404,7 +405,7 @@ def run(state: GraphState) -> dict:
             metadata_log += f"[DB] {db_name}: No matching rows\n"
 
     # --- Step 5: Format for State Update ---
-    combined_result = "\n\n".join(all_results) if all_results else "No matching data found in database."
+    combined_result = "\n\n".join(all_results) if all_results else NO_DATA_MARKER
     thinking_steps.append(f"Retrieved {total_rows} rows from database.")
 
     # Convert DB results to structured facts for the Auditor
@@ -455,11 +456,25 @@ def run(state: GraphState) -> dict:
             metadata={"source": "database", "domain": user_domain, "type": "db_record"}
         )]
 
+    # ====== 新增：智能早退判定 (Satisfaction Scoring) ======
+    satisfaction_score = 0.0
+    if total_rows == 1:
+        satisfaction_score = 1.0
+    elif total_rows > 1:
+        satisfaction_score = 0.8
+    
+    should_short_circuit = False
+    if state.get("intent") == "db_query" and satisfaction_score >= 0.8:
+        should_short_circuit = True
+        print(f"[Semiconductor DB Agent] 🛑 高满意度 ({satisfaction_score})，触发早退信号。")
+
     # Per-step return: ONLY the tokens we added (reducers handle the merge)
     return {
-        "documents": new_docs,
+        "documents": state.get("documents", []) + new_docs,
         "db_facts": db_facts,
         "db_data": combined_result,
+        "is_resolved": should_short_circuit,
+        "satisfaction_score": satisfaction_score,
         "metadata_log": metadata_log.replace(state.get("metadata_log", ""), "").strip(),
         "thought_process": thinking_steps,
         "_thinking": " | ".join(thinking_steps),

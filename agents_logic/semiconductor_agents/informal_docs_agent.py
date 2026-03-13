@@ -20,7 +20,7 @@ from agents_logic.semiconductor_agents.domain_config import DOMAIN_CONFIG
 _METADATA_SCHEMA = DOMAIN_CONFIG.get("metadata_schema", {})
 
 
-@vera_agent("Informal Docs Agent")
+@vera_agent("Semiconductor Informal Docs Agent")
 def run(state: GraphState) -> dict:
     """
     INFORMAL DOCS AGENT: Retrieve → Extract → Return Structured Facts.
@@ -37,8 +37,15 @@ def run(state: GraphState) -> dict:
 
     # --- Guard Clause: Fast-fail if intent doesn't need informal docs ---
     intent = state.get("intent", "")
-    if intent not in ("cross_reference", ""):
-        print(f"[Informal Docs Agent] ⏭️ Fast-fail: intent='{intent}' is not cross-reference")
+    is_generic = state.get("is_generic_query", False)
+    
+    # Allow if intent is cross_reference OR if it's a generic query
+    # AUDIT GUARD: Also allow if the question directly asks for discrepancy/conflict
+    audit_keywords = {"discrepancy", "conflict", "mismatch", "audit", "compare", "contradiction"}
+    is_audit_query = any(k in question.lower() for k in audit_keywords)
+    
+    if intent not in ("cross_reference", "") and not is_generic and not is_audit_query:
+        print(f"[{vera_agent.label}] ⏭️ Fast-fail: intent='{intent}' is not cross-reference and not generic (audit check passed)")
         return {}
 
     # --- Stage 1: Precision Retrieval ---
@@ -46,7 +53,7 @@ def run(state: GraphState) -> dict:
         query=question,
         user_role=user_role,
         user_domain=user_domain,
-        source_filter=["email", "memo", "dm"],
+        source_filter=None,
         metadata_schema=_METADATA_SCHEMA,
         k=10,
         target_entity=target_entity,
@@ -58,6 +65,7 @@ def run(state: GraphState) -> dict:
         target_entity=target_entity,
         target_attribute=target_attribute,
         source_type_override="",  # preserve original source types (email/memo/dm)
+        is_generic=state.get("is_generic_query", False),
     )
 
     print(f"[Informal Docs Agent] {len(result.documents)} docs → {len(facts)} structured facts")

@@ -22,6 +22,7 @@ ARCHITECTURAL CONSTRAINT:
 
 from shared.graph_state import GraphState
 from shared.agent_base import vera_agent
+from shared.advanced_rag import _is_garbage_text, NO_DATA_MARKER
 from shared.schemas import (
     ExtractedFact,
     AttributeConflict,
@@ -47,11 +48,11 @@ def _source_priority(source_type: str) -> int:
     Higher = more authoritative.
     """
     s = source_type.lower()
-    if s in ("db", "database", "db_info"):
+    if s in ("db", "database", "db_info", "sql", "records", "rulebook", "rules"):
         return 3
-    elif s in ("datasheet", "sop", "spec", "document"):
+    elif s in ("datasheet", "sop", "spec", "document", "manual", "policy", "regulations", "guideline", "standard", "official"):
         return 2
-    elif s in ("email", "memo", "dm"):
+    elif s in ("email", "memo", "dm", "informal", "communication", "chat"):
         return 1
     return 0
 
@@ -59,6 +60,8 @@ def _source_priority(source_type: str) -> int:
 def _build_fact_index(
     facts: list[dict],
     target_entity: str,
+    target_attribute: str = "GENERAL",
+    is_generic_query: bool = False,
 ) -> dict[str, list[ExtractedFact]]:
     """
     Group facts by attribute, filtering to the target entity.
@@ -70,17 +73,73 @@ def _build_fact_index(
     for fd in facts:
         try:
             fact = ExtractedFact(**fd)
+            # Binary & Garbage Filter: Discard facts that look like PDF garbage or raw bytes
+            if _is_garbage_text(fact.value):
+                continue
         except Exception:
             continue
 
-        # Entity isolation
-        if target_lower and target_lower not in fact.entity.lower():
-            continue
+        # Entity isolation (Soften matching)
+        fact_entity_lower = fact.entity.lower()
+        if target_lower and not is_generic_query:
+            variations = {target_lower, target_lower.replace("-", " "), target_lower.replace(" ", "-"), target_lower.replace(" ", "")}
+            entity_match = any(v in fact_entity_lower for v in variations if len(v) > 1)
+            
+            # ALLOW facts from high-authority sources even if label doesn't match perfectly,
+            # as long as they were retrieved for this context.
+            is_authoritative = _source_priority(fact.source_type) >= 2
+            if not entity_match and not is_authoritative:
+                continue
 
-        attr_key = fact.attribute.lower().strip()
-        if attr_key not in index:
-            index[attr_key] = []
-        index[attr_key].append(fact)
+        attr_raw = fact.attribute.lower().replace("-", "_").strip()
+        
+        # Semantic core matching
+        final_key = attr_raw
+        if target_lower:
+            t_norm = target_lower.replace("_", "").replace(" ", "").lower()
+            a_norm = attr_raw.replace("_", "").replace(" ", "").lower()
+            
+            if (t_norm in a_norm or a_norm in t_norm):
+                final_key = target_lower
+            elif t_norm in fact.value.lower() or t_norm in fact.attribute.lower():
+                final_key = target_lower
+
+        # KEY FIX: Group catch-all attributes together
+        if final_key in ("general_info", "db_result", "database_record", "summary", "db_data", "fact"):
+            final_key = "general_info"
+
+        if final_key not in index:
+            index[final_key] = []
+        index[final_key].append(fact)
+
+    # Debug: see what we have
+    if facts and not index:
+        entities = {f.get('entity', 'unknown') for f in facts}
+        print(f"[DEBUG] No index matches for '{target_entity}'. Available entities in facts: {entities}")
+
+    # Global Fallback: If no facts were found for the specific entity, 
+    # and it's a generic query OR we have official documents, allow them.
+    if not index and (is_generic_query or target_entity != "GENERAL"):
+        for fd in facts:
+            try:
+                fact = ExtractedFact(**fd)
+                # Binary & Garbage Filter: Discard facts that look like PDF garbage or raw bytes
+                if _is_garbage_text(fact.value):
+                    continue
+                
+                # ENTITY GUARD: Only allow official facts if they match the entity
+                # OR if the query is a truly broad GENERAL query.
+                is_official = _source_priority(fact.source_type) >= 2
+                entity_match = (not target_lower) or (target_lower in fact.entity.lower())
+                
+                if (is_official and entity_match) or fact.entity.upper() == "GENERAL":
+                    attr_raw = fact.attribute.lower().replace("-", "_").strip()
+                    final_key = "general_info" if attr_raw in ("general_info", "summary", "fact") else attr_raw
+                    if final_key not in index:
+                        index[final_key] = []
+                    index[final_key].append(fact)
+            except Exception:
+                continue
 
     return index
 
@@ -157,8 +216,9 @@ def _resolve_conflicts(
                 "source": v["source"],
                 "date": v["date"],
                 "reason": (
-                    f"Lower authority ({v['source']}) vs "
-                    f"authoritative ({authoritative['source']})"
+                    f"Conflict with authoritative value ({authoritative['source']})"
+                    if v["priority"] == authoritative["priority"]
+                    else f"Lower authority ({v['source']}) vs authoritative ({authoritative['source']})"
                 ),
             })
 
@@ -176,7 +236,7 @@ def _resolve_conflicts(
     )
 
 
-@vera_agent("Semiconductor Discrepancy Agent")
+@vera_agent("Pickleball Discrepancy Agent")
 def run(state: GraphState) -> dict:
     """
     DETERMINISTIC DISCREPANCY AGENT: Pure Python logic on structured facts.
@@ -210,7 +270,8 @@ def run(state: GraphState) -> dict:
     # Also extract DB facts from raw db_data if no structured db_facts exist
     if not db_facts:
         db_data = state.get("db_data", "") or state.get("db_result", "")
-        if db_data and "NO_MATCHING_DATA" not in db_data:
+        # Only promote if it's NOT a "No Matching Data" message
+        if db_data and db_data != NO_DATA_MARKER:
             # Create a minimal fact from the DB result
             db_facts = [{
                 "entity": target_entity if target_entity != "GENERAL" else "unknown",
@@ -222,15 +283,22 @@ def run(state: GraphState) -> dict:
                 "confidence": "HIGH",
             }]
 
-    print(f"[Semiconductor Discrepancy Agent] Facts: "
+    print(f"[Pickleball Discrepancy Agent] Facts: "
           f"official={len(official_facts)}, "
           f"informal={len(informal_facts)}, "
           f"db={len(db_facts)}")
 
     # Build indexes by attribute (entity-filtered)
-    official_idx = _build_fact_index(official_facts, target_entity)
-    informal_idx = _build_fact_index(informal_facts, target_entity)
-    db_idx = _build_fact_index(db_facts, target_entity)
+    is_generic = state.get("is_generic_query", False)
+    target_attr = state.get("target_attribute", "GENERAL")
+    official_idx = _build_fact_index(official_facts, target_entity, target_attr, is_generic)
+    informal_idx = _build_fact_index(informal_facts, target_entity, target_attr, is_generic)
+    db_idx = _build_fact_index(db_facts, target_entity, target_attr, is_generic)
+
+    print(f"[DEBUG] Target Entity: {target_entity}")
+    print(f"[DEBUG] Official Index Keys: {list(official_idx.keys())}")
+    if official_idx:
+        print(f"[DEBUG] First Official Fact Entity: {official_idx[list(official_idx.keys())[0]][0].entity}")
 
     # Gather all attribute keys across all sources
     all_attributes = set(official_idx.keys()) | set(informal_idx.keys()) | set(db_idx.keys())
@@ -295,7 +363,7 @@ def run(state: GraphState) -> dict:
     if has_discrepancy and retrieval_confidence == "HIGH":
         critique = report
 
-    print(f"[Semiconductor Discrepancy Agent] Verdict: {overall.value} "
+    print(f"[Pickleball Discrepancy Agent] Verdict: {overall.value} "
           f"({disc_count} discrepancies, {aligned_count} aligned)")
 
     return {

@@ -47,6 +47,7 @@ DOMAIN_CONFIG = {
         "cross_reference": [
             "compare", "discrepancy", "mismatch", "conflict",
             "cross-reference", "check against", "inconsistent", "verify",
+            "added", "newly", "difference", "comparison", "new", "versus",
         ],
     },
 

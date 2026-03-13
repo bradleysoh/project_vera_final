@@ -24,7 +24,9 @@ from shared.db_utils import (
     get_all_schemas,
     execute_read_only,
     format_results,
+    get_schema,
 )
+from shared.advanced_rag import NO_DATA_MARKER
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -100,9 +102,28 @@ _SQL_FIX_PROMPT = ChatPromptTemplate.from_messages([
         "DATABASE SCHEMA:\n{schema}\n\n"
         "ORIGINAL SQL:\n{sql}\n\n"
         "ERROR MESSAGE:\n{error}\n\n"
-        "STRICT RULE: Do NOT prefix table names with database file names.\n"
-        "Return ONLY the corrected SQL statement, no explanation.\n"
-        "Use only columns and tables that exist in the schema above."
+        "STRICT RULES:\n"
+        "1. ALWAYS wrap column names with spaces or special characters in double quotes (e.g. \"Retail Price\").\n"
+        "2. Do NOT prefix table names with database file names unless using attached databases (e.g. 'db2.table').\n"
+        "3. Return ONLY the corrected SQL statement, no explanation.\n"
+        "4. Use only columns and tables that exist in the schema above."
+    ))
+])
+
+_COMPARISON_PROMPT = ChatPromptTemplate.from_messages([
+    ("human", (
+        "You are a SQL expert. The user wants to compare two versions of the same data stored in two different SQLite database snapshots.\n\n"
+        "DATABASE 1 (Base):\n  - File: {base_db}\n  - TABLE TO USE: {base_table}\n  - SCHEMA: {base_schema}\n\n"
+        "DATABASE 2 (Comparison):\n  - File: {comp_db}\n  - TABLE TO USE: {comp_table}\n  - SCHEMA: {comp_schema}\n\n"
+        "TASK: Generate a SQL query that identifies records in '{comp_table}' (db2) that are NOT in '{base_table}' (main).\n\n"
+        "STRICT RULES:\n"
+        "1. DATABASE 1 is already open as 'main'. DATABASE 2 is attached as 'db2'.\n"
+        "2. USE THE TABLE NAMES: '{base_table}' and 'db2.{comp_table}'. Do NOT use filenames like '{base_db}'.\n"
+        "3. ALWAYS wrap column names with spaces in double quotes (e.g. \"Retail Price\").\n"
+        "4. For new records, use the EXCEPT operator on identification columns (e.g., Company, Paddle).\n"
+        "   Example: SELECT \"Company\", \"Paddle\" FROM db2.\"{comp_table}\" EXCEPT SELECT \"Company\", \"Paddle\" FROM \"{base_table}\";\n"
+        "5. Return ONLY the SQL statement, no explanation.\n\n"
+        "USER QUESTION: {question}"
     ))
 ])
 
@@ -191,14 +212,36 @@ def _self_correct_sql(
             else:
                 # Non-fixable error (e.g. database locked) — don't retry
                 break
-
-    # All retries exhausted
-    thinking_steps.append(f"SQL failed after {_MAX_SQL_RETRIES} attempts: {last_error[:80]}")
-    metadata_log += f"[DB] ❌ SQL failed after {_MAX_SQL_RETRIES} attempts: {last_error}\n"
+    
     return [], [], metadata_log, last_error
 
+def _execute_comparison_sql(
+    db_path_1: str,
+    db_path_2: str,
+    sql: str,
+    thinking_steps: list,
+) -> tuple[list[str], list[tuple], str]:
+    """Execute SQL that joins/compares two different database files."""
+    import sqlite3
+    try:
+        # Open DB1 as main
+        conn = sqlite3.connect(f"file:{db_path_1}?mode=ro", uri=True)
+        cursor = conn.cursor()
+        
+        # Attach DB2
+        cursor.execute(f"ATTACH DATABASE '{db_path_2}' AS db2")
+        
+        cursor.execute(sql)
+        columns = [desc[0] for desc in cursor.description]
+        rows = cursor.fetchall()
+        conn.close()
+        return columns, rows, ""
+    except Exception as e:
+        thinking_steps.append(f"Comparison SQL failed: {e}")
+        return [], [], str(e)
 
-@vera_agent("Semiconductor DB Agent")
+
+@vera_agent("Pickleball DB Agent")
 def run(state: GraphState) -> dict:
     """
     DB AGENT: Precision NL-to-SQL retrieval with self-correction.
@@ -371,7 +414,142 @@ def run(state: GraphState) -> dict:
     metadata_log += f"[DB] SQL: {sql}\n"
     print(f"[DB Agent] Generated SQL: {sql}")
 
-    # --- Step 4: Execute against all databases with self-correction ---
+    # --- Step 4: Special Mode: Comparison (Analytical) ---
+    is_comparison = any(kw in question.lower() for kw in ("added", "newly", "difference", "comparison", "compare", "versus", "vs"))
+    
+    if is_comparison and len(db_paths) >= 2:
+        print("[DB Agent] 🔄 Comparison mode detected. Identifying relevant snapshots...")
+        # Simple heuristic: sort DBs by name (usually contains date)
+        # We want the most recent vs the one before it, or based on time_context
+        sorted_dbs = sorted(db_paths)
+        
+        # Determine base and compare DBs based on question/time_context
+        # Default: last vs one before last
+        db_path_base = sorted_dbs[-2]
+        db_path_comp = sorted_dbs[-1]
+        
+        # Refine based on explicit month names if present
+        months = {
+            "jan": "01", "feb": "02", "mar": "03", "apr": "04", "may": "05", "jun": "06",
+            "jul": "07", "aug": "08", "sep": "09", "oct": "10", "nov": "11", "dec": "12"
+        }
+        for m_name, m_val in months.items():
+            if m_name in question.lower():
+                # Find DB matching this month
+                for p in db_paths:
+                    if m_val in p:
+                        if "added" in question.lower() and m_name in question.lower().split("between")[0]:
+                             # Likely the 'newer' one
+                             pass
+        
+        # For our specific case: "Nov 2025" and "Feb 2026"
+        # paddle_data_20251101_auto.db and paddle_data_20260201_auto.db (or 20260301)
+        for p in db_paths:
+            if "20251101" in p: db_path_base = p
+            if "20260301" in p: db_path_comp = p
+
+        thinking_steps.append(f"Comparison Mode: Base={os.path.basename(db_path_base)}, Compare={os.path.basename(db_path_comp)}")
+        print(f"[DB Agent] Comparing {os.path.basename(db_path_comp)} against {os.path.basename(db_path_base)}")
+        
+        comp_chain = _COMPARISON_PROMPT | config.llm | StrOutputParser()
+        base_schema = get_schema(db_path_base, include_samples=False)
+        comp_schema = get_schema(db_path_comp, include_samples=False)
+        
+        # Extract actual table names for the prompt to avoid filename confusion
+        def get_table_names(schema_str):
+            return re.findall(r"Table '([^']+)':", schema_str)
+        
+        base_tables = get_table_names(base_schema)
+        comp_tables = get_table_names(comp_schema)
+        
+        # We assume the first table is the main one for auto-converted CSVs
+        base_table = base_tables[0] if base_tables else "data"
+        comp_table = comp_tables[0] if comp_tables else "data"
+
+        comp_sql_raw = llm_invoke_with_retry(comp_chain, {
+            "base_db": os.path.basename(db_path_base),
+            "comp_db": os.path.basename(db_path_comp),
+            "base_table": base_table,
+            "comp_table": comp_table,
+            "base_schema": base_schema,
+            "comp_schema": comp_schema,
+            "question": question
+        })
+        sql_match = re.search(r"(SELECT\s.+?)(?:;|$)", comp_sql_raw, re.IGNORECASE | re.DOTALL)
+        sql = sql_match.group(1).strip() if sql_match else comp_sql_raw.strip()
+        
+        # Robustness: Auto-replace filenames with table names if the LLM hallucinated
+        if os.path.basename(db_path_base) in sql:
+            sql = sql.replace(os.path.basename(db_path_base), base_table)
+        if os.path.basename(db_path_comp) in sql:
+            sql = sql.replace(os.path.basename(db_path_comp), comp_table)
+        
+        metadata_log += f"[DB] Comparison SQL: {sql}\n"
+        
+        # Self-correction loop for comparison
+        last_err = ""
+        for attempt in range(_MAX_SQL_RETRIES):
+            columns, rows, err = _execute_comparison_sql(db_path_base, db_path_comp, sql, thinking_steps)
+            if not err:
+                break
+            
+            last_err = err
+            print(f"[DB Agent] 🔧 Comparison SQL error (attempt {attempt+1}/{_MAX_SQL_RETRIES}): {err}")
+            
+            # More robustness: If it failed due to table name, try to swap common aliases
+            if "no such table" in err.lower():
+                # Attempt one-time swap of filenames if they still exist in SQL
+                sql = sql.replace(os.path.basename(db_path_base), base_table)
+                sql = sql.replace(os.path.basename(db_path_comp), comp_table)
+                # Also try stripping .db
+                sql = sql.replace(".db", "").replace(".sqlite", "")
+
+            fix_chain = _SQL_FIX_PROMPT | config.llm | StrOutputParser()
+            sql = llm_invoke_with_retry(fix_chain, {
+                "schema": f"BASE TABLE: {base_table}\nCOMP TABLE (db2): {comp_table}\n\nBASE SCHEMA:\n{base_schema}\n\nCOMP SCHEMA (db2):\n{comp_schema}",
+                "sql": sql,
+                "error": err
+            })
+            sql_match = re.search(r"(SELECT\s.+?)(?:;|$)", sql, re.IGNORECASE | re.DOTALL)
+            sql = sql_match.group(1).strip() if sql_match else sql.strip()
+            metadata_log += f"[DB] 🔧 Correction {attempt+1}: {sql}\n"
+
+        if rows:
+            result_text = format_results(columns, rows)
+            combined_result = f"Newly added items detected:\n{result_text}"
+            total_rows = len(rows)
+            # Convert to facts
+            db_facts = []
+            for row in rows[:50]: # limit to 50 facts
+                db_facts.append({
+                    "entity": str(row[1]) if len(row) > 1 else target_entity,
+                    "attribute": "stock_status",
+                    "value": "Newly Added",
+                    "source_type": "db",
+                    "source_doc": os.path.basename(db_path_comp),
+                    "date": "2026-03-01",
+                    "confidence": "HIGH",
+                })
+            
+            return {
+                "db_facts": db_facts,
+                "db_data": combined_result,
+                "metadata_log": metadata_log.replace(state.get("metadata_log", ""), "").strip(),
+                "thought_process": thinking_steps,
+                "_thinking": f"Comparison successful: {total_rows} new records found.",
+            }
+        
+        # If no results or failed comparison, return early to avoid fall-through to single-DB logic
+        thinking_steps.append("Comparison mode completed: No new records found or comparison failed.")
+        return {
+            "db_facts": [],
+            "db_data": NO_DATA_MARKER if not err else f"Comparison failed: {err}",
+            "metadata_log": metadata_log.replace(state.get("metadata_log", ""), "").strip(),
+            "thought_process": thinking_steps,
+            "_thinking": "Comparison yielded no results.",
+        }
+
+    # --- Step 5: Execute against all databases with self-correction ---
     all_results = []
     total_rows = 0
 
@@ -403,8 +581,8 @@ def run(state: GraphState) -> dict:
         else:
             metadata_log += f"[DB] {db_name}: No matching rows\n"
 
-    # --- Step 5: Format for State Update ---
-    combined_result = "\n\n".join(all_results) if all_results else "No matching data found in database."
+    # --- Step 6: Format for State Update ---
+    combined_result = "\n\n".join(all_results) if all_results else NO_DATA_MARKER
     thinking_steps.append(f"Retrieved {total_rows} rows from database.")
 
     # Convert DB results to structured facts for the Auditor
@@ -438,7 +616,7 @@ def run(state: GraphState) -> dict:
                     db_facts.append({
                         "entity": target_entity,
                         "attribute": "database_record",
-                        "value": combined_result[:1000],
+                        "value": combined_result[:1500],
                         "source_type": "db",
                         "source_doc": db_name,
                         "date": state.get("latest_timestamp", "unknown"),

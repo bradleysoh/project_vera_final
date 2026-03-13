@@ -13,28 +13,34 @@ DO NOT define your own state — use this one.
 ================================================================================
 """
 
+import operator
 from typing import Annotated, Any, Dict, List, Optional, TypedDict, Union
 from langchain_core.documents import Document
 
 # --- Reducers for robust state merging ---
 def _merge_metadata(old: str, new: str) -> str:
-    """Appends new log entries to the existing log string."""
-    if not old: return new
-    if not new: return old
-    # Ensure newline separation
+    """Appends new log entries to the existing log string cleanly."""
+    if not old: return new or ""
+    if not new: return old or ""
     return old + "\n" + new if not old.endswith("\n") else old + new
 
 def _merge_list(old: list, new: list) -> list:
-    """Standard list addition reducer."""
+    """Standard list addition reducer. Prevents NoneType errors."""
     return (old or []) + (new or [])
+
+def _merge_dict(old: dict, new: dict) -> dict:
+    """Standard dict merge reducer for plugin architectures."""
+    res = (old or {}).copy()
+    res.update(new or {})
+    return res
 
 class GraphState(TypedDict):
     """
-    Defines the state schema for the VERA LangGraph workflow.
-    Uses Annotated reducers to allow accumulating data (documents, facts, logs)
-    cleanly across the graph flow, preventing 'InvalidUpdateError'.
+    Defines the rigid state schema for the VERA LangGraph workflow.
     """
-    # --- Core ---
+    # ==========================================
+    # 1. CORE CONTEXT
+    # ==========================================
     question: str
     generation: str
     user_role: str
@@ -42,38 +48,56 @@ class GraphState(TypedDict):
     input_contract_text: str
     input_contract_name: str
 
-    # --- Query Understanding (set by Router Agent) ---
+    # ==========================================
+    # 2. QUERY UNDERSTANDING (Router Output)
+    # ==========================================
     target_entity: str
     entity_type: str
     target_attribute: str
     time_context: str
-
-    # --- Routing & Security ---
     route: str
     intent: str   # "db_query", "spec_retrieval", "cross_reference", "general_chat", "out_of_domain"
     flagged: bool
+    is_generic_query: bool
     next_agent: str
 
-    # --- Raw Retrieval (Accumulated via Reducers) ---
+    # ==========================================
+    # 3. DYNAMIC STATE MACHINE (Early Exit)
+    # ==========================================
+    # CRITICAL: Using operator.or_ means if ANY agent sets this to True,
+    # the kill-switch engages and cannot be overwritten to False by other agents.
+    is_resolved: Annotated[bool, operator.or_] 
+    
+    # Phase 3 Plugin Sandbox: Domain-specific computed logic (e.g., Medical BMI, Legal CUAD)
+    domain_computed_facts: Annotated[dict, _merge_dict]
+
+    # ==========================================
+    # 4. RAW RETRIEVAL PIPELINE
+    # ==========================================
     documents: Annotated[List[Document], _merge_list]
-    retrieved_docs: dict
-    db_data: str              # Raw DB results string
+    db_data: str              # Standard overwrite: Latest DB query takes precedence
     official_data: Annotated[list, _merge_list]
     informal_data: Annotated[list, _merge_list]
     latest_timestamp: str
 
-    # --- Structured Facts (Accumulated via Reducers) ---
+    # ==========================================
+    # 5. SHIFT-LEFT: STRUCTURED FACTS
+    # ==========================================
     official_facts: Annotated[list, _merge_list]
     informal_facts: Annotated[list, _merge_list]
     db_facts: Annotated[list, _merge_list]
 
-    # --- Discrepancy & Response ---
+    # ==========================================
+    # 6. DISCREPANCY AUDIT
+    # ==========================================
     discrepancy_verdict: dict  # Serialized DiscrepancyVerdict
-    discrepancy_report: str    # Legacy text report (Discrepancy Agent)
-    discrepancy_report_summary: str  # Summarized report (Response Agent)
+    discrepancy_report: str    # Detailed textual conflict report
+    discrepancy_report_summary: str 
     retrieval_confidence: str  # HIGH / MEDIUM / LOW
 
-    # --- Agent Infrastructure (Accumulated via Reducers) ---
+    # ==========================================
+    # 7. AGENT TELEMETRY & TRACEABILITY
+    # ==========================================
     metadata_log: Annotated[str, _merge_metadata]
     thought_process: Annotated[List[str], _merge_list]
     refinement_count: int
