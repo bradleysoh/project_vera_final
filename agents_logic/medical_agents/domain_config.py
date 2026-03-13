@@ -39,5 +39,12 @@ DOMAIN_CONFIG = {
         "What is the maintenance history for MRI-Unit-4?",
         "Check patient records for dosage discrepancies",
         "What is the calibration SOP for CT-Scanner-A?"
-    ]
+    ],
+
+    "generic_entities": [
+        "patient", "patients", "record", "records", "doctor", "doctors",
+        "medication", "medications", "device", "devices", "data", "conflicts",
+        "discrepancy", "mismatch", "general", "potential", "rule", "rulebook",
+        "manual", "guide", "policy", "actions", "update", "procedure", "procedures"
+    ],
 }

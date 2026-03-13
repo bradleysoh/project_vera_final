@@ -342,12 +342,47 @@ def run(state: GraphState) -> dict:
                 print(f"[DB Agent] ❌ {db_name}: {e}")
 
         if all_results:
-            combined = "\n\n".join(all_results)
-            thinking_steps.append(f"Deterministic SQL: {total_rows} rows from {len(all_results)} tables.")
+            # Format as Key: Value lines instead of a table to help small models (1B)
+            combined_lines = []
+            for db_path, db_name, sql in sql_queries:
+                try:
+                    columns, rows = execute_read_only(db_path, sql)
+                    if rows:
+                        combined_lines.append(f"### DATABASE: {db_name}")
+                        for row_idx, row in enumerate(rows):
+                            combined_lines.append(f"--- Record {row_idx + 1} ---")
+                            for i, col in enumerate(columns):
+                                combined_lines.append(f"{col}: {row[i]}")
+                except: continue
+            
+            combined = "\n".join(combined_lines)
+            thinking_steps.append(f"Deterministic SQL: {total_rows} rows.")
+            
+            # Extract structured facts for Auditor/Generator
+            db_facts = []
+            for db_path, db_name, sql in sql_queries:
+                try:
+                    columns, rows = execute_read_only(db_path, sql)
+                    for row in rows:
+                        for i, col_name in enumerate(columns):
+                            val = str(row[i])
+                            if val.lower() not in ("none", "null", ""):
+                                db_facts.append({
+                                    "entity": target_entity,
+                                    "attribute": col_name.lower(),
+                                    "value": val,
+                                    "source_type": "db",
+                                    "source_doc": db_name,
+                                    "date": state.get("latest_timestamp", "unknown"),
+                                    "confidence": "HIGH",
+                                })
+                except: continue
+
             retrieved_docs = state.get("retrieved_docs") or {}
             retrieved_docs["db_sql"] = combined
             return {
                 "documents": state.get("documents", []),
+                "db_facts": db_facts,
                 "metadata_log": metadata_log + f"[DB] Deterministic: {total_rows} rows\n",
                 "retrieved_docs": retrieved_docs,
                 "db_data": combined,

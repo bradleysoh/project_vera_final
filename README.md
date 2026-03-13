@@ -69,11 +69,11 @@ In many industries, **official specifications** (datasheets, manuals) often beco
 
 ```mermaid
 graph TD
-    A["🧑 User Query + Role"] --> B["🔀 Router Agent"]
+    A["🧑 User Query + Role"] --> B["🔀 Surgical Router"]
     
-    B -->|"Surgical Route: db_query"| C1["🗄️ DB Agent"]
-    B -->|"Surgical Route: spec_retrieval"| C2["📊 Official Docs Agent"]
-    B -->|"Surgical Route: cross_reference"| C3["🧠 Full Chain (DB+Official+Informal)"]
+    B -->|"Surgical Route: db_query"| C1["🗄️ DB Agent Cluster"]
+    B -->|"Surgical Route: spec_retrieval"| C2["📊 Official Docs Cluster"]
+    B -->|"Surgical Route: cross_reference"| C3["🧠 Triangulation Engine"]
     B -->|"🚨 Security Flag"| E["⚠️ Human Escalation"]
     
     C1 --> D["🧩 Structured Facts"]
@@ -81,9 +81,16 @@ graph TD
     C3 --> D
     
     D --> F["🤖 Response Generator"]
-    F --> G["🔍 Discrepancy Agent"]
+    F --> G["🔍 Discrepancy Auditor"]
     G -->|"Report Generated"| H["📤 Final Response"]
     E -->|"Detailed Escalation Summary"| H
+
+    subgraph "Domain-Isolated Clusters"
+        C1
+        C2
+        C3
+        G
+    end
 
     subgraph "Knowledge Sources"
         I["📄 Official Specs\n(ChromaDB)"]
@@ -105,12 +112,12 @@ graph TD
 ### Data Flow (Enterprise Architecture)
 
 1. **User** submits a query with their role (Senior/Junior) and strictly assigned **Domain**.
-2. **Router Agent** performs **LLM-based NER** and classifies intent. It uses a **Hybrid Routing** strategy (Keywords + LLM Fallback) and enforces **Strict Domain Isolation**, ensuring the `user_domain` remains immutable.
-3. **Retrieval Agents** perform **Surgical Retrieval** based on decoupled data sources:
-    *   **DB Agent** queries structured relational data (SQL).
-    *   **Official/Informal Agents** search unstructured document vector stores (RAG).
+2. **Surgical Router** performs **LLM-based NER** and classifies intent. It uses a **Hybrid Routing** strategy (Keywords + LLM Fallback) and enforces **Strict Domain Isolation**, ensuring the `user_domain` remains immutable.
+3. **Domain-Isolated Clusters** perform **Surgical Retrieval** based on decoupled data sources:
+    *   **DB Agent Cluster** queries structured relational data (SQL).
+    *   **Official/Informal Clusters** search unstructured document vector stores (RAG).
 4. **Generator** synthesizes a response constrained by the **Information Lock** (Information-Lock Protocol).
-5. **Discrepancy Agent** performs a cross-source audit between SQL facts and RAG context.
+5. **Triangulation Discrepancy Engine** performs a cross-source audit between SQL facts and RAG context using a deterministic authority hierarchy (**DB > Official > Informal**).
 6. **Final response** delivered with citations or **Escalated** if security flags are tripped.
 
 ---

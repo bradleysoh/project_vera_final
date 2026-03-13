@@ -42,5 +42,11 @@ DOMAIN_CONFIG = {
         "doc_versions": True,
         "access_levels": ["public", "internal_only", "confidential"],
     },
+    "generic_entities": [
+        "contract", "contracts", "clause", "clauses", "agreement", "agreements",
+        "data", "records", "record", "conflicts", "discrepancy", "mismatch",
+        "general", "potential", "rule", "rulebook", "manual", "guide", "policy",
+        "actions", "update", "cuad", "labeled"
+    ],
 }
 

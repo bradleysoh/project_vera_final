@@ -114,7 +114,7 @@ def run(state: GraphState) -> dict:
             target_attribute="GENERAL",
             entity_type="GENERAL",
             time_context="",
-            is_security_risk=False,
+            is_security_risk="false",
             rewritten_query=question
         )
 
@@ -173,17 +173,16 @@ def run(state: GraphState) -> dict:
     # 核心修复 4: 实体后置纠偏 (Generic Entity Filtering & Regex Fallback)
     # ---------------------------------------------------------
     final_entity = planner_result.target_entity.strip()
-    generic_entities = {
-        "chips", "chip", "data", "records", "record", "conflicts", 
-        "discrepancy", "mismatch", "general", "potential", "cluster",
-        "rule", "rulebook", "manual", "guide", "policy", "actions", "update"
-    }
+    # Load generic entities dynamically from all domain configs
+    generic_entities = set()
+    for cfg in _DOMAIN_CONFIGS.values():
+        generic_entities.update(cfg.get("generic_entities", []))
     
     if final_entity.lower() in generic_entities:
         # LLM extracted a generic term. Try to find a specific ID in the question.
         import re
-        # Look for alphanumeric patterns like RTX-9000, TB-123, etc.
-        id_pattern = r'\b([A-Z0-9]{2,}[-][A-Z0-9]+|[A-Z]{2,}[0-9]+)\b'
+        # Look for alphanumeric patterns like RTX-9000, TB-123, OR CamelCase names (QuantumLogic)
+        id_pattern = r'\b([A-Z0-9]{2,}[-][A-Z0-9]+|[A-Z]{2,}[0-9]+|[A-Z][a-z]+[A-Z][a-zA-Z]*)\b'
         matches = re.findall(id_pattern, question.upper())
         if matches:
             final_entity = matches[0]
@@ -194,10 +193,10 @@ def run(state: GraphState) -> dict:
     # ---------------------------------------------------------
     is_generic = (planner_result.user_intent_category in ["GENERIC_QA", "SMALL_TALK"]) or (final_entity.upper() == "GENERAL")
     
-    # Substring match for generic markers (cluster, rules, ball, etc.)
-    if any(g in final_entity.lower() for g in generic_entities if len(g) > 2):
+    # Substring match only for very specific generic markers, or exact match for common terms
+    if final_entity.lower() in generic_entities:
         is_generic = True
-        print(f"[Router Agent] 🔧 Topic-based query detected via entity '{final_entity}'")
+        print(f"[Router Agent] 🔧 Topic-based query detected via generic entity list.")
     
     # Phrase match for question patterns (What are the actions for X)
     generic_phrases = ["what are the", "is it possible", "how do i", "can a player", "rule book", "latest updates"]
@@ -212,6 +211,12 @@ def run(state: GraphState) -> dict:
         f"Entity: '{final_entity}' (LLM said '{planner_result.target_entity}'), Attr: '{planner_result.target_attribute}'."
     )
 
+    # Detect required domain for specific query types
+    required_domain = ""
+    if "contract" in question.lower() or "cuad" in question.lower() or "clause" in question.lower():
+        required_domain = "legal"
+    # Add more conditions as needed for other domains
+
     return {
         "route": mapped_intent, 
         "intent": mapped_intent,
@@ -219,6 +224,7 @@ def run(state: GraphState) -> dict:
         "is_generic_query": is_generic,
         "next_agent": final_domain,
         "user_domain": final_domain,
+        "required_domain": required_domain,
         "target_entity": final_entity,
         "target_attribute": planner_result.target_attribute,
         "entity_type": planner_result.entity_type,

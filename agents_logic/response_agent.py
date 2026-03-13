@@ -48,18 +48,19 @@ def _get_vera_capabilities() -> str:
         "🔍 **Discrepancy Detection**: Flag conflicts between sources automatically.\n"
     )
 
-def _format_facts_as_table(facts: list[dict]) -> str:
+def _format_facts_as_list(facts: list[dict]) -> str:
+    """Simpler format for small models (Llama 3.2 1B) to avoid table parsing errors."""
     if not facts: return "(no facts)"
-    lines = ["| Entity | Attribute | Value | Source | Date |", "|--------|-----------|-------|--------|------|"]
+    lines = []
     for fd in facts:
         try:
             f = ExtractedFact(**fd)
-            # Binary Filter: Skip facts that look like PDF garbage or raw bytes
+            # Binary Filter
             if "%PDF" in f.value[:10] or "obj <<" in f.value[:50] or f.value.count("\\x") > 5:
                 continue
-            lines.append(f"| {f.entity} | {f.attribute} | {f.value} | {f.source_type} | {f.date} |")
+            lines.append(f"- Entity: {f.entity} | Attribute: {f.attribute} | Value: {f.value} (Source: {f.source_type}, Date: {f.date})")
         except: continue
-    if len(lines) <= 2: return "(no valid textual facts found)"
+    if not lines: return "(no valid textual facts found)"
     return "\n".join(lines)
 
 
@@ -83,22 +84,14 @@ def run(state: GraphState) -> dict:
     if any(p in question.lower() for p in _META_PATTERNS):
         return {"generation": _get_vera_capabilities(), "_thinking": "Meta-query response."}
 
-    # --- 核心修复 1: 绝对的物理空值拦截 (Physical Null Check) ---
-    # 如果所有前置检索节点全部失效，产生零上下文，直接物理熔断，不消耗 Token
-    has_valid_db = bool(db_data and db_data != NO_DATA_MARKER)
-    has_context = bool(official_facts or informal_facts or db_facts or has_valid_db or documents)
-    
-    if not has_context:
-        print(f"[Response Agent] 🔒 Information Lock: Absolute zero context. Forcing 'Data Not Found'.")
-        return {"generation": _DATA_NOT_FOUND_MSG, "_thinking": "Zero context available."}
-
-    # --- 核心修复 2: Entity-Strict Context Filtering ---
+    # --- 核心修订 2: Entity-Strict Context Filtering (Moved Up) ---
     # Filter facts to the target entity for specific (non-generic) queries
     # to prevent the LLM from seeing unrelated background facts.
     is_generic = state.get("is_generic_query", False)
     display_official = official_facts
     display_informal = informal_facts
     display_db = db_facts
+    display_db_data = db_data
 
     if not is_generic and target_entity != "GENERAL":
         target_lower = target_entity.lower().strip()
@@ -106,46 +99,66 @@ def run(state: GraphState) -> dict:
         
         def _matches(f):
             e = f.get('entity', '').lower()
-            # Relaxed match: allow explicitly matching variations OR any authoritative fact
-            # (If it reached here, RAG already decided it was relevant context)
-            entity_match = any(v in e for v in variations if len(v) > 2) or e == "general"
-            is_authoritative = any(s in f.get('source_type', '').lower() for s in ("db", "spec", "datasheet", "manual", "sop", "policy", "regulations"))
-            return entity_match or is_authoritative
+            # STRICT FILTER: Only allow explicit entity matches or 'general' labels.
+            return any(v in e for v in variations if len(v) > 2) or e in ("general", "unknown", "")
 
         display_official = [f for f in official_facts if _matches(f)]
         display_informal = [f for f in informal_facts if _matches(f)]
         display_db = [f for f in db_facts if _matches(f)]
+        
+        def _doc_matches(doc):
+            c = doc.page_content.lower()
+            t = doc.metadata.get("title", "").lower()
+            s = doc.metadata.get("source", "").lower()
+            entity_match = any(v in c or v in t for v in variations if len(v) > 2)
+            is_generic_doc = any(kw in s or kw in t for kw in ("sop", "policy", "handbook", "manual", "regulations"))
+            return entity_match or is_generic_doc
+
+        documents = [d for d in documents if _doc_matches(d)]
+        
+        # If DB data (blob) doesn't mention the entity, clear it from the generator's view
+        has_orig_db = bool(db_data and db_data != NO_DATA_MARKER)
+        if has_orig_db and not any(v in db_data.lower() for v in variations if len(v) > 2):
+            display_db_data = ""
+
+    # --- 核心修复 1: 绝对的物理空值拦截 (Physical Null Check) ---
+    # RE-CALCULATE after filtering
+    final_has_db = bool(display_db_data and display_db_data != NO_DATA_MARKER)
+    has_relevant_context = bool(display_official or display_informal or display_db or final_has_db or documents)
+    
+    if not has_relevant_context:
+        print(f"[Response Agent] 🔒 Information Lock: Context filtered to zero relevance. Forcing 'Data Not Found'.")
+        return {"generation": _DATA_NOT_FOUND_MSG, "_thinking": "Context exists but is irrelevant to the target entity."}
 
     # --- Build Context for LLM ---
-    context_parts = ["Below is the VERIFIED CONTEXT to answer the question:"]
-    if has_valid_db: context_parts.append(f"### DATABASE CONTENT:\n{db_data[:1500]}")
-    if display_official: context_parts.append(f"### OFFICIAL SPECS:\n{_format_facts_as_table(display_official)}")
-    if display_informal: context_parts.append(f"### INTERNAL INFO:\n{_format_facts_as_table(display_informal)}")
+    context_parts = [f"Below is the VERIFIED CONTEXT exclusively for the entity '{target_entity}':"]
+    if final_has_db: context_parts.append(f"### DATABASE RECORDS FOR '{target_entity}':\n{display_db_data[:1500]}")
+    if display_official: context_parts.append(f"### OFFICIAL SPECIFICATIONS FOR '{target_entity}':\n{_format_facts_as_list(display_official)}")
+    if display_informal: context_parts.append(f"### INTERNAL COMMUNICATIONS FOR '{target_entity}':\n{_format_facts_as_list(display_informal)}")
     if documents and not (display_official or display_informal):
         doc_snippet = "\n\n".join([f"[Source {i+1}] {doc.page_content[:800]}" for i, doc in enumerate(documents[:5])])
-        context_parts.append(f"### PRIMARY DOCUMENTS:\n{doc_snippet}")
+        context_parts.append(f"### MENTIONED IN PRIMARY DOCUMENTS (RELEVANT TO '{target_entity}'):\n{doc_snippet}")
 
     context_text = "\n\n".join(context_parts)
 
     # --- 核心修复 3: 注入绝对反致幻系统指令 (Anti-Hallucination Prompt) ---
     
     system_instruction = (
-        "You are VERA, a verified information assistant. Answer ONLY using the CONTEXT provided.\n\n"
+        "You are VERA, a verified information assistant. Your goal is to summarize the provided CONTEXT.\n"
         "STRICT RULES:\n"
-        "1. GROUNDING: Answer based on the CONTEXT. If the CONTEXT contains an AUDIT REPORT, use it to confirm alignment or conflicts.\n"
-        "   If no data at all is present, output 'NOT_FOUND'.\n"
+        "1. SYNTHESIS: List all facts found in the CONTEXT related to the target entity. "
+        "If the CONTEXT contains an AUDIT REPORT showing alignment, mention it. "
+        "If it shows a conflict, state it clearly.\n"
     )
     
     if is_generic:
         system_instruction += (
-            "2. TOPIC-BASED SYNTHESIS: The user is asking about a general topic. "
-            "List ALL distinct facts found in the context. For each fact, mention its source. "
-            "If the data contains specific case IDs (like TB-123) or locations (like 'Lorong ABC'), you MUST include them.\n"
+            "2. TOPIC-BASED SUMMARY: List ALL distinct details found in the context with their sources.\n"
         )
     else:
         system_instruction += (
-            f"2. ANTI-HALLUCINATION PROTOCOL: You must verify that the entities in the CONTEXT exactly match "
-            f"the TARGET ENTITY '{target_entity}'. If the data discusses a completely different subject, IGNORE IT.\n"
+            f"2. TARGETED SUMMARY: Focus exclusively on '{target_entity}'. "
+            "Ignore any training data you have about this entity; use ONLY the provided context.\n"
         )
 
     if is_discrepancy:
@@ -199,16 +212,16 @@ def run(state: GraphState) -> dict:
             # Fallback to state-based audit report if LLM failed to generate one
             state_report = report_text or verdict_dict.get("audit_summary", "A conflict was detected between sources.")
             main_res = f"Note: Conflicts were detected between sources.\n\n{state_report}"
-        elif (official_facts or db_facts or informal_facts) and is_generic:
-            # Manual multi-source evidence summary for generic/topic queries
+        elif (display_official or display_db or display_informal):
+            # Manual multi-source evidence summary fallback
             summary_lines = [f"Based on the VERIFIED CONTEXT, I found the following information for '{target_entity}':"]
             seen_values = set()
             
-            for src_list, label in [(official_facts, "OFFICIAL"), (db_facts, "DATABASE"), (informal_facts, "INFORMAL")]:
+            for src_list, label in [(display_official, "OFFICIAL"), (display_db, "DATABASE"), (display_informal, "INFORMAL")]:
                 for f in src_list:
                     val_clean = f['value'].strip()
-                    if val_clean not in seen_values and len(val_clean) > 20:
-                        summary_lines.append(f"- **{label} ({f.get('entity', 'General')})**: {val_clean[:500]}...")
+                    if val_clean not in seen_values and len(val_clean) > 5:
+                        summary_lines.append(f"- **{label} ({f.get('entity', 'General')})**: {val_clean[:1000]}")
                         seen_values.add(val_clean)
             
             if len(summary_lines) > 1:

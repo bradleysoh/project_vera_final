@@ -60,6 +60,7 @@ class GraphState(TypedDict):
     flagged: bool
     is_generic_query: bool
     next_agent: str
+    required_domain: str  # Set by router/domain agents if specific domain required
 
     # ==========================================
     # 3. DYNAMIC STATE MACHINE (Early Exit)

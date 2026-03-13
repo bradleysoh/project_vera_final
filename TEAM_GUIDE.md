@@ -158,10 +158,23 @@ def run(state: GraphState) -> dict:
 
 | Agent File | Role | Goal |
 | :--- | :--- | :--- |
-| `db_agent.py` | SQL Expert | Natural language to SQL querying. |
-| `official_docs_agent.py` | Librarian | Precise spec extraction from official docs. |
-| `informal_docs_agent.py` | Detective | Context research in emails/memos. |
-| `discrepancy_agent.py` | Auditor | Conflict detection across all facts. |
+| `db_agent.py` | SQL Expert | Natural language to SQL querying. Authority: **3 (Primary)**. |
+| `official_docs_agent.py` | Specs Specialist | High-precision fact extraction from datasheets and SOPs. Authority: **2 (Gold Standard)**. |
+| `informal_docs_agent.py` | Context Researcher | Context research in emails and memos. Authority: **1 (Conditional)**. |
+| `discrepancy_agent.py` | Deterministic Auditor| Core logic for conflict detection and hierarchy enforcement. **No LLM calls**. |
+
+---
+
+## 🔍 Triangulation Discrepancy Engine
+
+VERA uses a **deterministic authority hierarchy** to resolve conflicts between sources:
+
+1. **Database Facts (Priority 3)**: Current production truth.
+2. **Official Documents (Priority 2)**: Specifications, SOPs, and Manuals.
+3. **Informal Communications (Priority 1)**: Emails, DMs, and Memos (Only overrides if date is newer).
+
+### Semantic Attribute Normalization
+To prevent false discrepancies (e.g., `voltage` mismatching `voltage_max`), the Discrepancy Agent applies **Semantic Core Matching**. It strips filler words (max, min, series) and compares the normalized cores.
 
 ---
 

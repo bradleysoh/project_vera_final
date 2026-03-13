@@ -194,9 +194,32 @@ def _post_filter_by_entity(
     entity: str,
 ) -> List[Document]:
     """
-    [MVP 紧急修改] 废除脆弱的字符串硬匹配，防止误杀合法文档。
+    Filter documents based on entity relevance to prevent context poisoning.
+    Always allow generic documents (SOPs, Policies, Handbooks).
     """
-    return docs  # <--- 直接把后面的 for 循环全删掉或注释掉，强行返回原文档
+    if not entity or entity.upper() == "GENERAL":
+        return docs
+        
+    filtered = []
+    entity_lower = entity.lower()
+    # Broad variations for better recall while still isolating
+    variations = {entity_lower, entity_lower.replace("-", " "), entity_lower.replace(" ", "-"), entity_lower.replace(" ", "")}
+    
+    for doc in docs:
+        content_lower = doc.page_content.lower()
+        source = doc.metadata.get("source", "").lower()
+        title = doc.metadata.get("title", "").lower()
+        
+        # 1. Direct entity match in content or title
+        entity_match = any(v in content_lower or v in title for v in variations if len(v) > 2)
+        
+        # 2. Document is generic/broad context (SOP, Policy, Manual)
+        is_generic_doc = any(kw in source or kw in title for kw in ("sop", "policy", "handbook", "manual", "regulations", "standard"))
+        
+        if entity_match or is_generic_doc:
+            filtered.append(doc)
+            
+    return filtered
 
 
 def _compute_confidence(
@@ -432,14 +455,13 @@ def perform_llm_fact_extraction(
             snippet = doc.page_content[:1500].strip().replace("\n", " ")
             
             # Entity-aware labeling
+            # Avoid "Fact Poisoning": do not force target_entity if document is about something else
             if entity_lower:
-                # If target entity is specifically mentioned, use it.
-                # Otherwise, if it's from an authoritative source, optimistically label it.
-                is_authoritative = any(s in src.lower() for s in ("db", "spec", "datasheet", "manual", "sop", "policy", "regulations"))
-                if entity_lower in content_lower or is_authoritative:
+                if entity_lower in content_lower:
                     fact_entity = target_entity
                 else:
-                    fact_entity = doc.metadata.get("title", "unknown")[:50]
+                    # If not explicitly mentioned, use the document's own title or metadata
+                    fact_entity = doc.metadata.get("title", doc.metadata.get("entity", "GENERAL"))[:50]
             else:
                 fact_entity = doc.metadata.get("title", target_entity)[:50]
 

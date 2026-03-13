@@ -98,7 +98,7 @@ def create_proposal():
     # =====================================================================
     doc.add_heading('1. Executive Summary', level=1)
     doc.add_paragraph(
-        'Project VERA v2.0 (Virtual Engineering Review Agent) is a production-grade, '
+        'Project VERA v2.5 (Virtual Engineering Review Agent) is a production-grade, '
         'multi-agent AI system designed to automate technical document auditing, '
         'cross-reference checking, and compliance verification. It addresses the '
         'critical challenge of documentation drift in regulated industries by '
@@ -106,10 +106,11 @@ def create_proposal():
         'and informal email communications.'
     )
     doc.add_paragraph(
-        'The system features a domain-agnostic core architecture, "Information Lock" '
-        'grounding to eliminate hallucinations, and strictly immutable Domain Isolation. '
-        'VERA v2.0 supports local (Ollama) and cloud (Gemini, Groq) LLM backends, '
-        'making it adaptable to diverse security and performance requirements.'
+        'The system features a "Surgical Router" architecture for domain-isolated processing, '
+        '"Information Lock" grounding to eliminate hallucinations, and a deterministic '
+        '"Triangulation Discrepancy Engine." VERA v2.5 supports local (Ollama) and '
+        'cloud (Gemini, Groq) LLM backends, making it adaptable to diverse security '
+        'and performance requirements.'
     )
     doc.add_paragraph(
         'VERA leverages state-of-the-art AI technologies — including LangGraph for '
@@ -226,12 +227,12 @@ def create_proposal():
         'The core application implements a LangGraph state machine with specialized agents:'
     )
     for item in [
-        'Router Agent: Performs LLM-based NER and surgical routing to domain subchains',
-        'DB Agent: Executes natural language to SQL queries on domain databases',
-        'Official Docs Agent: Extracts high-precision facts from datasheets and manuals',
-        'Informal Docs Agent: Researches engineering emails and informal memos',
+        'Surgical Router: Performs LLM-based NER and surgical routing to domain clusters',
+        'DB Agent Cluster: Executes natural language to SQL queries on domain databases',
+        'Official Docs Cluster: Extracts high-precision facts from datasheets and manuals',
+        'Informal Docs Cluster: Researches engineering emails and informal memos',
         'Response Generator: Synthesizes comprehensive answers with source citations',
-        'Discrepancy Agent: Performs final audit and cross-source conflict detection',
+        'Triangulation Engine: Performs final audit and deterministic conflict detection',
         'Escalation Handler: Manages unauthorized access and out-of-domain queries',
     ]:
         doc.add_paragraph(item, style='List Bullet')
@@ -261,11 +262,11 @@ def create_proposal():
     
     flow_data = [
         ('1', 'Entry Point', 'User submits query with role (senior/junior)'),
-        ('2', 'Router Agent', 'LLM-NER (Entity/Attr) + Surgical Routing'),
-        ('3a', 'DB Agent', 'SQL Querying (Read-only) if db_query target'),
-        ('3b', 'Official Agent', 'Spec Extraction if spec_retrieval target'),
+        ('2', 'Surgical Router', 'LLM-NER (Entity/Attr) + Cluster Delegation'),
+        ('3a', 'DB Cluster', 'SQL Querying (Read-only) if db_query target'),
+        ('3b', 'Official Cluster', 'Spec Extraction if spec_retrieval target'),
         ('3c', 'Full Retrieval', 'Cross-referencing all sources if cross_reference'),
-        ('4', 'Generator + Auditor', 'Response synthesis + Discrepancy audit'),
+        ('4', 'Triangulation', 'Deterministic audit using authority hierarchy'),
     ]
     for i, (stage, component, desc) in enumerate(flow_data):
         table.rows[i+1].cells[0].text = stage
@@ -302,12 +303,12 @@ def create_proposal():
                 run.bold = True
     
     agents_data = [
-        ('Router', 'route_query', 'Question + Role', 'Route + NER + Security Flag'),
-        ('DB Agent', '{domain}_db_query', 'Question', 'SQL Results as Structured Facts'),
-        ('Official Docs', '{domain}_official', 'Question + Entity', 'Precise Specifications'),
-        ('Informal Docs', '{domain}_informal', 'Question + Entity', 'Email-based Decisions'),
-        ('Generator', 'generate_response', 'Extracted Facts', 'LLM Report'),
-        ('Discrepancy', '{domain}_discrepancy', 'All Facts + Report', 'Audit Verdict'),
+        ('Surgical Router', 'route_query', 'Question + Role', 'Route + NER + Cluster Flag'),
+        ('DB Cluster', '{domain}_db_query', 'Question', 'SQL Results (Priority 3)'),
+        ('Official Docs', '{domain}_official', 'Question + Entity', 'Specs (Priority 2)'),
+        ('Informal Docs', '{domain}_informal', 'Question + Entity', 'Memos (Priority 1)'),
+        ('Generator', 'generate_response', 'Extracted Facts', 'LLM Report (Grounded)'),
+        ('Triangulation', '{domain}_discrepancy', 'All Facts', 'Verdict (Deterministic)'),
     ]
     for i, (agent, node, inp, out) in enumerate(agents_data):
         table.rows[i+1].cells[0].text = agent

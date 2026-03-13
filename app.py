@@ -140,8 +140,8 @@ def build_graph():
         # --- 差异审查节点逻辑 ---
         if audit_node in domain_nodes:
             # Phase 3: Insert domain-specific analyzer node if it exists
-            analyzer_node = f"{domain}_analyze_contract" if domain == "legal" else ""
-            if analyzer_node and analyzer_node in domain_nodes:
+            analyzer_node = f"{domain}_analyze_contract"
+            if analyzer_node in domain_nodes:
                 workflow.add_edge(audit_node, analyzer_node)
                 workflow.add_edge(analyzer_node, "generate_response")
             else:

@@ -32,4 +32,11 @@ DOMAIN_CONFIG = {
         "doc_versions": False,
         "access_levels": ["public", "internal_only", "confidential"],
     },
+
+    "generic_entities": [
+        "plant", "plants", "generator", "generators", "turbine", "turbines",
+        "data", "records", "record", "conflicts", "discrepancy", "mismatch",
+        "general", "potential", "rule", "rulebook", "manual", "guide", "policy",
+        "actions", "update", "procedure", "procedures", "audit", "audits"
+    ],
 }

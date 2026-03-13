@@ -86,9 +86,14 @@ def _build_fact_index(
             
             # ALLOW facts from high-authority sources even if label doesn't match perfectly,
             # as long as they were retrieved for this context.
+            # HOWEVER, if the fact is explicitly labeled as a DIFFERENT specific entity, reject it.
             is_authoritative = _source_priority(fact.source_type) >= 2
-            if not entity_match and not is_authoritative:
-                continue
+            if not entity_match:
+                if not is_authoritative:
+                    continue
+                # If authoritative but labeled as a different specific entity, exclude.
+                if fact_entity_lower not in ("general", "unknown", "") and len(fact_entity_lower) > 2:
+                    continue
 
         attr_raw = fact.attribute.lower().replace("-", "_").strip()
         

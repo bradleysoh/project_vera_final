@@ -68,4 +68,11 @@ DOMAIN_CONFIG = {
     "keyword_hints": (
         "chips, voltage, thermal, RTX, silicon, wafer, die, yield, burn-in"
     ),
+
+    # Generic entities to filter out during routing (domain-specific)
+    "generic_entities": [
+        "chips", "chip", "data", "records", "record", "conflicts", 
+        "discrepancy", "mismatch", "general", "potential", "cluster",
+        "rule", "rulebook", "manual", "guide", "policy", "actions", "update"
+    ],
 }

@@ -53,6 +53,30 @@ def _source_priority(source_type: str) -> int:
         return 1
     return 0
 
+
+def _normalize_attribute(attr: str) -> str:
+    """
+    Normalize attribute names for better matching.
+    Handles synonyms and common variations.
+    """
+    # Basic normalization
+    normalized = attr.lower().replace("-", "_").strip()
+    # Synonym mapping for common terms
+    synonyms = {
+        "maximum": "max",
+        "minimum": "min",
+        "voltage": "v",
+        "current": "i",
+        "power": "p",
+        "temperature": "temp",
+        "frequency": "freq",
+        "capacity": "cap",
+    }
+    words = normalized.split("_")
+    normalized_words = [synonyms.get(word, word) for word in words]
+    return "_".join(normalized_words)
+
+
 def _build_fact_index(
     facts: list[dict],
     target_entity: str,
@@ -79,11 +103,16 @@ def _build_fact_index(
             
             # ALLOW facts from high-authority sources even if label doesn't match perfectly,
             # as long as they were retrieved for this context.
+            # HOWEVER, if the fact is explicitly labeled as a DIFFERENT specific entity, reject it.
             is_authoritative = _source_priority(fact.source_type) >= 2
-            if not entity_match and not is_authoritative:
-                continue
+            if not entity_match:
+                if not is_authoritative:
+                    continue
+                # If authoritative but labeled as a different specific entity, exclude.
+                if fact_entity_lower not in ("general", "unknown", "") and len(fact_entity_lower) > 2:
+                    continue
 
-        attr_raw = fact.attribute.lower().replace("-", "_").strip()
+        attr_raw = _normalize_attribute(fact.attribute)
         
         # KEY FIX: Group catch-all attributes together
         if attr_raw in ("general_info", "db_result", "database_record", "summary", "db_data", "fact"):
@@ -102,8 +131,15 @@ def _build_fact_index(
             try:
                 fact = ExtractedFact(**fd)
                 is_official = _source_priority(fact.source_type) >= 2
-                if is_official or fact.entity.upper() == "GENERAL":
-                    attr_raw = fact.attribute.lower().replace("-", "_").strip()
+                entity_match = (not target_lower) or (target_lower in fact.entity.lower())
+                
+                # Double-check: if official doc is about a DIFFERENT specific entity, skip.
+                if is_official and not entity_match:
+                    if fact.entity.lower() not in ("general", "unknown", "") and len(fact.entity) > 2:
+                        continue
+                
+                if (is_official and entity_match) or fact.entity.upper() == "GENERAL":
+                    attr_raw = _normalize_attribute(fact.attribute)
                     final_key = "general_info" if attr_raw in ("general_info", "summary", "fact") else attr_raw
                     if final_key not in index:
                         index[final_key] = []
