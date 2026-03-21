@@ -27,7 +27,7 @@
 
 ## Overview
 
-**Project VERA** is an industry-agnostic Multi-Agent System that audits technical documents, emails, and Standard Operating Procedures (SOPs) for compliance issues. While the included demo uses a **semiconductor manufacturing** scenario, VERA's architecture is designed for **any document-heavy industry** — including aerospace, pharmaceuticals, automotive, energy, and more. It supports **two LLM backends**:
+**Project VERA** is an industry-agnostic Multi-Agent System that audits technical documents, emails, and Standard Operating Procedures (SOPs) for compliance issues. VERA comes fully equipped with out-of-the-box support for **semiconductor**, **aerospace**, **energy**, **finance**, **legal**, **medical**, and **pickleball** domains, but its highly adaptable architecture is designed for **any document-heavy industry**. It supports **two LLM backends**:
 
 - **Google Gemini** (cloud API) — higher quality, complex synthesis
 - **Groq** (cloud API) — ultra-fast Llama-3.3 inference
@@ -40,7 +40,7 @@
 | 🔒 **Role-Based Access Control** | Metadata-driven RBAC that filters document retrieval based on user clearance level |
 | 🤖 **Agent Discussion** | Collaborative single-pass mechanism where Auditors critique Researchers to resolve contradictions |
 | 🕵️ **Context Shield (V3)** | Dual-layer filtering of both structured facts and raw document chunks to prevent irrelevant data leakage |
-| 🧪 **Cross-Industry Support** | Fully verified workflows for both **Semiconductor** (Manufacturing) and **Medical** (Healthcare) domains |
+| 🧪 **Cross-Industry Support** | Fully verified workflows for multiple domains out-of-the-box (**Semiconductor**, **Aerospace**, **Energy**, **Finance**, **Legal**, **Medical**, **Pickleball**) |
 | 🗄️ **Enterprise Data Logic** | Physically decoupled data sources (Structured SQL vs. Unstructured Vector) for production-grade reliability |
 
 ---
@@ -113,7 +113,7 @@ graph TD
 1. **User** submits a query with their role (Senior/Junior) and strictly assigned **Domain**.
 2. **Surgical Router** performs **LLM-based NER** and classifies intent. It uses a **Hybrid Routing** strategy (Keywords + LLM Fallback) and enforces **Strict Domain Isolation**, ensuring the `user_domain` remains immutable.
 3. **Domain-Isolated Clusters** perform **Surgical Retrieval** based on decoupled data sources:
-    *   **DB Agent Cluster** queries structured relational data (SQL).
+    *   **DB Agent Cluster** queries structured relational data (SQL). *Note: Includes a new **Early Exit / Short-Circuiting** built-in mechanism — if the DB Agent perfectly answers the query, the system dynamically skips redundant document retrieval to save time and compute footprint.*
     *   **Official/Informal Clusters** search unstructured document vector stores (RAG).
 4. **Generator** synthesizes a response constrained by the **Context Shield (V3)** and **Information Lock**.
 5. **Triangulation Discrepancy Engine** performs a cross-source audit between SQL facts and RAG context using a deterministic authority hierarchy (**DB > Official > Informal**).
@@ -138,7 +138,7 @@ graph TD
 
 ## 🛠️ Developer Guide: Scaling to New Domains
 
-VERA is designed for **"Plug-and-Play" multi-industry deployment**. The core architecture (`shared/`) is 100% domain-agnostic. To add a new industry (e.g., Aerospace or Energy), follow these steps:
+VERA is designed for **"Plug-and-Play" multi-industry deployment** and auto-discovers agents from the `agents_logic` bundle out of the box. The core architecture (`shared/`) is 100% domain-agnostic. To add a completely new industry, follow these steps:
 
 ### 1. Structure Requirements
 Create a new agent folder in `agents_logic/` named `{domain}_agents/`. To be auto-discovered and routed properly, it must contain:
@@ -373,7 +373,13 @@ proj_vera/
 │   ├── router_agent.py     # LLM-NER & Surgical Routing
 │   ├── response_agent.py   # Report compiler
 │   ├── escalation_agent.py # Security & domain-mismatch handler
-│   └── semiconductor_agents/ # Domain: semiconductor (example)
+│   ├── aerospace_agents/   # Domain: aerospace
+│   ├── energy_agents/      # Domain: energy
+│   ├── finance_agents/     # Domain: finance
+│   ├── legal_agents/       # Domain: legal
+│   ├── medical_agents/     # Domain: medical
+│   ├── pickleball_agents/  # Domain: pickleball
+│   └── semiconductor_agents/ # Domain: semiconductor
 │       ├── db_agent.py              # SQL query capability
 │       ├── official_docs_agent.py   # Datasheet retrieval
 │       ├── informal_docs_agent.py   # Email/Memo research
