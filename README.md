@@ -12,6 +12,15 @@
 
 ---
 
+## 📸 Screenshots
+
+![Project VERA Interface](mkdir%20assets/Project%20VERA%20Interface.png)
+
+![Sample Semiconductor Response](mkdir%20assets/Sample%20Semiconductor%20Response.png)
+
+![Sample Pickleball Response](mkdir%20assets/Sample%20Pickleball%20Response.png)
+
+---
 ## 📋 Table of Contents
 
 - [Overview](#overview)
@@ -414,7 +423,7 @@ proj_vera/
 
 ## 📄 License
 
-This project was developed as a Capstone Project for Data Science & AI certification.
+This project was developed as a Capstone Project for Data Science & AI certification, in collaboration with Farida, Leslie, Taufiq, and Wilson.
 
 ---
 
